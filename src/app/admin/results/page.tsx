@@ -17,15 +17,8 @@ interface FormResponse {
   score: number
   max_score: number
   submitted_at: string
-  profiles?: {
-    name: string
-    email: string
-    gender: string
-  }
-  forms?: {
-    name: string
-    project_id: string
-  }
+  profiles?: any
+  forms?: any
 }
 
 interface Form {
