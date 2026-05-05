@@ -1,9 +1,16 @@
 -- ================================================
--- أوراد أحلى شباب - Supabase Database Schema
+-- أوراد أحلى شباب - Supabase Database Schema (Updated)
 -- ================================================
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ================================================
+-- ENUMS (Custom Types for Dropdowns)
+-- ================================================
+DO $$ BEGIN CREATE TYPE user_role AS ENUM ('volunteer', 'supervisor', 'admin'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+DO $$ BEGIN CREATE TYPE user_status AS ENUM ('pending', 'approved', 'rejected'); EXCEPTION WHEN duplicate_object THEN null; END $$;
+DO $$ BEGIN CREATE TYPE user_gender AS ENUM ('male', 'female'); EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 -- ================================================
 -- PROFILES TABLE (User profiles)
@@ -13,9 +20,9 @@ CREATE TABLE IF NOT EXISTS profiles (
     email TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
     phone TEXT,
-    gender TEXT CHECK (gender IN ('male', 'female')) NOT NULL,
-    role TEXT CHECK (role IN ('volunteer', 'supervisor', 'admin')) DEFAULT 'volunteer',
-    status TEXT CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    gender user_gender NOT NULL,
+    role user_role DEFAULT 'volunteer'::user_role,
+    status user_status DEFAULT 'pending'::user_status,
     avatar_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -80,7 +87,7 @@ CREATE TABLE IF NOT EXISTS form_responses (
 );
 
 -- ================================================
--- ROW LEVEL SECURITY (RLS)
+-- ROW LEVEL SECURITY (RLS) & POLICIES
 -- ================================================
 
 -- Enable RLS on all tables
@@ -90,124 +97,73 @@ ALTER TABLE forms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE form_responses ENABLE ROW LEVEL SECURITY;
 
+-- Helper function to check if current user is admin without causing infinite recursion
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'::user_role
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- PROFILES POLICIES
-CREATE POLICY "Users can view own profile" ON profiles
-    FOR SELECT USING (auth.uid() = id);
-
-CREATE POLICY "Users can update own profile" ON profiles
-    FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Admins can view all profiles" ON profiles
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM profiles 
-            WHERE id = auth.uid() AND role = 'admin'
-        )
-    );
-
-CREATE POLICY "Admins can update any profile" ON profiles
-    FOR UPDATE USING (
-        EXISTS (
-            SELECT 1 FROM profiles 
-            WHERE id = auth.uid() AND role = 'admin'
-        )
-    );
+CREATE POLICY "View Profiles Policy" ON public.profiles FOR SELECT USING ( auth.uid() = id OR public.is_admin() );
+CREATE POLICY "Update Profiles Policy" ON public.profiles FOR UPDATE USING ( auth.uid() = id OR public.is_admin() );
+CREATE POLICY "Allow public read for email check" ON public.profiles FOR SELECT USING ( true );
 
 -- PROJECTS POLICIES
-CREATE POLICY "Anyone can view projects" ON projects
-    FOR SELECT USING (true);
-
-CREATE POLICY "Supervisors and admins can create projects" ON projects
-    FOR INSERT WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM profiles 
-            WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
-        )
-    );
-
-CREATE POLICY "Supervisors and admins can update projects" ON projects
-    FOR UPDATE USING (
-        EXISTS (
-            SELECT 1 FROM profiles 
-            WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
-        )
-    );
-
-CREATE POLICY "Admins can delete projects" ON projects
-    FOR DELETE USING (
-        EXISTS (
-            SELECT 1 FROM profiles 
-            WHERE id = auth.uid() AND role = 'admin'
-        )
-    );
+CREATE POLICY "Anyone can view projects" ON projects FOR SELECT USING (true);
+CREATE POLICY "Supervisors and admins can create projects" ON projects FOR INSERT WITH CHECK ( EXISTS ( SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('supervisor'::user_role, 'admin'::user_role) ) );
+CREATE POLICY "Supervisors and admins can update projects" ON projects FOR UPDATE USING ( EXISTS ( SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('supervisor'::user_role, 'admin'::user_role) ) );
+CREATE POLICY "Admins can delete projects" ON projects FOR DELETE USING ( EXISTS ( SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'::user_role ) );
 
 -- FORMS POLICIES
-CREATE POLICY "Anyone can view forms" ON forms
-    FOR SELECT USING (true);
-
-CREATE POLICY "Supervisors and admins can create forms" ON forms
-    FOR INSERT WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM profiles 
-            WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
-        )
-    );
-
-CREATE POLICY "Supervisors and admins can update forms" ON forms
-    FOR UPDATE USING (
-        EXISTS (
-            SELECT 1 FROM profiles 
-            WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
-        )
-    );
+CREATE POLICY "Anyone can view forms" ON forms FOR SELECT USING (true);
+CREATE POLICY "Supervisors and admins can create forms" ON forms FOR INSERT WITH CHECK ( EXISTS ( SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('supervisor'::user_role, 'admin'::user_role) ) );
+CREATE POLICY "Supervisors and admins can update forms" ON forms FOR UPDATE USING ( EXISTS ( SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('supervisor'::user_role, 'admin'::user_role) ) );
 
 -- QUESTIONS POLICIES
-CREATE POLICY "Anyone can view questions" ON questions
-    FOR SELECT USING (true);
-
-CREATE POLICY "Supervisors and admins can manage questions" ON questions
-    FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM profiles 
-            WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
-        )
-    );
+CREATE POLICY "Anyone can view questions" ON questions FOR SELECT USING (true);
+CREATE POLICY "Supervisors and admins can manage questions" ON questions FOR ALL USING ( EXISTS ( SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('supervisor'::user_role, 'admin'::user_role) ) );
 
 -- FORM_RESPONSES POLICIES
-CREATE POLICY "Users can view own responses" ON form_responses
-    FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can create own responses" ON form_responses
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Supervisors can view responses in their gender" ON form_responses
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM profiles p1
-            JOIN profiles p2 ON p2.id = form_responses.user_id
-            WHERE p1.id = auth.uid() 
-            AND p1.role IN ('supervisor', 'admin')
-            AND (
-                p1.role = 'admin' 
-                OR p1.gender = p2.gender
-            )
-        )
-    );
+CREATE POLICY "Users can view own responses" ON form_responses FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can create own responses" ON form_responses FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Supervisors can view responses in their gender" ON form_responses FOR SELECT USING (
+    EXISTS (
+        SELECT 1 FROM profiles p1
+        JOIN profiles p2 ON p2.id = form_responses.user_id
+        WHERE p1.id = auth.uid() 
+        AND p1.role IN ('supervisor'::user_role, 'admin'::user_role)
+        AND ( p1.role = 'admin'::user_role OR p1.gender = p2.gender )
+    )
+);
 
 -- ================================================
--- FUNCTIONS
+-- FUNCTIONS & TRIGGERS
 -- ================================================
 
 -- Function to handle new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
+    INSERT INTO public.profiles (id, email, name, gender, role, status)
+    VALUES (
+        NEW.id,
+        NEW.email,
+        COALESCE(NEW.raw_user_meta_data->>'name', 'مستخدم جديد'),
+        COALESCE(NEW.raw_user_meta_data->>'gender', 'male')::user_gender,
+        'volunteer'::user_role,
+        'pending'::user_status
+    );
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger for new user
-CREATE OR REPLACE TRIGGER on_auth_user_created
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
@@ -221,17 +177,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Triggers for updated_at
-CREATE TRIGGER update_profiles_updated_at
-    BEFORE UPDATE ON profiles
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
+CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE TRIGGER update_projects_updated_at
-    BEFORE UPDATE ON projects
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DROP TRIGGER IF EXISTS update_projects_updated_at ON projects;
+CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE TRIGGER update_forms_updated_at
-    BEFORE UPDATE ON forms
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+DROP TRIGGER IF EXISTS update_forms_updated_at ON forms;
+CREATE TRIGGER update_forms_updated_at BEFORE UPDATE ON forms FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- ================================================
 -- SEED DATA (Sample Project)
@@ -250,11 +203,6 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('avatars', 'avatars', true)
 ON CONFLICT DO NOTHING;
 
-CREATE POLICY "Anyone can view avatars" ON storage.objects
-    FOR SELECT USING (bucket_id = 'avatars');
-
-CREATE POLICY "Users can upload own avatar" ON storage.objects
-    FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
-
-CREATE POLICY "Users can update own avatar" ON storage.objects
-    FOR UPDATE USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Anyone can view avatars" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+CREATE POLICY "Users can upload own avatar" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Users can update own avatar" ON storage.objects FOR UPDATE USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
