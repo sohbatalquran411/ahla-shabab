@@ -32,9 +32,7 @@ interface Form {
   id: string
   name: string
   project_id: string
-  projects?: {
-    name: string
-  }
+  projects?: any
 }
 
 interface Project {
