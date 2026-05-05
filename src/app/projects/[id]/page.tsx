@@ -1,53 +1,147 @@
-import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-interface PageProps {
-  params: Promise<{ id: string }>
-}
+export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
+  const [projectId, setProjectId] = useState<string | null>(null)
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
+  const [project, setProject] = useState<any>(null)
+  const [forms, setForms] = useState<any[]>([])
+  const [completedFormIds, setCompletedFormIds] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  
+  const router = useRouter()
+  const supabase = createClient()
 
-export default async function ProjectPage({ params }: PageProps) {
-  const { id } = await params
-  const supabase = await createClient()
+  useEffect(() => {
+    params.then(({ id }) => setProjectId(id))
+  }, [params])
 
-  const { data: { user } } = await supabase.auth.getUser()
+  useEffect(() => {
+    if (projectId) {
+      fetchData()
+    }
+  }, [projectId])
 
-  if (!user) {
-    redirect('/login')
+  const fetchData = async () => {
+    if (!projectId) return
+
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+
+      if (!authUser) {
+        router.push('/login')
+        return
+      }
+
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authUser.id)
+        .single()
+
+      if (!profileData) {
+        router.push('/login')
+        return
+      }
+
+      if (profileData.status !== 'approved') {
+        router.push('/login')
+        return
+      }
+
+      setUser(authUser)
+      setProfile(profileData)
+
+      const { data: projectData } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .single()
+
+      if (!projectData) {
+        router.push('/dashboard')
+        return
+      }
+
+      setProject(projectData)
+
+      const { data: formsData } = await supabase
+        .from('forms')
+        .select('*')
+        .eq('project_id', projectId)
+        .eq('is_active', true)
+
+      setForms(formsData || [])
+
+      const { data: responses } = await supabase
+        .from('form_responses')
+        .select('*')
+        .eq('user_id', authUser.id)
+
+      setCompletedFormIds(responses?.map((r: any) => r.form_id) || [])
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const handleDeleteProject = async () => {
+    if (!projectId || profile?.role !== 'admin') return
 
-  if (!profile) {
-    redirect('/login')
+    setDeleting(true)
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectId)
+
+      if (error) throw error
+
+      router.push('/projects')
+    } catch (error) {
+      console.error('Error deleting project:', error)
+      alert('حدث خطأ أثناء حذف المشروع')
+    } finally {
+      setDeleting(false)
+    }
   }
 
-  const { data: project } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (!project) {
-    redirect('/dashboard')
+  const getIcon = (iconName: string) => {
+    const icons: Record<string, JSX.Element> = {
+      mosque: (
+        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+        </svg>
+      ),
+      sun: (
+        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ),
+      quran: (
+        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      )
+    }
+    return icons[iconName] || icons.mosque
   }
 
-  const { data: forms } = await supabase
-    .from('forms')
-    .select('*')
-    .eq('project_id', id)
-    .eq('is_active', true)
-
-  const { data: responses } = await supabase
-    .from('form_responses')
-    .select('*')
-    .eq('user_id', user.id)
-
-  const completedFormIds = responses?.map(r => r.form_id) || []
+  if (loading || !project) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div>
+      </div>
+    )
+  }
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
@@ -55,7 +149,7 @@ export default async function ProjectPage({ params }: PageProps) {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
-            href="/dashboard"
+            href="/projects"
             className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,7 +158,21 @@ export default async function ProjectPage({ params }: PageProps) {
             رجوع
           </Link>
           <h1 className="text-lg font-bold text-teal-700">{project.name}</h1>
-          <div className="w-16" />
+          
+          {/* Delete Button (Admin only) */}
+          {profile?.role === 'admin' && (
+            <button
+              onClick={() => setDeleteModal(true)}
+              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              title="حذف المشروع"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          )}
+          
+          {!profile?.role === 'admin' && <div className="w-8" />}
         </div>
       </header>
 
@@ -73,12 +181,10 @@ export default async function ProjectPage({ params }: PageProps) {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
           <div className="flex items-start gap-4">
             <div
-              className="w-20 h-20 rounded-2xl flex items-center justify-center text-white text-3xl"
-              style={{ backgroundColor: project.color }}
+              className="w-20 h-20 rounded-2xl flex items-center justify-center"
+              style={{ backgroundColor: `${project.color}20`, color: project.color }}
             >
-              {project.icon === 'mosque' && '🕌'}
-              {project.icon === 'sun' && '☀️'}
-              {project.icon === 'quran' && '📖'}
+              {getIcon(project.icon)}
             </div>
             <div className="flex-1">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">{project.name}</h2>
@@ -101,9 +207,9 @@ export default async function ProjectPage({ params }: PageProps) {
         {/* Forms */}
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-xl font-bold text-gray-900">الفورمز المتاحة</h3>
-          {(profile.role === 'supervisor' || profile.role === 'admin') && (
+          {(profile?.role === 'supervisor' || profile?.role === 'admin') && (
             <Link
-              href={`/forms/create?project_id=${id}`}
+              href={`/forms/create?project_id=${projectId}`}
               className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -115,7 +221,7 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {forms?.map((form) => {
+          {forms.map((form) => {
             const isCompleted = completedFormIds.includes(form.id)
             
             return (
@@ -143,15 +249,18 @@ export default async function ProjectPage({ params }: PageProps) {
                   {form.description || 'لا يوجد وصف'}
                 </p>
                 <div className="mt-4">
-                  <span className="text-teal-600 font-medium text-sm">
-                    {isCompleted ? 'عرض النتيجة' : 'ابدأ الآن'} ←
+                  <span className="text-teal-600 font-medium text-sm flex items-center gap-1">
+                    {isCompleted ? 'عرض النتيجة' : 'ابدأ الآن'}
+                    <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
                   </span>
                 </div>
               </Link>
             )
           })}
 
-          {(!forms || forms.length === 0) && (
+          {forms.length === 0 && (
             <div className="col-span-full text-center py-12 bg-white rounded-2xl border border-gray-100">
               <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                 <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,6 +272,59 @@ export default async function ProjectPage({ params }: PageProps) {
           )}
         </div>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setDeleteModal(false)}
+          />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد الحذف</h3>
+            <p className="text-gray-600 text-center mb-6">
+              هل أنت متأكد من حذف مشروع "<strong>{project.name}</strong>"؟
+              <br />
+              <span className="text-red-500 text-sm">هذا الإجراء لا يمكن التراجع عنه.</span>
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteModal(false)}
+                disabled={deleting}
+                className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={handleDeleteProject}
+                disabled={deleting}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deleting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    جاري الحذف...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    حذف
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
