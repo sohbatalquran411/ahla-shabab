@@ -6,15 +6,50 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import type { QuestionType, QuestionOption } from '@/types'
 
-// Question type definitions
+// Question type definitions with detailed explanations
 const QUESTION_TYPES = {
-  text: { label: 'نص', icon: 'T', description: 'إجابة نصية قصيرة' },
-  textarea: { label: 'نص طويل', icon: '¶', description: 'إجابة نصية متعددة الأسطر' },
-  single_choice: { label: 'اختيار واحد', icon: '○', description: 'اختيار إجابة واحدة' },
-  multiple_choice: { label: 'اختيار متعدد', icon: '☑', description: 'اختيار عدة إجابات' },
-  scale: { label: 'تقييم', icon: '★', description: 'تقييم من 1 إلى 5' },
-  ranking: { label: 'ترتيب', icon: '#', description: 'ترتيب العناصر' },
-  matrix: { label: 'مصفوفة', icon: '▦', description: 'أسئلة متعددة مع خيارات مشتركة' }
+  text: { 
+    label: 'نص', 
+    icon: 'T', 
+    description: 'إجابة نصية قصيرة',
+    explanation: 'سؤال يتطلب إجابة نصية قصيرة مثل الاسم أو كلمة واحدة. مثال: "ما اسمك؟" أو "اكتب دعاء قصير"'
+  },
+  textarea: { 
+    label: 'نص طويل', 
+    icon: '¶', 
+    description: 'إجابة نصية متعددة الأسطر',
+    explanation: 'سؤال يتطلب إجابة مفصلة أو فقرة كاملة. مثال: "اكتب عن تجربتك في الحج" أو "صف شعورك أثناء الصلاة"'
+  },
+  single_choice: { 
+    label: 'اختيار واحد', 
+    icon: '○', 
+    description: 'اختيار إجابة واحدة',
+    explanation: 'سؤال يحتوي على عدة خيارات ويمكن اختيار واحد فقط. مثال: "في أي وقت تصلي الفجر؟" مع خيارات: قبل الأذان، مع الأذان، بعد الأذان'
+  },
+  multiple_choice: { 
+    label: 'اختيار متعدد', 
+    icon: '☑', 
+    description: 'اختيار عدة إجابات',
+    explanation: 'سؤال يحتوي على عدة خيارات ويمكن اختيار أكثر من واحد. مثال: "ما الأعمال الصالحة التي تقوم بها؟" مع خيارات: الصلاة، الصيام، الصدقة، قراءة القرآن'
+  },
+  scale: { 
+    label: 'تقييم', 
+    icon: '★', 
+    description: 'تقييم من 1 إلى 5',
+    explanation: 'سؤال تقييم بمقياس من 1 إلى 5 نجوم أو نقاط. مثال: "قيم مستوى انتظامك في الصلاة" من 1 (ضعيف) إلى 5 (ممتاز)'
+  },
+  ranking: { 
+    label: 'ترتيب', 
+    icon: '#', 
+    description: 'ترتيب العناصر',
+    explanation: 'سؤال يطلب ترتيب عدة عناصر حسب الأولوية أو الأهمية. مثال: "رتب العبادات التالية حسب أولويتك: الصلاة، الصيام، الحج، الزكاة، الشهادة"'
+  },
+  matrix: { 
+    label: 'مصفوفة', 
+    icon: '▦', 
+    description: 'أسئلة متعددة مع خيارات مشتركة',
+    explanation: 'عدة أسئلة فرعية تشترك في نفس خيارات الإجابة. مثال: تقييم الصلوات الخمس (الفجر، الظهر، العصر، المغرب، العشاء) من حيث: الانتظام، الخشوع، الوقت'
+  }
 } as const
 
 interface Question {
@@ -474,19 +509,28 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
           {/* Question Types Guide */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             {(Object.entries(QUESTION_TYPES) as [QuestionType, typeof QUESTION_TYPES['text']][]).map(([type, info]) => (
-              <button
-                key={type}
-                onClick={() => addQuestion(type)}
-                className="p-4 bg-gray-50 hover:bg-teal-50 border border-gray-200 hover:border-teal-300 rounded-xl transition-all group text-right"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="w-8 h-8 bg-teal-600 text-white rounded-lg flex items-center justify-center font-bold">
-                    {info.icon}
-                  </span>
-                  <span className="font-medium text-gray-800 group-hover:text-teal-700">{info.label}</span>
+              <div key={type} className="relative group">
+                <button
+                  onClick={() => addQuestion(type)}
+                  className="w-full p-4 bg-gray-50 hover:bg-teal-50 border border-gray-200 hover:border-teal-300 rounded-xl transition-all group text-right"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="w-8 h-8 bg-teal-600 text-white rounded-lg flex items-center justify-center font-bold">
+                      {info.icon}
+                    </span>
+                    <span className="font-medium text-gray-800 group-hover:text-teal-700">{info.label}</span>
+                  </div>
+                  <p className="text-xs text-gray-500">{info.description}</p>
+                </button>
+                
+                {/* Tooltip */}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 w-64 text-center">
+                  <div className="font-medium mb-1">{info.label}</div>
+                  <div className="text-xs text-gray-300">{info.explanation}</div>
+                  {/* Arrow */}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                 </div>
-                <p className="text-xs text-gray-500">{info.description}</p>
-              </button>
+              </div>
             ))}
           </div>
 
@@ -701,29 +745,98 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
           </div>
         </div>
 
-        {/* Example: Prayer Question */}
-        <div className="bg-amber-50 rounded-2xl p-6 border border-amber-200">
-          <h3 className="text-lg font-bold text-amber-800 mb-3">💡 مثال: سؤال الصلاة</h3>
-          <div className="bg-white rounded-xl p-4 space-y-3">
-            <p className="font-medium text-gray-800">في أي وقت تصلي الفجر؟</p>
-            <div className="space-y-2 text-sm text-gray-600">
-              <div className="flex justify-between items-center">
-                <span>○ قبل الأذان</span>
-                <span className="text-teal-600 font-medium">5 نقاط</span>
+        {/* Examples Section */}
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
+          <h3 className="text-lg font-bold text-amber-800 mb-4">💡 أمثلة عملية لأنواع الأسئلة</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Text Example */}
+            <div className="bg-white rounded-xl p-4 border border-amber-200">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">T</span>
+                <span className="font-medium text-gray-800">نص قصير</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span>○ مع الإمام</span>
-                <span className="text-teal-600 font-medium">4 نقاط</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>○ بعد الأذان بـ 15 دقيقة</span>
-                <span className="text-teal-600 font-medium">3 نقاط</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>○ بعد الأذان بـ 30+ دقيقة</span>
-                <span className="text-teal-600 font-medium">1 نقطة</span>
+              <p className="text-sm text-gray-600 mb-2">ما اسم المسجد الذي تصلي فيه؟</p>
+              <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
+                إجابة: مسجد النور
               </div>
             </div>
+
+            {/* Textarea Example */}
+            <div className="bg-white rounded-xl p-4 border border-amber-200">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">¶</span>
+                <span className="font-medium text-gray-800">نص طويل</span>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">اكتب عن شعورك أثناء قراءة القرآن</p>
+              <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
+                إجابة: أشعر بالسكينة والطمأنينة...
+              </div>
+            </div>
+
+            {/* Single Choice Example */}
+            <div className="bg-white rounded-xl p-4 border border-amber-200">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">○</span>
+                <span className="font-medium text-gray-800">اختيار واحد</span>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">في أي وقت تصلي الفجر؟</p>
+              <div className="space-y-1 text-xs text-gray-500">
+                <div>○ قبل الأذان (5 نقاط)</div>
+                <div>● مع الأذان (4 نقاط)</div>
+                <div>○ بعد الأذان بـ15 دقيقة (3 نقاط)</div>
+              </div>
+            </div>
+
+            {/* Multiple Choice Example */}
+            <div className="bg-white rounded-xl p-4 border border-amber-200">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">☑</span>
+                <span className="font-medium text-gray-800">اختيار متعدد</span>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">ما الأعمال الصالحة التي تقوم بها؟</p>
+              <div className="space-y-1 text-xs text-gray-500">
+                <div>☑ الصلاة في وقتها (2 نقاط)</div>
+                <div>☑ قراءة القرآن (2 نقاط)</div>
+                <div>☐ الصدقة (2 نقاط)</div>
+                <div>☑ الذكر (1 نقطة)</div>
+              </div>
+            </div>
+
+            {/* Scale Example */}
+            <div className="bg-white rounded-xl p-4 border border-amber-200">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">★</span>
+                <span className="font-medium text-gray-800">تقييم</span>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">قيم مستوى خشوعك في الصلاة</p>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>★☆☆☆☆ ضعيف</span>
+                <span>★★★★★ ممتاز</span>
+              </div>
+            </div>
+
+            {/* Ranking Example */}
+            <div className="bg-white rounded-xl p-4 border border-amber-200">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">#</span>
+                <span className="font-medium text-gray-800">ترتيب</span>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">رتب العبادات حسب أولويتك</p>
+              <div className="space-y-1 text-xs text-gray-500">
+                <div>1. الصلاة (5 نقاط)</div>
+                <div>2. قراءة القرآن (4 نقاط)</div>
+                <div>3. الذكر (3 نقاط)</div>
+                <div>4. الصدقة (2 نقاط)</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 p-3 bg-amber-100 rounded-lg">
+            <p className="text-sm text-amber-800">
+              <strong>نصيحة:</strong> استخدم أنواع الأسئلة المختلفة لجعل النموذج أكثر تفاعلاً وشمولية. 
+              يمكنك دمج عدة أنواع في نموذج واحد لتغطية جوانب مختلفة من الموضوع.
+            </p>
           </div>
         </div>
       </main>

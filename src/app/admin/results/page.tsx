@@ -1,14 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 interface FormResponse {
   id: string
@@ -35,6 +30,7 @@ interface Project {
 
 export default function ResultsPage() {
   const router = useRouter()
+  const supabase = createClient()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
   const [responses, setResponses] = useState<FormResponse[]>([])

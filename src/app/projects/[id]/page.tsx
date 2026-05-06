@@ -238,9 +238,8 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
             const isCompleted = completedFormIds.includes(form.id)
             
             return (
-              <Link
+              <div
                 key={form.id}
-                href={`/forms/${form.id}`}
                 className={`bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-lg hover:border-teal-200 ${
                   isCompleted ? 'border-green-200' : 'border-gray-100'
                 }`}
@@ -251,25 +250,40 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  {isCompleted && (
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">
-                      مكتمل ✓
+                  <div className="flex items-center gap-2">
+                    {isCompleted && (
+                      <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">
+                        مكتمل ✓
+                      </span>
+                    )}
+                    {profile?.role === 'admin' && (
+                      <Link
+                        href={`/forms/${form.id}/edit`}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="تعديل النموذج"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+                <Link href={`/forms/${form.id}`}>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2 hover:text-teal-600 transition-colors">{form.name}</h4>
+                  <p className="text-gray-600 text-sm line-clamp-2">
+                    {form.description || 'لا يوجد وصف'}
+                  </p>
+                  <div className="mt-4">
+                    <span className="text-teal-600 font-medium text-sm flex items-center gap-1">
+                      {isCompleted ? 'عرض النتيجة' : 'ابدأ الآن'}
+                      <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
                     </span>
-                  )}
-                </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">{form.name}</h4>
-                <p className="text-gray-600 text-sm line-clamp-2">
-                  {form.description || 'لا يوجد وصف'}
-                </p>
-                <div className="mt-4">
-                  <span className="text-teal-600 font-medium text-sm flex items-center gap-1">
-                    {isCompleted ? 'عرض النتيجة' : 'ابدأ الآن'}
-                    <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </span>
-                </div>
-              </Link>
+                  </div>
+                </Link>
+              </div>
             )
           })}
 

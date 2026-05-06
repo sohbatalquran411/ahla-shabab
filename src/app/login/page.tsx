@@ -8,6 +8,7 @@ import Link from 'next/link'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -22,6 +23,9 @@ export default function LoginPage() {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          persistSession: rememberMe
+        }
       })
 
       if (error) throw error
@@ -118,6 +122,19 @@ export default function LoginPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 text-teal-600 bg-gray-50 border-gray-300 rounded focus:ring-teal-500 focus:ring-2"
+              />
+              <label htmlFor="remember-me" className="mr-2 text-sm text-gray-700">
+                تذكرني
+              </label>
             </div>
 
             <button

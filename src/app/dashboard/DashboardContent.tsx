@@ -81,104 +81,205 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
-      {/* Mobile Header */}
-      <header className="bg-white shadow-sm lg:hidden">
-        <div className="flex items-center justify-between px-4 py-3">
+      {/* Mobile App-like Header */}
+      <header className="bg-gradient-to-l from-teal-500 to-teal-600 shadow-lg lg:hidden sticky top-0 z-30">
+        <div className="flex items-center justify-between px-4 py-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            className="p-2 text-white hover:bg-white/20 rounded-xl transition-colors"
           >
             {Icons.menu}
           </button>
-          <h1 className="text-lg font-bold text-teal-700">أوراد أحلى شباب</h1>
-          <div className="w-10" />
+          <div className="text-center">
+            <h1 className="text-lg font-bold text-white">أوراد أحلى شباب</h1>
+            <p className="text-xs text-teal-100">منصة المشاريع الدعوية</p>
+          </div>
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <span className="text-sm font-bold text-white">
+              {user.name.charAt(0)}
+            </span>
+          </div>
         </div>
       </header>
 
       <div className="flex">
-        {/* Sidebar */}
+        {/* Mobile App-like Sidebar */}
         <aside className={`
-          fixed inset-y-0 right-0 z-50 w-72 bg-white shadow-xl transform transition-transform duration-300 lg:translate-x-0 lg:static lg:shadow-none
+          fixed inset-y-0 right-0 z-50 w-full bg-white shadow-2xl transform transition-transform duration-300 lg:w-80 lg:translate-x-0 lg:static lg:shadow-none
           ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}
         `}>
-          {/* Sidebar Header */}
-          <div className="bg-gradient-to-l from-teal-600 to-teal-700 px-6 py-8">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
-                <span className="text-2xl font-bold text-white">
-                  {user.name.charAt(0)}
-                </span>
+          {/* Mobile Sidebar Header */}
+          <div className="lg:hidden bg-gradient-to-br from-teal-500 via-teal-600 to-emerald-700 px-6 py-8 relative overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
+              <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full"></div>
+            </div>
+            
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
+                  <span className="text-2xl font-bold text-white">
+                    {user.name.charAt(0)}
+                  </span>
+                </div>
+                <div>
+                  <h2 className="text-white font-bold text-lg">{user.name}</h2>
+                  <p className="text-teal-100 text-sm">
+                    {user.role === 'admin' ? 'مدير النظام' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-white font-semibold">{user.name}</h2>
-                <p className="text-teal-200 text-sm">
-                  {user.role === 'admin' ? 'مدير' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
-                </p>
+              
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 text-white hover:bg-white/20 rounded-xl transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Sidebar Header */}
+          <div className="hidden lg:block relative bg-gradient-to-br from-teal-500 via-teal-600 to-emerald-700 px-6 py-10 overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
+              <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full"></div>
+            </div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
+                  <span className="text-2xl font-bold text-white">
+                    {user.name.charAt(0)}
+                  </span>
+                </div>
+                <div>
+                  <h2 className="text-white font-bold text-lg">{user.name}</h2>
+                  <p className="text-teal-100 text-sm">
+                    {user.role === 'admin' ? 'مدير النظام' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Logo/Brand */}
+              <div className="text-center">
+                <h1 className="text-white font-bold text-xl mb-1">أوراد أحلى شباب</h1>
+                <p className="text-teal-100 text-sm">منصة إدارة المشاريع الدعوية</p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="mt-6 px-4 space-y-2">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-3 px-4 py-3 bg-teal-50 text-teal-700 rounded-xl font-medium"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              الرئيسية
-            </Link>
+          <nav className="px-4 py-6 space-y-1 pb-24 lg:pb-6">
+            {/* Main Section */}
+            <div className="mb-6">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">القائمة الرئيسية</h3>
+              
+              <Link
+                href="/dashboard"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-4 px-4 py-4 bg-gradient-to-l from-teal-50 to-teal-100 text-teal-700 rounded-2xl font-medium mb-2 shadow-sm active:scale-95 transition-all"
+              >
+                <div className="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center text-white shadow-lg">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                </div>
+                <span className="font-semibold text-lg">الرئيسية</span>
+              </Link>
 
-            <Link
-              href="/projects"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-            >
-              {Icons.folder}
-              المشاريع
-            </Link>
+              <Link
+                href="/projects"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
+              >
+                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                  {Icons.folder}
+                </div>
+                <span className="font-medium text-lg">المشاريع</span>
+              </Link>
 
-            <Link
-              href="/profile"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              الملف الشخصي
-            </Link>
+              <Link
+                href="/profile"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
+              >
+                <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <span className="font-medium text-lg">الملف الشخصي</span>
+              </Link>
+            </div>
 
+            {/* Management Section */}
             {(user.role === 'supervisor' || user.role === 'admin') && (
-              <Link
-                href="/forms/create"
-                className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                إنشاء فورم
-              </Link>
-            )}
+              <div className="mb-6">
+                <div className="h-px bg-gray-200 mb-4"></div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">الإدارة</h3>
+                
+                <Link
+                  href="/forms/create"
+                  onClick={() => setSidebarOpen(false)}
+                  className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
+                >
+                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <span className="font-medium text-lg">إنشاء فورم</span>
+                </Link>
 
-            {user.role === 'admin' && (
-              <Link
-                href="/admin/users"
-                className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-              >
-                {Icons.users}
-                إدارة المستخدمين
-              </Link>
+                {user.role === 'admin' && (
+                  <>
+                    <Link
+                      href="/admin/users"
+                      onClick={() => setSidebarOpen(false)}
+                      className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
+                    >
+                      <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                        {Icons.users}
+                      </div>
+                      <span className="font-medium text-lg">إدارة المستخدمين</span>
+                    </Link>
+
+                    <Link
+                      href="/admin/results"
+                      onClick={() => setSidebarOpen(false)}
+                      className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
+                    >
+                      <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                      </div>
+                      <span className="font-medium text-lg">النتائج</span>
+                    </Link>
+                  </>
+                )}
+              </div>
             )}
           </nav>
 
           {/* Logout */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t lg:border-t-0">
+            <div className="h-px bg-gray-200 mb-4 lg:block hidden"></div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+              className="flex items-center gap-4 w-full px-4 py-4 text-red-600 hover:bg-red-50 rounded-2xl transition-all duration-200 group active:scale-95"
             >
-              {Icons.logout}
-              تسجيل الخروج
+              <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                {Icons.logout}
+              </div>
+              <span className="font-medium text-lg">تسجيل الخروج</span>
             </button>
           </div>
         </aside>
@@ -186,13 +287,15 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
         {/* Overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
         {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-8">
+        <main className="flex-1 p-4 lg:p-8 pt-0 lg:pt-8">
+          {/* Mobile spacing */}
+          <div className="h-4 lg:hidden"></div>
           {/* Welcome Section */}
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900">
@@ -262,25 +365,25 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {projects.map((project) => (
               <Link
-key={project.id}
+                key={project.id}
                 href={`/projects/${project.id}`}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+                className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group active:scale-95"
               >
                 <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"
+                  className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center mb-3 lg:mb-4 group-hover:scale-110 transition-transform"
                   style={{ backgroundColor: `${project.color}20`, color: project.color }}
                 >
                   {getIcon(project.icon)}
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{project.name}</h3>
+                <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-2">{project.name}</h3>
                 <p className="text-gray-600 text-sm line-clamp-2">
                   {project.description || 'لا يوجد وصف'}
                 </p>
-                <div className="mt-4 flex items-center gap-2">
-                  <span className={`px-3 py-1 text-xs rounded-full ${
+                <div className="mt-3 lg:mt-4 flex items-center gap-2">
+                  <span className={`px-2 lg:px-3 py-1 text-xs rounded-full ${
                     project.target_gender === 'male' 
                       ? 'bg-blue-100 text-blue-700' 
                       : project.target_gender === 'female'
@@ -294,9 +397,9 @@ key={project.id}
             ))}
 
             {projects.length === 0 && (
-              <div className="col-span-full text-center py-12">
-                <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="col-span-full text-center py-8 lg:py-12">
+                <div className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 lg:w-10 lg:h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                   </svg>
                 </div>
