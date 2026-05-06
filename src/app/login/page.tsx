@@ -22,10 +22,7 @@ export default function LoginPage() {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: {
-          persistSession: rememberMe
-        }
+        password
       })
 
       if (error) throw error
@@ -49,6 +46,15 @@ export default function LoginPage() {
         setError('تم رفض حسابك. تواصل مع الإدارة للمزيد من المعلومات.')
         setLoading(false)
         return
+      }
+
+      // Handle "Remember Me" functionality
+      if (rememberMe) {
+        // Store a flag in localStorage to indicate the user wants to be remembered
+        localStorage.setItem('rememberMe', 'true')
+      } else {
+        // Remove the flag if unchecked
+        localStorage.removeItem('rememberMe')
       }
 
       router.push('/dashboard')
