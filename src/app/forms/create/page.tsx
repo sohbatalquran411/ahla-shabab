@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -41,7 +41,7 @@ interface ExistingForm {
   questions: any[]
 }
 
-export default function CreateFormPage() {
+function CreateFormContent() {
   const [projectId, setProjectId] = useState<string>('')
   const [projectName, setProjectName] = useState<string>('')
   const [profile, setProfile] = useState<any>(null)
@@ -752,5 +752,13 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
         </div>
       )}
     </div>
+  )
+}
+
+export default function CreateFormPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div></div>}>
+      <CreateFormContent />
+    </Suspense>
   )
 }
