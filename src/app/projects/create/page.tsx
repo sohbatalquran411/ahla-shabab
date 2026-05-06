@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ImageUpload from '@/components/ImageUpload'
 
 const ICON_OPTIONS = [
   { value: 'mosque', label: 'مسجد', icon: '🕌' },
@@ -33,7 +34,8 @@ export default function CreateProjectPage() {
     description: '',
     target_gender: 'both',
     icon: 'mosque',
-    color: '#10B981'
+    color: '#10B981',
+    image_url: ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -78,6 +80,7 @@ export default function CreateProjectPage() {
           target_gender: formData.target_gender,
           icon: formData.icon,
           color: formData.color,
+          image_url: formData.image_url,
           created_by: user.id
         })
 
@@ -118,6 +121,12 @@ export default function CreateProjectPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Image Upload */}
+            <ImageUpload
+              onImageUploaded={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+              currentImage={formData.image_url}
+            />
+
             {/* Project Name */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">اسم المشروع *</label>
@@ -217,12 +226,22 @@ export default function CreateProjectPage() {
               <label className="block text-sm font-medium text-gray-700">معاينة</label>
               <div className="bg-gray-50 rounded-xl p-6">
                 <div className="flex items-center gap-4">
-                  <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
-                    style={{ backgroundColor: `${formData.color}20` }}
-                  >
-                    {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || '🕌'}
-                  </div>
+                  {formData.image_url ? (
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-gray-200">
+                      <img 
+                        src={formData.image_url} 
+                        alt="صورة المشروع" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
+                      style={{ backgroundColor: `${formData.color}20` }}
+                    >
+                      {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || '🕌'}
+                    </div>
+                  )}
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">
                       {formData.name || 'اسم المشروع'}

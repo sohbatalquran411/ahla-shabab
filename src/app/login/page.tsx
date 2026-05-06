@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useAppSettings } from '@/hooks/useAppSettings'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -11,8 +12,18 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPendingMessage, setShowPendingMessage] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { settings } = useAppSettings()
+
+  useEffect(() => {
+    // Check if redirected from registration with pending status
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('pending') === 'true') {
+      setShowPendingMessage(true)
+    }
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -79,17 +90,40 @@ export default function LoginPage() {
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-l from-teal-600 to-teal-700 px-8 py-10 text-center">
-            <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-              <svg className="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-white mb-2">أوراد أحلى شباب</h1>
+            {settings.app_logo ? (
+              <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30">
+                <img 
+                  src={settings.app_logo} 
+                  alt="شعار التطبيق" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <svg className="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+            )}
+            <h1 className="text-2xl font-bold text-white mb-2">{settings.app_name}</h1>
             <p className="text-teal-100 text-sm">مرحباً بك مجدداً</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleLogin} className="px-8 py-8 space-y-6">
+            {/* Pending Message */}
+            {showPendingMessage && (
+              <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl text-sm">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="font-medium">تم إنشاء حسابك بنجاح!</span>
+                </div>
+                <p className="mt-1">حسابك كمشرف قيد المراجعة من الإدارة. ستتمكن من تسجيل الدخول بعد الموافقة.</p>
+              </div>
+            )}
+
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
                 {error}
@@ -174,7 +208,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-teal-100 text-xs mt-6">
-          © 2026 أوراد أحلى شباب. جميع الحقوق محفوظة
+          © 2026 {settings.app_name}. جميع الحقوق محفوظة
         </p>
       </div>
     </div>

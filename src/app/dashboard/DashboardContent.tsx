@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useAppSettings } from '@/hooks/useAppSettings'
 import type { User, Project } from '@/types'
 
 interface DashboardContentProps {
@@ -69,6 +70,7 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { settings } = useAppSettings()
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -91,8 +93,8 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
             {Icons.menu}
           </button>
           <div className="text-center">
-            <h1 className="text-lg font-bold text-white">أوراد أحلى شباب</h1>
-            <p className="text-xs text-teal-100">منصة المشاريع الدعوية</p>
+            <h1 className="text-lg font-bold text-white">{settings.app_name}</h1>
+            <p className="text-xs text-teal-100">{settings.app_description}</p>
           </div>
           <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
             <span className="text-sm font-bold text-white">
@@ -169,8 +171,8 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               
               {/* Logo/Brand */}
               <div className="text-center">
-                <h1 className="text-white font-bold text-xl mb-1">أوراد أحلى شباب</h1>
-                <p className="text-teal-100 text-sm">منصة إدارة المشاريع الدعوية</p>
+                <h1 className="text-white font-bold text-xl mb-1">{settings.app_name}</h1>
+                <p className="text-teal-100 text-sm">{settings.app_description}</p>
               </div>
             </div>
           </div>
@@ -195,17 +197,6 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               </Link>
 
               <Link
-                href="/projects"
-                onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
-              >
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
-                  {Icons.folder}
-                </div>
-                <span className="font-medium text-lg">المشاريع</span>
-              </Link>
-
-              <Link
                 href="/profile"
                 onClick={() => setSidebarOpen(false)}
                 className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
@@ -219,52 +210,24 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               </Link>
             </div>
 
-            {/* Management Section */}
-            {(user.role === 'supervisor' || user.role === 'admin') && (
+            {/* Management Section - Admin Only */}
+            {user.role === 'admin' && (
               <div className="mb-6">
                 <div className="h-px bg-gray-200 mb-4"></div>
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">الإدارة</h3>
                 
                 <Link
-                  href="/forms/create"
+                  href="/admin"
                   onClick={() => setSidebarOpen(false)}
                   className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
                 >
-                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                  <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                  <span className="font-medium text-lg">إنشاء فورم</span>
+                  <span className="font-medium text-lg">لوحة تحكم المدير</span>
                 </Link>
-
-                {user.role === 'admin' && (
-                  <>
-                    <Link
-                      href="/admin/users"
-                      onClick={() => setSidebarOpen(false)}
-                      className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
-                    >
-                      <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
-                        {Icons.users}
-                      </div>
-                      <span className="font-medium text-lg">إدارة المستخدمين</span>
-                    </Link>
-
-                    <Link
-                      href="/admin/results"
-                      onClick={() => setSidebarOpen(false)}
-                      className="flex items-center gap-4 px-4 py-4 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 group active:scale-95"
-                    >
-                      <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-xl transition-shadow">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                      </div>
-                      <span className="font-medium text-lg">النتائج</span>
-                    </Link>
-                  </>
-                )}
               </div>
             )}
           </nav>
@@ -306,8 +269,25 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
                 ? 'لوحة تحكم المدير' 
                 : user.role === 'supervisor' 
                   ? 'لوحة تحكم المشرف' 
-                  : 'مرحباً بك في منصتك'}
+                  : 'مرحباً بك في منصة أوراد أحلى شباب'}
             </p>
+            
+            {/* Welcome message for volunteers */}
+            {user.role === 'volunteer' && (
+              <div className="mt-4 bg-gradient-to-l from-teal-50 to-blue-50 border border-teal-200 rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center text-white">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-teal-800">أهلاً وسهلاً بك!</h3>
+                    <p className="text-sm text-teal-700">تصفح المشاريع المتاحة وابدأ رحلتك في العمل التطوعي والدعوي</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Stats (Admin only) */}
@@ -353,16 +333,17 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
 
           {/* Projects Grid */}
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">المشاريع</h2>
-            {(user.role === 'supervisor' || user.role === 'admin') && (
-              <Link
-                href="/projects/create"
-                className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors"
-              >
-                {Icons.plus}
-                مشروع جديد
-              </Link>
-            )}
+            <h2 className="text-xl font-bold text-gray-900">المشاريع المتاحة</h2>
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              عرض جميع المشاريع
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
@@ -372,12 +353,22 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
                 href={`/projects/${project.id}`}
                 className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group active:scale-95"
               >
-                <div
-                  className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center mb-3 lg:mb-4 group-hover:scale-110 transition-transform"
-                  style={{ backgroundColor: `${project.color}20`, color: project.color }}
-                >
-                  {getIcon(project.icon)}
-                </div>
+                {project.image_url ? (
+                  <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl overflow-hidden mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
+                    <img 
+                      src={project.image_url} 
+                      alt={project.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center mb-3 lg:mb-4 group-hover:scale-110 transition-transform"
+                    style={{ backgroundColor: `${project.color}20`, color: project.color }}
+                  >
+                    {getIcon(project.icon)}
+                  </div>
+                )}
                 <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-2">{project.name}</h3>
                 <p className="text-gray-600 text-sm line-clamp-2">
                   {project.description || 'لا يوجد وصف'}

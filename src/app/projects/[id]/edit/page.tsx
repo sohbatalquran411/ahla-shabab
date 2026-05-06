@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import ImageUpload from '@/components/ImageUpload'
 
 const ICON_OPTIONS = [
   { value: 'mosque', label: 'مسجد', icon: '🕌' },
@@ -40,7 +41,8 @@ function EditProjectContent() {
     description: '',
     target_gender: 'both',
     icon: 'mosque',
-    color: '#10B981'
+    color: '#10B981',
+    image_url: ''
   })
 
   const router = useRouter()
@@ -95,7 +97,8 @@ function EditProjectContent() {
         description: projectData.description || '',
         target_gender: projectData.target_gender || 'both',
         icon: projectData.icon || 'mosque',
-        color: projectData.color || '#10B981'
+        color: projectData.color || '#10B981',
+        image_url: projectData.image_url || ''
       })
     } catch (error) {
       console.error('Error fetching data:', error)

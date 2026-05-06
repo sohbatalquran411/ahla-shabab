@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import ImageUpload from '@/components/ImageUpload'
 import type { QuestionType, QuestionOption } from '@/types'
 
 // Question type definitions with detailed explanations
@@ -67,6 +68,7 @@ interface FormData {
   description: string
   target_gender: 'male' | 'female' | 'both'
   allow_multiple: boolean
+  image_url: string
   questions: Question[]
 }
 
@@ -91,6 +93,7 @@ function CreateFormContent() {
     description: '',
     target_gender: 'both',
     allow_multiple: false,
+    image_url: '',
     questions: []
   })
 
@@ -318,6 +321,7 @@ function CreateFormContent() {
           description: formData.description,
           target_gender: formData.target_gender,
           allow_multiple: formData.allow_multiple,
+          image_url: formData.image_url,
           created_by: profile.id,
           is_active: true
         })
@@ -417,6 +421,12 @@ function CreateFormContent() {
           <h2 className="text-xl font-bold text-gray-900 mb-6">معلومات الفورم</h2>
           
           <div className="space-y-4">
+            {/* Image Upload */}
+            <ImageUpload
+              onImageUploaded={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+              currentImage={formData.image_url}
+            />
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">اسم الفورم *</label>
               <input

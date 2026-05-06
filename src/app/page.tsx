@@ -1,14 +1,25 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import { useAppSettings } from '@/hooks/useAppSettings'
+import PublicProjectsView from '@/components/PublicProjectsView'
 
 export default async function HomePage() {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = createClient()
 
+  // Check if user is already logged in
+  const { data: { user } } = await supabase.auth.getUser()
+  
   if (user) {
+    // If logged in, redirect to dashboard
     redirect('/dashboard')
-  } else {
-    redirect('/login')
   }
+
+  // Get public projects
+  const { data: projects } = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  return <PublicProjectsView projects={projects || []} />
 }
