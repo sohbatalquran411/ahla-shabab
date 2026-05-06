@@ -74,7 +74,12 @@ export default function AdminUsersPage() {
     }
   }
 
-  const handleAction = async (userId: string, action: 'approve' | 'reject' | 'role' | 'delete' | 'reset_password', newRole?: UserRole, updatedData?: Partial<User>) => {
+  const handleAction = async (
+    userId: string, 
+    action: 'approve' | 'reject' | 'role' | 'delete' | 'reset_password' | 'edit', 
+    newRole?: UserRole, 
+    updatedData?: Partial<User>
+  ) => {
     setActionLoading(true)
     try {
       if (action === 'delete') {
