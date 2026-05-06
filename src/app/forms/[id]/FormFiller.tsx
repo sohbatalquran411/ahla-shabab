@@ -123,8 +123,8 @@ export default function FormFiller({ form, questions, existingResponse, project,
           if (mainOption) {
             if (subOptionId && mainOption.sub_options) {
               const subOption = mainOption.sub_options.find((sub: any) => sub.id === subOptionId)
-              if (sub) {
-                score += sub.points || 0
+              if (subOption) {
+                score += subOption.points || 0
               }
             } else {
               score += mainOption.points || 0
@@ -141,8 +141,8 @@ export default function FormFiller({ form, questions, existingResponse, project,
             if (mainOption) {
               if (subOptionId && mainOption.sub_options) {
                 const subOption = mainOption.sub_options.find((sub: any) => sub.id === subOptionId)
-                if (sub) {
-                  score += sub.points || 0
+                if (subOption) {
+                  score += subOption.points || 0
                 }
               } else {
                 score += mainOption.points || 0
