@@ -1,11 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { useAppSettings } from '@/hooks/useAppSettings'
 import PublicProjectsView from '@/components/PublicProjectsView'
 
 export default async function HomePage() {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // Check if user is already logged in
   const { data: { user } } = await supabase.auth.getUser()
