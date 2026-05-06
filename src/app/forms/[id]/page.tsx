@@ -48,13 +48,16 @@ export default async function FormPage({ params }: PageProps) {
     .eq('form_id', id)
     .order('order_index', { ascending: true })
 
-  // Check if user already responded
-  const { data: existingResponse } = await supabase
+  // Get ALL user responses for this form
+  const { data: allResponses } = await supabase
     .from('form_responses')
     .select('*')
     .eq('form_id', id)
     .eq('user_id', user.id)
-    .single()
+    .order('submitted_at', { ascending: false })
+
+  // Get the latest response as existingResponse
+  const existingResponse = allResponses && allResponses.length > 0 ? allResponses[0] : null
 
   // Get project info
   const { data: project } = await supabase
@@ -68,6 +71,7 @@ export default async function FormPage({ params }: PageProps) {
       form={form}
       questions={questions || []}
       existingResponse={existingResponse}
+      allUserResponses={allResponses || []}
       project={project}
       userId={user.id}
     />

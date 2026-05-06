@@ -172,7 +172,20 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
             </button>
           )}
           
-          {profile?.role !== 'admin' && <div className="w-8" />}
+          {/* Edit Button (Admin/Supervisor) */}
+          {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
+            <Link
+              href={`/projects/${projectId}/edit`}
+              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="تعديل المشروع"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </Link>
+          )}
+          
+          {profile?.role !== 'admin' && profile?.role !== 'supervisor' && <div className="w-8" />}
         </div>
       </header>
 

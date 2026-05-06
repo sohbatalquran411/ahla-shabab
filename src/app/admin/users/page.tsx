@@ -21,6 +21,12 @@ export default function AdminUsersPage() {
   const [showModal, setShowModal] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [editingUser, setEditingUser] = useState(false)
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    phone: '',
+    gender: '' as Gender | ''
+  })
   
   const router = useRouter()
   const supabase = createClient()
@@ -68,9 +74,56 @@ export default function AdminUsersPage() {
     }
   }
 
-  const handleAction = async (userId: string, action: 'approve' | 'reject' | 'role', newRole?: UserRole) => {
+  const handleAction = async (userId: string, action: 'approve' | 'reject' | 'role' | 'delete' | 'reset_password', newRole?: UserRole, updatedData?: Partial<User>) => {
     setActionLoading(true)
     try {
+      if (action === 'delete') {
+        const confirmed = confirm('هل أنت متأكد من حذف هذا المستخدم؟')
+        if (!confirmed) {
+          setActionLoading(false)
+          return
+        }
+        
+        // Delete from auth first
+        const { error: authError } = await supabase.auth.admin.deleteUser(userId)
+        if (authError) {
+          console.error('Auth delete error:', authError)
+          // Continue to delete profile even if auth delete fails
+        }
+        
+        // Delete profile
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .delete()
+          .eq('id', userId)
+        
+        if (profileError) throw profileError
+        
+        // Refresh users list
+        const { data: updatedUsers } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false })
+        
+        setUsers(updatedUsers || [])
+        setShowModal(false)
+        setSelectedUser(null)
+        setActionLoading(false)
+        return
+      }
+      
+      if (action === 'reset_password') {
+        const { error: resetError } = await supabase.auth.admin.updateUserById(userId, {
+          password: '123456'
+        })
+        
+        if (resetError) throw resetError
+        
+        alert('تم إعادة تعيين الباسورد بنجاح. الباسورد الجديد: 123456')
+        setActionLoading(false)
+        return
+      }
+
       const updateData: Partial<User> = {}
 
       if (action === 'approve') {
@@ -79,6 +132,8 @@ export default function AdminUsersPage() {
         updateData.status = 'rejected'
       } else if (action === 'role' && newRole) {
         updateData.role = newRole
+      } else if (action === 'edit' && updatedData) {
+        Object.assign(updateData, updatedData)
       }
 
       const { error } = await supabase
@@ -378,10 +433,13 @@ export default function AdminUsersPage() {
             onClick={() => {
               setShowModal(false)
               setSelectedUser(null)
+              setEditingUser(false)
 }}
           />
-          <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">إدارة المستخدم</h3>
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              {editingUser ? 'تعديل بيانات المستخدم' : 'إدارة المستخدم'}
+            </h3>
             
             <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-bold text-lg">
@@ -393,86 +451,192 @@ export default function AdminUsersPage() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">تغيير الدور</label>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={() => handleAction(selectedUser.id, 'role', 'volunteer')}
-                    disabled={actionLoading || selectedUser.role === 'volunteer'}
-                    className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                      selectedUser.role === 'volunteer'
-                        ? 'bg-teal-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    } disabled:opacity-50`}
+            {/* Edit Form */}
+            {editingUser ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">الاسم</label>
+                  <input
+                    type="text"
+                    value={editFormData.name}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">رقم الهاتف</label>
+                  <input
+                    type="text"
+                    value={editFormData.phone || ''}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500"
+                    placeholder="01xxxxxxxxx"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">النوع</label>
+                  <select
+                    value={editFormData.gender}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, gender: e.target.value as Gender }))}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500"
                   >
-                    متطوع
+                    <option value="">اختر...</option>
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                  </select>
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => {
+                      handleAction(selectedUser.id, 'edit', undefined, {
+                        name: editFormData.name,
+                        phone: editFormData.phone || undefined,
+                        gender: editFormData.gender as Gender
+                      })
+                    }}
+                    disabled={actionLoading}
+                    className="flex-1 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors disabled:opacity-50"
+                  >
+                    {actionLoading ? 'جاري الحفظ...' : 'حفظ التعديلات'}
                   </button>
                   <button
-                    onClick={() => handleAction(selectedUser.id, 'role', 'supervisor')}
-                    disabled={actionLoading || selectedUser.role === 'supervisor'}
-                    className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                      selectedUser.role === 'supervisor'
-                        ? 'bg-teal-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    } disabled:opacity-50`}
+                    onClick={() => setEditingUser(false)}
+                    className="px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
                   >
-                    مشرف
-                  </button>
-                  <button
-                    onClick={() => handleAction(selectedUser.id, 'role', 'admin')}
-                    disabled={actionLoading || selectedUser.role === 'admin'}
-                    className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                      selectedUser.role === 'admin'
-                        ? 'bg-teal-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    } disabled:opacity-50`}
-                  >
-                    مدير
+                    إلغاء
                   </button>
                 </div>
               </div>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  {/* Edit User Data */}
+                  <button
+                    onClick={() => {
+                      setEditFormData({
+                        name: selectedUser.name,
+                        phone: selectedUser.phone || '',
+                        gender: selectedUser.gender
+                      })
+                      setEditingUser(true)
+                    }}
+                    className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    تعديل البيانات
+                  </button>
 
-              {selectedUser.status !== 'pending' && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">تغيير الحالة</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => handleAction(selectedUser.id, 'approve')}
-                      disabled={actionLoading || selectedUser.status === 'approved'}
-                      className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                        selectedUser.status === 'approved'
-                          ? 'bg-green-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      } disabled:opacity-50`}
-                    >
-                      تفعيل
-                    </button>
-                    <button
-                      onClick={() => handleAction(selectedUser.id, 'reject')}
-                      disabled={actionLoading || selectedUser.status === 'rejected'}
-                      className={`px-3 py-2 text-sm rounded-lg transition-colors ${
-                        selectedUser.status === 'rejected'
-                          ? 'bg-red-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      } disabled:opacity-50`}
-                    >
-                      تعطيل
-                    </button>
+                  {/* Reset Password */}
+                  <button
+                    onClick={() => handleAction(selectedUser.id, 'reset_password')}
+                    disabled={actionLoading}
+                    className="w-full py-3 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                    إعادة تعيين الباسورد (123456)
+                  </button>
+
+                  {/* Role Change */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">تغيير الدور</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => handleAction(selectedUser.id, 'role', 'volunteer')}
+                        disabled={actionLoading || selectedUser.role === 'volunteer'}
+                        className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                          selectedUser.role === 'volunteer'
+                            ? 'bg-teal-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        } disabled:opacity-50`}
+                      >
+                        متطوع
+                      </button>
+                      <button
+                        onClick={() => handleAction(selectedUser.id, 'role', 'supervisor')}
+                        disabled={actionLoading || selectedUser.role === 'supervisor'}
+                        className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                          selectedUser.role === 'supervisor'
+                            ? 'bg-teal-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        } disabled:opacity-50`}
+                      >
+                        مشرف
+                      </button>
+                      <button
+                        onClick={() => handleAction(selectedUser.id, 'role', 'admin')}
+                        disabled={actionLoading || selectedUser.role === 'admin'}
+                        className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                          selectedUser.role === 'admin'
+                            ? 'bg-teal-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        } disabled:opacity-50`}
+                      >
+                        مدير
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
 
-            <button
-              onClick={() => {
-                setShowModal(false)
-                setSelectedUser(null)
-              }}
-              className="w-full mt-6 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              إغلاق
-            </button>
+                  {/* Status Change */}
+                  {selectedUser.status !== 'pending' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">تغيير الحالة</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => handleAction(selectedUser.id, 'approve')}
+                          disabled={actionLoading || selectedUser.status === 'approved'}
+                          className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                            selectedUser.status === 'approved'
+                              ? 'bg-green-600 text-white'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          } disabled:opacity-50`}
+                        >
+                          تفعيل
+                        </button>
+                        <button
+                          onClick={() => handleAction(selectedUser.id, 'reject')}
+                          disabled={actionLoading || selectedUser.status === 'rejected'}
+                          className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                            selectedUser.status === 'rejected'
+                              ? 'bg-red-600 text-white'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          } disabled:opacity-50`}
+                        >
+                          تعطيل
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Delete User */}
+                  <button
+                    onClick={() => handleAction(selectedUser.id, 'delete')}
+                    disabled={actionLoading || selectedUser.id === currentUser?.id}
+                    className="w-full py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    title={selectedUser.id === currentUser?.id ? 'لا يمكنك حذف حسابك الحالي' : 'حذف المستخدم'}
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    حذف المستخدم
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setShowModal(false)
+                    setSelectedUser(null)
+                  }}
+                  className="w-full mt-6 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  إغلاق
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

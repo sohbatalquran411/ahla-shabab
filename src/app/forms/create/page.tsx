@@ -31,6 +31,7 @@ interface FormData {
   name: string
   description: string
   target_gender: 'male' | 'female' | 'both'
+  allow_multiple: boolean
   questions: Question[]
 }
 
@@ -54,6 +55,7 @@ function CreateFormContent() {
     name: '',
     description: '',
     target_gender: 'both',
+    allow_multiple: false,
     questions: []
   })
 
@@ -280,6 +282,7 @@ function CreateFormContent() {
           name: formData.name,
           description: formData.description,
           target_gender: formData.target_gender,
+          allow_multiple: formData.allow_multiple,
           created_by: profile.id,
           is_active: true
         })
@@ -424,6 +427,22 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Allow Multiple */}
+            <div className="bg-amber-50 rounded-xl p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.allow_multiple}
+                  onChange={(e) => setFormData(prev => ({ ...prev, allow_multiple: e.target.checked }))}
+                  className="w-5 h-5 mt-1 text-teal-600 rounded focus:ring-teal-500"
+                />
+                <div>
+                  <span className="font-medium text-gray-800 block">السماح بالتسجيل المتعدد</span>
+                  <span className="text-sm text-gray-600">تفعيل هذا الخيار يسمح للمستخدم بإعادة ملء الفورم عدة مرات يوميًا</span>
+                </div>
+              </label>
             </div>
 
             <div className="bg-teal-50 rounded-xl p-4">

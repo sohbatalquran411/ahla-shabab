@@ -27,6 +27,7 @@ interface Form {
   name: string
   description: string
   project_id: string
+  allow_multiple: boolean
 }
 
 interface Project {
@@ -39,11 +40,12 @@ interface FormFillerProps {
   form: Form
   questions: Question[]
   existingResponse: any
+  allUserResponses: any[]
   project: Project | null
   userId: string
 }
 
-export default function FormFiller({ form, questions, existingResponse, project, userId }: FormFillerProps) {
+export default function FormFiller({ form, questions, existingResponse, allUserResponses, project, userId }: FormFillerProps) {
   const [answers, setAnswers] = useState<Record<string, any>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(!!existingResponse)
@@ -180,7 +182,9 @@ export default function FormFiller({ form, questions, existingResponse, project,
     const { score, maxScore } = calculateScore()
 
     try {
-      if (existingResponse) {
+      // If allow_multiple is false and there's existing response, update it
+      // Otherwise always insert a new response
+      if (!form.allow_multiple && existingResponse) {
         const { error: updateError } = await supabase
           .from('form_responses')
           .update({
@@ -193,6 +197,7 @@ export default function FormFiller({ form, questions, existingResponse, project,
 
         if (updateError) throw updateError
       } else {
+        // Insert new response (for allow_multiple=true or no existing response)
         const { error: insertError } = await supabase
           .from('form_responses')
           .insert({
@@ -522,6 +527,15 @@ checked={isSelected}
             </p>
           </div>
 
+          {/* Show submission count for multiple allowed forms */}
+          {form.allow_multiple && allUserResponses && allUserResponses.length > 0 && (
+            <div className="bg-blue-50 rounded-xl p-3 mb-6">
+              <p className="text-blue-700 text-sm">
+                هذا التسجيل رقم {allUserResponses.length} في هذا الفورم
+              </p>
+            </div>
+          )}
+
           <div className="flex gap-3">
             <Link
               href={project ? `/projects/${project.id}` : '/dashboard'}
@@ -530,10 +544,20 @@ checked={isSelected}
               العودة للمشروع
             </Link>
             <button
-              onClick={() => setShowRetryConfirm(true)}
+              onClick={() => {
+                if (form.allow_multiple) {
+                  // Just reset without deleting for multiple allowed
+                  setSubmitted(false)
+                  setAnswers({})
+                  setShowRetryConfirm(false)
+                } else {
+                  // Show confirm dialog for single submission
+                  setShowRetryConfirm(true)
+                }
+              }}
               className="flex-1 py-3 bg-teal-600 text-white rounded-xl font-medium hover:bg-teal-700 transition-colors"
             >
-              إعادة المحاولة
+              {form.allow_multiple ? 'تسجيل جديد' : 'إعادة المحاولة'}
             </button>
           </div>
         </div>
