@@ -24,6 +24,7 @@ export interface Project {
   icon: string
   color: string
   target_gender: 'male' | 'female' | 'both'
+  image_url?: string | null
   created_by: string
   created_at: string
   updated_at: string
