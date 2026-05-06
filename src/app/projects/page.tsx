@@ -96,7 +96,7 @@ export default function ProjectsPage() {
   }
 
   const getIcon = (iconName: string) => {
-    const icons: Record<string, JSX.Element> = {
+    const icons: Record<string, any> = {
       mosque: (
         <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
