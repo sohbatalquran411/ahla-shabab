@@ -692,15 +692,12 @@ function EditFormContent() {
 
           <p className="text-gray-500">لم يتم العثور على النموذج</p>
 
-          <button
-            onClick={() => router.back()}
+          <Link
+            href="/dashboard"
             className="text-blue-600 hover:text-blue-700 mt-2 inline-block"
           >
-
             العودة للوحة التحكم
-
           </Link>
-
         </div>
 
       </div>
@@ -721,22 +718,14 @@ function EditFormContent() {
 
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
 
-          <Link
-
-            href={`/projects/${formData.project_id}`}
-
+          <button
+            onClick={() => router.back()}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-
           >
-
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-
             </svg>
-
             رجوع
-
           </button>
 
           <h1 className="text-lg font-bold text-blue-700">تعديل النموذج</h1>
