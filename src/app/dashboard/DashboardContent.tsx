@@ -173,7 +173,7 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
                     <div className="h-px bg-gray-200 my-4"></div>
                     <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3 px-3">الإدارة</p>
                     <Link
-                        href="/admin/projects"
+                        href="/admin"
                         onClick={() => setSidebarOpen(false)}
                         className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95"
                     >
