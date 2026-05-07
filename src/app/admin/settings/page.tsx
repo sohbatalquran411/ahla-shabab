@@ -20,9 +20,9 @@ export default function AdminSettingsPage() {
 
     app_logo: '',
 
-    app_name: 'أح�"�? شباب',
+    app_name: 'أحلن شباب',
 
-    app_description: '�.�?صة إدارة ا�"�.شار�Sع ا�"دع�^�Sة'
+    app_description: 'منصة إدارة المشاريع الدعوية'
 
   })
 
@@ -210,7 +210,7 @@ export default function AdminSettingsPage() {
 
 
 
-      setSuccess('ت�. حفظ ا�"إعدادات ب�?جاح!')
+      setSuccess('تم حفظ الإعدادات بنجاح!')
 
       
 
@@ -220,7 +220,7 @@ export default function AdminSettingsPage() {
 
     } catch (error: any) {
 
-      setError(error.message || 'حدث خطأ أث�?اء حفظ ا�"إعدادات')
+      setError(error.message || 'حدث خطأ أثناء حفظ الإعدادات')
 
     } finally {
 
@@ -272,11 +272,11 @@ export default function AdminSettingsPage() {
 
             </svg>
 
-            رج�^ع �"�"داشب�^رد
+            رجوع للداشبورد
 
           </Link>
 
-          <h1 className="text-lg font-bold text-blue-700">إعدادات ا�"تطب�S�,</h1>
+          <h1 className="text-lg font-bold text-blue-700">إعدادات التطبيق</h1>
 
           <div className="w-10" />
 
@@ -302,9 +302,9 @@ export default function AdminSettingsPage() {
 
             <div>
 
-              <h3 className="font-medium text-amber-800">ص�"اح�Sات ا�"�.د�Sر</h3>
+              <h3 className="font-medium text-amber-800">صلاحيات المدير</h3>
 
-              <p className="text-sm text-amber-700">�?ذ�? ا�"صفحة �.تاحة �"�"�.د�Sر�S�? ف�,ط. ا�"تغ�S�Sرات ستؤثر ع�"�? ا�"تطب�S�, با�"�fا�.�".</p>
+              <p className="text-sm text-amber-700">نذن الصفحة متاحة للمديرين فقط. التغييرات ستؤثر علن التطبيق بالكامل.</p>
 
             </div>
 
@@ -344,7 +344,7 @@ export default function AdminSettingsPage() {
 
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
 
-          <h2 className="text-xl font-bold text-gray-900 mb-6">ا�"إعدادات ا�"عا�.ة</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">الإعدادات العامة</h2>
 
           
 
@@ -354,7 +354,7 @@ export default function AdminSettingsPage() {
 
             <div>
 
-              <label className="block text-sm font-medium text-gray-700 mb-3">شعار ا�"تطب�S�,</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">شعار التطبيق</label>
 
               <ImageUpload
 
@@ -366,7 +366,7 @@ export default function AdminSettingsPage() {
 
               <p className="text-xs text-gray-500 mt-2">
 
-                س�Sظ�?ر �?ذا ا�"شعار ف�S ج�.�Sع صفحات ا�"تطب�S�,. ا�"حج�. ا�"�.ُ�^ص�? ب�?: 200x200 ب�fس�"
+                سيظنر نذا الشعار في جميع صفحات التطبيق. الحجم المُوصن بن: 200x200 بكسل
 
               </p>
 
@@ -378,7 +378,7 @@ export default function AdminSettingsPage() {
 
             <div>
 
-              <label className="block text-sm font-medium text-gray-700 mb-2">اس�. ا�"تطب�S�,</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">اسم التطبيق</label>
 
               <input
 
@@ -402,7 +402,7 @@ export default function AdminSettingsPage() {
 
             <div>
 
-              <label className="block text-sm font-medium text-gray-700 mb-2">�^صف ا�"تطب�S�,</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">وصف التطبيق</label>
 
               <textarea
 
@@ -426,7 +426,7 @@ export default function AdminSettingsPage() {
 
             <div className="bg-gray-50 rounded-xl p-6">
 
-              <h3 className="text-sm font-medium text-gray-700 mb-4">�.عا�S�?ة</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-4">معاينة</h3>
 
               <div className="bg-gradient-to-l from-blue-500 to-blue-600 rounded-xl p-6 text-center">
 
@@ -496,7 +496,7 @@ export default function AdminSettingsPage() {
 
                     </svg>
 
-                    جار�S ا�"حفظ...
+                    جاري الحفظ...
 
                   </>
 
@@ -510,7 +510,7 @@ export default function AdminSettingsPage() {
 
                     </svg>
 
-                    حفظ ا�"إعدادات
+                    حفظ الإعدادات
 
                   </>
 
@@ -530,7 +530,7 @@ export default function AdminSettingsPage() {
 
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mt-6">
 
-          <h2 className="text-xl font-bold text-gray-900 mb-4">إعدادات إضاف�Sة</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">إعدادات إضافية</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -556,9 +556,9 @@ export default function AdminSettingsPage() {
 
                 <div>
 
-                  <h3 className="font-medium text-blue-800 group-hover:text-blue-900">إدارة ا�"�.ستخد�.�S�?</h3>
+                  <h3 className="font-medium text-blue-800 group-hover:text-blue-900">إدارة المستخدمين</h3>
 
-                  <p className="text-sm text-blue-600">تعد�S�" ص�"اح�Sات �^حا�"ة ا�"�.ستخد�.�S�?</p>
+                  <p className="text-sm text-blue-600">تعديل صلاحيات وحالة المستخدمين</p>
 
                 </div>
 
@@ -590,9 +590,9 @@ export default function AdminSettingsPage() {
 
                 <div>
 
-                  <h3 className="font-medium text-green-800 group-hover:text-green-900">عرض ا�"�?تائج</h3>
+                  <h3 className="font-medium text-green-800 group-hover:text-green-900">عرض النتائج</h3>
 
-                  <p className="text-sm text-green-600">�.راجعة �?تائج ا�"ف�^ر�.ز �^ا�"ت�,ار�Sر</p>
+                  <p className="text-sm text-green-600">مراجعة نتائج الفورمز والتقارير</p>
 
                 </div>
 

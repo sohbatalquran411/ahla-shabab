@@ -89,7 +89,7 @@ export default function ProjectsPage() {
       setDeleteModal({ show: false, project: null })
     } catch (error) {
       console.error('Error deleting project:', error)
-      alert('حدث خطأ أث�?اء حذف ا�"�.شر�^ع')
+      alert('حدث خطأ أثناء حذف المشروع')
     } finally {
       setDeleting(false)
     }
@@ -145,9 +145,9 @@ export default function ProjectsPage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              رج�^ع
+              رجوع
             </Link>
-            <h1 className="text-lg font-bold text-blue-700">ا�"�.شار�Sع</h1>
+            <h1 className="text-lg font-bold text-blue-700">المشاريع</h1>
             <div className="w-16" />
           </div>
         </div>
@@ -201,7 +201,7 @@ export default function ProjectsPage() {
               <Link href={`/projects/${project.id}`} prefetch={true} className="block p-5">
                 <h3 className="text-lg font-bold text-gray-900 mb-1.5">{project.name}</h3>
                 <p className="text-sm text-gray-500 line-clamp-2 mb-4">
-                  {project.description || '�"ا �S�^جد �^صف'}
+                  {project.description || 'لا يوجد وصف'}
                 </p>
                 
                 <div className="flex items-center justify-between">
@@ -212,12 +212,12 @@ export default function ProjectsPage() {
                         ? 'bg-pink-100 text-pink-700'
                         : 'bg-purple-100 text-purple-700'
                   }`}>
-                    {project.target_gender === 'male' ? 'ذ�f�^ر ف�,ط' : 
-                     project.target_gender === 'female' ? 'إ�?اث ف�,ط' : 'ا�"ج�.�Sع'}
+                    {project.target_gender === 'male' ? 'ذكور فقط' : 
+                     project.target_gender === 'female' ? 'إناث فقط' : 'الجميع'}
                   </span>
                   
                   <span className="text-blue-600 font-medium text-sm flex items-center gap-1">
-                    عرض ا�"تفاص�S�"
+                    عرض التفاصيل
                     <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
@@ -243,7 +243,7 @@ export default function ProjectsPage() {
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  إ�?شاء �.شر�^ع جد�Sد
+                  إنشاء مشروع جديد
                 </Link>
               )}
             </div>
@@ -265,11 +265,11 @@ export default function ProjectsPage() {
               </svg>
             </div>
             
-            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأ�f�Sد ا�"حذف</h3>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد الحذف</h3>
             <p className="text-gray-600 text-center mb-6">
-              �?�" أ�?ت �.تأ�fد �.�? حذف �.شر�^ع "<strong>{deleteModal.project.name}</strong>"�Y
+              نل أنت متأكد من حذف مشروع "<strong>{deleteModal.project.name}</strong>"؟
               <br />
-              <span className="text-red-500 text-sm">�?ذا ا�"إجراء �"ا �S�.�f�? ا�"تراجع ع�?�?.</span>
+              <span className="text-red-500 text-sm">نذا الإجراء لا يمكن التراجع عنن.</span>
             </p>
 
             <div className="flex gap-3">
@@ -278,7 +278,7 @@ export default function ProjectsPage() {
                 disabled={deleting}
                 className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
-                إ�"غاء
+                إلغاء
               </button>
               <button
                 onClick={handleDeleteProject}
@@ -288,7 +288,7 @@ export default function ProjectsPage() {
                 {deleting ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    جار�S ا�"حذف...
+                    جاري الحذف...
                   </>
                 ) : (
                   <>

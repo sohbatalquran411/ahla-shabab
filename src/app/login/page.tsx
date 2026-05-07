@@ -47,14 +47,14 @@ export default function LoginPage() {
 
       if (profile?.status === 'pending') {
         await supabase.auth.signOut()
-        setError('حساب�f �,�Sد ا�"�.راجعة. س�Sت�. تفع�S�"�? �.�? ا�"إدارة.')
+        setError('حسابك قيد المراجعة. سيتم تفعيلن من الإدارة.')
         setLoading(false)
         return
       }
 
       if (profile?.status === 'rejected') {
         await supabase.auth.signOut()
-        setError('ت�. رفض حساب�f. ت�^اص�" �.ع ا�"إدارة �"�"�.ز�Sد �.�? ا�"�.ع�"�^�.ات.')
+        setError('تم رفض حسابك. تواصل مع الإدارة للمزيد من المعلومات.')
         setLoading(false)
         return
       }
@@ -71,7 +71,7 @@ export default function LoginPage() {
       router.push('/dashboard')
       router.refresh()
     } catch (error: any) {
-      setError(error.message || 'حدث خطأ أث�?اء تسج�S�" ا�"دخ�^�"')
+      setError(error.message || 'حدث خطأ أثناء تسجيل الدخول')
     } finally {
       setLoading(false)
     }
@@ -118,9 +118,9 @@ export default function LoginPage() {
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className="font-medium">ت�. إ�?شاء حساب�f ب�?جاح!</span>
+                  <span className="font-medium">تم إنشاء حسابك بنجاح!</span>
                 </div>
-                <p className="mt-1">حساب�f �f�.شرف �,�Sد ا�"�.راجعة �.�? ا�"إدارة. ستت�.�f�? �.�? تسج�S�" ا�"دخ�^�" بعد ا�"�.�^اف�,ة.</p>
+                <p className="mt-1">حسابك كمشرف قيد المراجعة من الإدارة. ستتمكن من تسجيل الدخول بعد الموافقة.</p>
               </div>
             )}
 
@@ -131,7 +131,7 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">ا�"بر�Sد ا�"إ�"�fتر�^�?�S</label>
+              <label className="block text-sm font-medium text-gray-700">البريد الإلكتروني</label>
               <div className="relative">
                 <input
                   type="email"
@@ -148,14 +148,14 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">�f�"�.ة ا�"�.ر�^ر</label>
+              <label className="block text-sm font-medium text-gray-700">كلمة المرور</label>
               <div className="relative">
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-right"
-                  placeholder="�?��?��?��?��?��?��?��?�"
+                  placeholder="********"
                   required
                 />
                 <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,7 +173,7 @@ export default function LoginPage() {
                 className="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
               />
               <label htmlFor="remember-me" className="mr-2 text-sm text-gray-700">
-                تذ�fر�?�S
+                تذكرني
               </label>
             </div>
 
@@ -188,18 +188,18 @@ export default function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  جار�S ا�"تح�.�S�"...
+                  جاري التحميل...
                 </span>
               ) : (
-                'تسج�S�" ا�"دخ�^�"'
+                'تسجيل الدخول'
               )}
             </button>
 
             <div className="text-center">
               <p className="text-gray-600 text-sm">
-                �"�Sس �"د�S�f حساب�Y{' '}
+                ليس لديك حساب؟{' '}
                 <Link href="/register" className="text-blue-600 font-semibold hover:text-blue-700">
-                  سج�" ا�"آ�?
+                  سجل الآن
                 </Link>
               </p>
             </div>
@@ -208,7 +208,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-blue-100 text-xs mt-6">
-          © 2026 {settings.app_name}. ج�.�Sع ا�"ح�,�^�, �.حف�^ظة
+          © 2026 {settings.app_name}. جميع الحقوق محفوظة
         </p>
       </div>
     </div>

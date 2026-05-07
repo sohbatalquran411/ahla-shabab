@@ -74,7 +74,7 @@ export default function ProfilePage() {
     setSuccess('')
 
     if (!formData.name.trim()) {
-      setError('�Sرج�? إدخا�" ا�"اس�.')
+      setError('يرجن إدخال الاسم')
       return
     }
 
@@ -95,12 +95,12 @@ export default function ProfilePage() {
 
       if (updateError) throw updateError
 
-      setSuccess('ت�. تحد�Sث ا�"ب�Sا�?ات ب�?جاح')
+      setSuccess('تم تحديث البيانات بنجاح')
       
       // Refresh profile
       fetchProfile()
     } catch (err: any) {
-      setError(err.message || 'حدث خطأ أث�?اء تحد�Sث ا�"ب�Sا�?ات')
+      setError(err.message || 'حدث خطأ أثناء تحديث البيانات')
     } finally {
       setSaving(false)
     }
@@ -111,17 +111,17 @@ export default function ProfilePage() {
     setError('')
 
     if (!passwordData.new_password) {
-      setError('�Sرج�? إدخا�" ا�"باس�^رد ا�"جد�Sد')
+      setError('يرجن إدخال الباسورد الجديد')
       return
     }
 
     if (passwordData.new_password.length < 6) {
-      setError('ا�"باس�^رد �Sجب أ�? �S�f�^�? 6 أحرف ع�"�? ا�"أ�,�"')
+      setError('الباسورد يجب أن يكون 6 أحرف علن الأقل')
       return
     }
 
     if (passwordData.new_password !== passwordData.confirm_password) {
-      setError('ا�"باس�^رد ا�"جد�Sد غ�Sر �.تطاب�,')
+      setError('الباسورد الجديد غير متطابق')
       return
     }
 
@@ -133,11 +133,11 @@ export default function ProfilePage() {
 
       if (updateError) throw updateError
 
-      setSuccess('ت�. تغ�S�Sر ا�"باس�^رد ب�?جاح')
+      setSuccess('تم تغيير الباسورد بنجاح')
       setPasswordData({ current_password: '', new_password: '', confirm_password: '' })
       setShowPasswordChange(false)
     } catch (err: any) {
-      setError(err.message || 'حدث خطأ أث�?اء تغ�S�Sر ا�"باس�^رد')
+      setError(err.message || 'حدث خطأ أثناء تغيير الباسورد')
     } finally {
       setSaving(false)
     }
@@ -145,9 +145,9 @@ export default function ProfilePage() {
 
   const getStatusBadge = (status: string) => {
     const badges: Record<string, { class: string, label: string }> = {
-      pending: { class: 'bg-amber-100 text-amber-700', label: '�.ع�"�,' },
-      approved: { class: 'bg-green-100 text-green-700', label: '�.�^اف�, ع�"�S�?' },
-      rejected: { class: 'bg-red-100 text-red-700', label: '�.رف�^ض' }
+      pending: { class: 'bg-amber-100 text-amber-700', label: 'معلق' },
+      approved: { class: 'bg-green-100 text-green-700', label: 'موافق علين' },
+      rejected: { class: 'bg-red-100 text-red-700', label: 'مرفوض' }
     }
     const badge = badges[status] || badges.pending
     return (
@@ -159,9 +159,9 @@ export default function ProfilePage() {
 
   const getRoleBadge = (role: string) => {
     const badges: Record<string, { class: string, label: string }> = {
-      admin: { class: 'bg-purple-100 text-purple-700', label: '�.د�Sر' },
-      supervisor: { class: 'bg-blue-100 text-blue-700', label: '�.شرف' },
-      volunteer: { class: 'bg-gray-100 text-gray-700', label: '�.تط�^ع' }
+      admin: { class: 'bg-purple-100 text-purple-700', label: 'مدير' },
+      supervisor: { class: 'bg-blue-100 text-blue-700', label: 'مشرف' },
+      volunteer: { class: 'bg-gray-100 text-gray-700', label: 'متطوع' }
     }
     const badge = badges[role] || badges.volunteer
     return (
@@ -191,9 +191,9 @@ export default function ProfilePage() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رج�^ع
+            رجوع
           </Link>
-          <h1 className="text-lg font-bold text-blue-700">�.�"ف�S ا�"شخص�S</h1>
+          <h1 className="text-lg font-bold text-blue-700">ملفي الشخصي</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -218,15 +218,15 @@ export default function ProfilePage() {
           {/* Stats */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-gray-50 rounded-xl p-4 text-center">
-              <p className="text-gray-500 text-sm">تار�Sخ ا�"تسج�S�"</p>
+              <p className="text-gray-500 text-sm">تاريخ التسجيل</p>
               <p className="font-bold text-gray-900">
                 {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('ar-EG') : '-'}
               </p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4 text-center">
-              <p className="text-gray-500 text-sm">ا�"�?�^ع</p>
+              <p className="text-gray-500 text-sm">النوع</p>
               <p className="font-bold text-gray-900">
-                {profile?.gender === 'male' ? 'ذ�fر' : profile?.gender === 'female' ? 'أ�?ث�?' : '-'}
+                {profile?.gender === 'male' ? 'ذكر' : profile?.gender === 'female' ? 'أنثن' : '-'}
               </p>
             </div>
           </div>
@@ -238,7 +238,7 @@ export default function ProfilePage() {
             <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            تعد�S�" ا�"ب�Sا�?ات ا�"شخص�Sة
+            تعديل البيانات الشخصية
           </h3>
 
           {error && (
@@ -255,7 +255,7 @@ export default function ProfilePage() {
 
           <form onSubmit={handleUpdateProfile} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">ا�"اس�. *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">الاسم *</label>
               <input
                 type="text"
                 value={formData.name}
@@ -267,7 +267,7 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">ر�,�. ا�"�?اتف</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">رقم الناتف</label>
               <input
                 type="tel"
                 value={formData.phone || ''}
@@ -278,7 +278,7 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">ا�"�?�^ع</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">النوع</label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                       : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  �Y'� ذ�fر
+                  ؟'� ذكر
                 </button>
                 <button
                   type="button"
@@ -300,7 +300,7 @@ export default function ProfilePage() {
                       : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  �Y'� أ�?ث�?
+                  ؟'� أنثن
                 </button>
               </div>
             </div>
@@ -313,14 +313,14 @@ export default function ProfilePage() {
               {saving ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                  جار�S ا�"حفظ...
+                  جاري الحفظ...
                 </>
               ) : (
                 <>
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  حفظ ا�"تعد�S�"ات
+                  حفظ التعديلات
                 </>
               )}
             </button>
@@ -337,7 +337,7 @@ export default function ProfilePage() {
               <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
               </svg>
-              تغ�S�Sر ا�"باس�^رد
+              تغيير الباسورد
             </span>
             <svg className={`w-5 h-5 text-gray-400 transition-transform ${showPasswordChange ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -347,7 +347,7 @@ export default function ProfilePage() {
           {showPasswordChange && (
             <form onSubmit={handleChangePassword} className="mt-4 space-y-4 pt-4 border-t">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ا�"باس�^رد ا�"جد�Sد *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">الباسورد الجديد *</label>
                 <input
                   type="password"
                   value={passwordData.new_password}
@@ -359,7 +359,7 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">تأ�f�Sد ا�"باس�^رد *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">تأكيد الباسورد *</label>
                 <input
                   type="password"
                   value={passwordData.confirm_password}
@@ -378,14 +378,14 @@ export default function ProfilePage() {
                 {saving ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    جار�S ا�"تغ�S�Sر...
+                    جاري التغيير...
                   </>
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                     </svg>
-                    تغ�S�Sر ا�"باس�^رد
+                    تغيير الباسورد
                   </>
                 )}
               </button>
@@ -399,20 +399,20 @@ export default function ProfilePage() {
             <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            �.ع�"�^�.ات ا�"حساب
+            معلومات الحساب
           </h3>
           
           <div className="space-y-3 text-sm">
             <div className="flex justify-between py-2 border-b">
-              <span className="text-gray-500">ا�"بر�Sد ا�"إ�"�fتر�^�?�S</span>
+              <span className="text-gray-500">البريد الإلكتروني</span>
               <span className="text-gray-800 font-medium">{profile?.email}</span>
             </div>
             <div className="flex justify-between py-2 border-b">
-              <span className="text-gray-500">ا�"د�^ر</span>
-              <span className="font-medium">{profile?.role === 'admin' ? '�.د�Sر' : profile?.role === 'supervisor' ? '�.شرف' : '�.تط�^ع'}</span>
+              <span className="text-gray-500">الدور</span>
+              <span className="font-medium">{profile?.role === 'admin' ? 'مدير' : profile?.role === 'supervisor' ? 'مشرف' : 'متطوع'}</span>
             </div>
             <div className="flex justify-between py-2 border-b">
-              <span className="text-gray-500">تار�Sخ ا�"تسج�S�"</span>
+              <span className="text-gray-500">تاريخ التسجيل</span>
               <span className="text-gray-800">
                 {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('ar-EG', {
                   year: 'numeric',
@@ -422,7 +422,7 @@ export default function ProfilePage() {
               </span>
             </div>
             <div className="flex justify-between py-2">
-              <span className="text-gray-500">آخر تحد�Sث</span>
+              <span className="text-gray-500">آخر تحديث</span>
               <span className="text-gray-800">
                 {profile?.updated_at ? new Date(profile.updated_at).toLocaleDateString('ar-EG', {
                   year: 'numeric',
@@ -436,7 +436,7 @@ export default function ProfilePage() {
 
         {/* Quick Links */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">ر�^ابط سر�Sعة</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-4">روابط سريعة</h3>
           <div className="space-y-3">
             <Link
               href="/dashboard"
@@ -446,7 +446,7 @@ export default function ProfilePage() {
                 <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
-                �"�^حة ا�"تح�f�.
+                لوحة التحكم
               </span>
               <svg className="w-5 h-5 text-gray-400 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -461,7 +461,7 @@ export default function ProfilePage() {
                 <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
-                ا�"�.شار�Sع
+                المشاريع
               </span>
               <svg className="w-5 h-5 text-gray-400 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -477,7 +477,7 @@ export default function ProfilePage() {
                   <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
-                  إدارة ا�"�.ستخد�.�S�?
+                  إدارة المستخدمين
                 </span>
                 <svg className="w-5 h-5 text-gray-400 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -494,7 +494,7 @@ export default function ProfilePage() {
                   <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
-                  ا�"�?تائج �^ا�"ت�,ار�Sر
+                  النتائج والتقارير
                 </span>
                 <svg className="w-5 h-5 text-gray-400 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

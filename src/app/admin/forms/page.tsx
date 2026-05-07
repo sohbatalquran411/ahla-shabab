@@ -52,9 +52,9 @@ export default function AdminFormsPage() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رج�^ع
+            رجوع
           </Link>
-          <h1 className="text-lg font-bold text-blue-700">إدارة ا�"ف�^ر�.ز</h1>
+          <h1 className="text-lg font-bold text-blue-700">إدارة الفورمز</h1>
           <div className="w-16" />
         </div>
       </header>
@@ -64,15 +64,15 @@ export default function AdminFormsPage() {
           <table className="w-full text-right">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">اس�. ا�"ف�^ر�.</th>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">ا�"�.شر�^ع</th>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">تار�Sخ ا�"إ�?شاء</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">اسم الفورم</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">المشروع</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">تاريخ الإنشاء</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {forms.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-gray-500">�"ا ت�^جد ف�^ر�.ز بعد</td>
+                  <td colSpan={3} className="px-6 py-12 text-center text-gray-500">لا توجد فورمز بعد</td>
                 </tr>
               ) : forms.map(form => (
                 <tr key={form.id} className="hover:bg-gray-50 transition-colors">

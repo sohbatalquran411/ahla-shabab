@@ -130,7 +130,7 @@ export default function AdminProjectsPage() {
 
   const deleteProject = async (projectId: string) => {
 
-    if (!confirm('�?�" أ�?ت �.تأ�fد �.�? حذف �?ذا ا�"�.شر�^ع�Y س�Sت�. حذف ج�.�Sع ا�"ف�^ر�.ز ا�"�.رتبطة ب�?.')) {
+    if (!confirm('نل أنت متأكد من حذف نذا المشروع؟ سيتم حذف جميع الفورمز المرتبطة بن.')) {
 
       return
 
@@ -156,11 +156,11 @@ export default function AdminProjectsPage() {
 
       setProjects(prev => prev.filter(p => p.id !== projectId))
 
-      alert('ت�. حذف ا�"�.شر�^ع ب�?جاح')
+      alert('تم حذف المشروع بنجاح')
 
     } catch (error: any) {
 
-      alert('حدث خطأ أث�?اء حذف ا�"�.شر�^ع: ' + error.message)
+      alert('حدث خطأ أثناء حذف المشروع: ' + error.message)
 
     }
 
@@ -208,11 +208,11 @@ export default function AdminProjectsPage() {
 
             </svg>
 
-            رج�^ع �"�"إدارة
+            رجوع للإدارة
 
           </Link>
 
-          <h1 className="text-xl font-bold text-blue-700">إدارة ا�"�.شار�Sع</h1>
+          <h1 className="text-xl font-bold text-blue-700">إدارة المشاريع</h1>
 
           <Link
 
@@ -228,7 +228,7 @@ export default function AdminProjectsPage() {
 
             </svg>
 
-            �.شر�^ع جد�Sد
+            مشروع جديد
 
           </Link>
 
@@ -244,7 +244,7 @@ export default function AdminProjectsPage() {
 
           <div className="p-6 border-b border-gray-100">
 
-            <h2 className="text-xl font-bold text-gray-900">ج�.�Sع ا�"�.شار�Sع ({projects.length})</h2>
+            <h2 className="text-xl font-bold text-gray-900">جميع المشاريع ({projects.length})</h2>
 
           </div>
 
@@ -258,17 +258,17 @@ export default function AdminProjectsPage() {
 
                 <tr>
 
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">ا�"�.شر�^ع</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المشروع</th>
 
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">ا�"�.�?شئ</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المنشئ</th>
 
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">ا�"فئة ا�"�.ست�?دفة</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الفئة المستندفة</th>
 
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد ا�"ف�^ر�.ز</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد الفورمز</th>
 
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تار�Sخ ا�"إ�?شاء</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
 
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">ا�"إجراءات</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
 
                 </tr>
 
@@ -302,7 +302,7 @@ export default function AdminProjectsPage() {
 
                           >
 
-                            �Y.O
+                            ؟.O
 
                           </div>
 
@@ -322,7 +322,7 @@ export default function AdminProjectsPage() {
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
 
-                      {project.profiles?.name || 'غ�Sر �.حدد'}
+                      {project.profiles?.name || 'غير محدد'}
 
                     </td>
 
@@ -338,7 +338,7 @@ export default function AdminProjectsPage() {
 
                       }`}>
 
-                        {project.target_gender === 'male' ? 'ذ�f�^ر' : project.target_gender === 'female' ? 'إ�?اث' : 'ا�"�f�"'}
+                        {project.target_gender === 'male' ? 'ذكور' : project.target_gender === 'female' ? 'إناث' : 'الكل'}
 
                       </span>
 
@@ -380,7 +380,7 @@ export default function AdminProjectsPage() {
 
                         >
 
-                          تعد�S�"
+                          تعديل
 
                         </Link>
 

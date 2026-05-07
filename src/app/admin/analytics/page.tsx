@@ -56,12 +56,12 @@ export default function AdminAnalyticsPage() {
   )
 
   const cards = [
-    { label: 'إج�.ا�"�S ا�"�.ستخد�.�S�?', value: stats?.totalUsers, color: 'bg-blue-500' },
-    { label: '�.ستخد�.�S�? �.�^اف�, ع�"�S�?�.', value: stats?.approvedUsers, color: 'bg-green-500' },
-    { label: 'ط�"بات �.ع�"�,ة', value: stats?.pendingUsers, color: 'bg-amber-500' },
-    { label: 'ا�"�.شار�Sع', value: stats?.totalProjects, color: 'bg-blue-500' },
-    { label: 'ا�"ف�^ر�.ز', value: stats?.totalForms, color: 'bg-purple-500' },
-    { label: 'إج�.ا�"�S ا�"رد�^د', value: stats?.totalResponses, color: 'bg-indigo-500' },
+    { label: 'إجمالي المستخدمين', value: stats?.totalUsers, color: 'bg-blue-500' },
+    { label: 'مستخدمين موافق علينم', value: stats?.approvedUsers, color: 'bg-green-500' },
+    { label: 'طلبات معلقة', value: stats?.pendingUsers, color: 'bg-amber-500' },
+    { label: 'المشاريع', value: stats?.totalProjects, color: 'bg-blue-500' },
+    { label: 'الفورمز', value: stats?.totalForms, color: 'bg-purple-500' },
+    { label: 'إجمالي الردود', value: stats?.totalResponses, color: 'bg-indigo-500' },
   ]
 
   return (
@@ -72,9 +72,9 @@ export default function AdminAnalyticsPage() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رج�^ع
+            رجوع
           </Link>
-          <h1 className="text-lg font-bold text-blue-700">ا�"إحصائ�Sات ا�"�.ت�,د�.ة</h1>
+          <h1 className="text-lg font-bold text-blue-700">الإحصائيات المتقدمة</h1>
           <div className="w-16" />
         </div>
       </header>

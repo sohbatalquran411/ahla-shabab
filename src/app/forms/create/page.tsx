@@ -10,46 +10,46 @@ import type { QuestionType, QuestionOption } from '@/types'
 // Question type definitions with detailed explanations
 const QUESTION_TYPES = {
   text: { 
-    label: '�?ص', 
+    label: 'نص', 
     icon: 'T', 
-    description: 'إجابة �?ص�Sة �,ص�Sرة',
-    explanation: 'سؤا�" �Sتط�"ب إجابة �?ص�Sة �,ص�Sرة �.ث�" ا�"اس�. أ�^ �f�"�.ة �^احدة. �.ثا�": "�.ا اس�.�f�Y" أ�^ "ا�fتب دعاء �,ص�Sر"'
+    description: 'إجابة نصية قصيرة',
+    explanation: 'سؤال يتطلب إجابة نصية قصيرة مثل الاسم أو كلمة واحدة. مثال: "ما اسمك؟" أو "اكتب دعاء قصير"'
   },
   textarea: { 
-    label: '�?ص ط�^�S�"', 
+    label: 'نص طويل', 
     icon: '¶', 
-    description: 'إجابة �?ص�Sة �.تعددة ا�"أسطر',
-    explanation: 'سؤا�" �Sتط�"ب إجابة �.فص�"ة أ�^ ف�,رة �fا�.�"ة. �.ثا�": "ا�fتب ع�? تجربت�f ف�S ا�"حج" أ�^ "صف شع�^ر�f أث�?اء ا�"ص�"اة"'
+    description: 'إجابة نصية متعددة الأسطر',
+    explanation: 'سؤال يتطلب إجابة مفصلة أو فقرة كاملة. مثال: "اكتب عن تجربتك في الحج" أو "صف شعورك أثناء الصلاة"'
   },
   single_choice: { 
-    label: 'اخت�Sار �^احد', 
+    label: 'اختيار واحد', 
     icon: '�-<', 
-    description: 'اخت�Sار إجابة �^احدة',
-    explanation: 'سؤا�" �Sحت�^�S ع�"�? عدة خ�Sارات �^�S�.�f�? اخت�Sار �^احد ف�,ط. �.ثا�": "ف�S أ�S �^�,ت تص�"�S ا�"فجر�Y" �.ع خ�Sارات: �,ب�" ا�"أذا�?�O �.ع ا�"أذا�?�O بعد ا�"أذا�?'
+    description: 'اختيار إجابة واحدة',
+    explanation: 'سؤال يحتوي علن عدة خيارات ويمكن اختيار واحد فقط. مثال: "في أي وقت تصلي الفجر؟" مع خيارات: قبل الأذان�O مع الأذان�O بعد الأذان'
   },
   multiple_choice: { 
-    label: 'اخت�Sار �.تعدد', 
+    label: 'اختيار متعدد', 
     icon: '☑', 
-    description: 'اخت�Sار عدة إجابات',
-    explanation: 'سؤا�" �Sحت�^�S ع�"�? عدة خ�Sارات �^�S�.�f�? اخت�Sار أ�fثر �.�? �^احد. �.ثا�": "�.ا ا�"أع�.ا�" ا�"صا�"حة ا�"ت�S ت�,�^�. ب�?ا�Y" �.ع خ�Sارات: ا�"ص�"اة�O ا�"ص�Sا�.�O ا�"صد�,ة�O �,راءة ا�"�,رآ�?'
+    description: 'اختيار عدة إجابات',
+    explanation: 'سؤال يحتوي علن عدة خيارات ويمكن اختيار أكثر من واحد. مثال: "ما الأعمال الصالحة التي تقوم بنا؟" مع خيارات: الصلاة�O الصيام�O الصدقة�O قراءة القرآن'
   },
   scale: { 
-    label: 'ت�,�S�S�.', 
+    label: 'تقييم', 
     icon: '�~.', 
-    description: 'ت�,�S�S�. �.�? 1 إ�"�? 5',
-    explanation: 'سؤا�" ت�,�S�S�. ب�.�,�Sاس �.�? 1 إ�"�? 5 �?ج�^�. أ�^ �?�,اط. �.ثا�": "�,�S�. �.ست�^�? ا�?تظا�.�f ف�S ا�"ص�"اة" �.�? 1 (ضع�Sف) إ�"�? 5 (�.�.تاز)'
+    description: 'تقييم من 1 إلن 5',
+    explanation: 'سؤال تقييم بمقياس من 1 إلن 5 نجوم أو نقاط. مثال: "قيم مستون انتظامك في الصلاة" من 1 (ضعيف) إلن 5 (ممتاز)'
   },
   ranking: { 
-    label: 'ترت�Sب', 
+    label: 'ترتيب', 
     icon: '#', 
-    description: 'ترت�Sب ا�"ع�?اصر',
-    explanation: 'سؤا�" �Sط�"ب ترت�Sب عدة ع�?اصر حسب ا�"أ�^�"�^�Sة أ�^ ا�"أ�?�.�Sة. �.ثا�": "رتب ا�"عبادات ا�"تا�"�Sة حسب أ�^�"�^�Sت�f: ا�"ص�"اة�O ا�"ص�Sا�.�O ا�"حج�O ا�"ز�fاة�O ا�"ش�?ادة"'
+    description: 'ترتيب العناصر',
+    explanation: 'سؤال يطلب ترتيب عدة عناصر حسب الأولوية أو الأنمية. مثال: "رتب العبادات التالية حسب أولويتك: الصلاة�O الصيام�O الحج�O الزكاة�O الشنادة"'
   },
   matrix: { 
-    label: '�.صف�^فة', 
+    label: 'مصفوفة', 
     icon: '�-�', 
-    description: 'أسئ�"ة �.تعددة �.ع خ�Sارات �.شتر�fة',
-    explanation: 'عدة أسئ�"ة فرع�Sة تشتر�f ف�S �?فس خ�Sارات ا�"إجابة. �.ثا�": ت�,�S�S�. ا�"ص�"�^ات ا�"خ�.س (ا�"فجر�O ا�"ظ�?ر�O ا�"عصر�O ا�"�.غرب�O ا�"عشاء) �.�? ح�Sث: ا�"ا�?تظا�.�O ا�"خش�^ع�O ا�"�^�,ت'
+    description: 'أسئلة متعددة مع خيارات مشتركة',
+    explanation: 'عدة أسئلة فرعية تشترك في نفس خيارات الإجابة. مثال: تقييم الصلوات الخمس (الفجر�O الظنر�O العصر�O المغرب�O العشاء) من حيث: الانتظام�O الخشوع�O الوقت'
   }
 } as const
 
@@ -301,12 +301,12 @@ function CreateFormContent() {
 
   const saveForm = async () => {
     if (!formData.name.trim()) {
-      alert('�Sرج�? إدخا�" اس�. ا�"ف�^ر�.')
+      alert('يرجن إدخال اسم الفورم')
       return
     }
 
     if (formData.questions.length === 0) {
-      alert('�Sرج�? إضافة سؤا�" �^احد ع�"�? ا�"أ�,�"')
+      alert('يرجن إضافة سؤال واحد علن الأقل')
       return
     }
 
@@ -353,7 +353,7 @@ function CreateFormContent() {
       router.push(`/projects/${projectId}`)
     } catch (error) {
       console.error('Error saving form:', error)
-      alert('حدث خطأ أث�?اء حفظ ا�"ف�^ر�.')
+      alert('حدث خطأ أثناء حفظ الفورم')
     } finally {
       setSaving(false)
     }
@@ -390,9 +390,9 @@ function CreateFormContent() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رج�^ع
+            رجوع
           </Link>
-          <h1 className="text-lg font-bold text-blue-700">إ�?شاء ف�^ر�. جد�Sد</h1>
+          <h1 className="text-lg font-bold text-blue-700">إنشاء فورم جديد</h1>
           <button
             onClick={saveForm}
             disabled={saving}
@@ -401,7 +401,7 @@ function CreateFormContent() {
             {saving ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                جار�S ا�"حفظ...
+                جاري الحفظ...
               </>
             ) : (
               <>
@@ -418,7 +418,7 @@ function CreateFormContent() {
       <main className="max-w-4xl mx-auto px-4 py-6">
         {/* Form Basic Info */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">�.ع�"�^�.ات ا�"ف�^ر�.</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">معلومات الفورم</h2>
           
           <div className="space-y-4">
             {/* Image Upload */}
@@ -428,7 +428,7 @@ function CreateFormContent() {
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">اس�. ا�"ف�^ر�. *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">اسم الفورم *</label>
               <input
                 type="text"
                 value={formData.name}
@@ -439,7 +439,7 @@ function CreateFormContent() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">ا�"�^صف</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
@@ -450,12 +450,12 @@ function CreateFormContent() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">ا�"فئة ا�"�.ست�?دفة</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">الفئة المستندفة</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: 'both', label: 'ا�"�f�"', color: 'purple' },
-                  { value: 'male', label: 'ذ�f�^ر ف�,ط', color: 'blue' },
-                  { value: 'female', label: 'إ�?اث ف�,ط', color: 'pink' }
+                  { value: 'both', label: 'الكل', color: 'purple' },
+                  { value: 'male', label: 'ذكور فقط', color: 'blue' },
+                  { value: 'female', label: 'إناث فقط', color: 'pink' }
                 ].map(option => (
                   <button
                     key={option.value}
@@ -501,7 +501,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">
-              ا�"أسئ�"ة ({formData.questions.length})
+              الأسئلة ({formData.questions.length})
             </h2>
             <div className="flex gap-2">
               <button
@@ -511,7 +511,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                استرداد سؤا�"
+                استرداد سؤال
               </button>
             </div>
           </div>
@@ -600,11 +600,11 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       onChange={(e) => updateQuestion(qIndex, { required: e.target.checked })}
                       className="w-4 h-4 text-blue-600 rounded"
                     />
-                    <span className="text-sm text-gray-700">�.ط�"�^ب</span>
+                    <span className="text-sm text-gray-700">مطلوب</span>
                   </label>
                   
                   <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-700">ا�"�?�,اط:</label>
+                    <label className="text-sm text-gray-700">النقاط:</label>
                     <input
                       type="number"
                       min="0"
@@ -622,7 +622,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 {/* Options for choice questions */}
                 {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
                   <div className="mr-11 space-y-3">
-                    <p className="text-sm font-medium text-gray-700">ا�"خ�Sارات:</p>
+                    <p className="text-sm font-medium text-gray-700">الخيارات:</p>
                     {question.options.map((option, oIndex) => (
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
                         <div className="flex items-center gap-3">
@@ -662,15 +662,15 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            إضافة خ�Sارات فرع�Sة
+                            إضافة خيارات فرعية
                           </button>
                           
                           {option.sub_options && option.sub_options.length > 0 && (
                             <div className="bg-amber-50 rounded-lg p-2 space-y-2 border border-amber-200">
-                              <p className="text-xs text-amber-700 font-medium">خ�Sارات فرع�Sة:</p>
+                              <p className="text-xs text-amber-700 font-medium">خيارات فرعية:</p>
                               {option.sub_options.map((subOpt, sIndex) => (
                                 <div key={subOpt.id} className="flex items-center gap-2 bg-white rounded-lg p-2">
-                                  <span className="text-gray-400 text-sm">�?'</span>
+                                  <span className="text-gray-400 text-sm">ن'</span>
                                   <input
                                     type="text"
                                     value={subOpt.text}
@@ -709,7 +709,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                       </svg>
-                      إضافة خ�Sار
+                      إضافة خيار
                     </button>
                   </div>
                 )}
@@ -717,7 +717,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 {/* Scale Options */}
                 {question.type === 'scale' && (
                   <div className="mr-11 bg-blue-50 rounded-lg p-4">
-                    <p className="text-sm font-medium text-blue-700 mb-3">�.�,�Sاس ا�"ت�,�S�S�. (1-5)</p>
+                    <p className="text-sm font-medium text-blue-700 mb-3">مقياس التقييم (1-5)</p>
                     <div className="flex justify-between items-center">
                       {question.options.map((opt) => (
                         <div key={opt.id} className="text-center">
@@ -748,8 +748,8 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-gray-500 mb-4">�"�. تضف أ�S أسئ�"ة بعد</p>
-                <p className="text-gray-400 text-sm">اختر �?�^ع ا�"سؤا�" �.�? ا�"أع�"�? �"�"بدء</p>
+                <p className="text-gray-500 mb-4">لم تضف أي أسئلة بعد</p>
+                <p className="text-gray-400 text-sm">اختر نوع السؤال من الأعلن للبدء</p>
               </div>
             )}
           </div>
@@ -757,18 +757,18 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
 
         {/* Examples Section */}
         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
-          <h3 className="text-lg font-bold text-amber-800 mb-4">�Y'� أ�.ث�"ة ع�.�"�Sة �"أ�?�^اع ا�"أسئ�"ة</h3>
+          <h3 className="text-lg font-bold text-amber-800 mb-4">؟'� أمثلة عملية لأنواع الأسئلة</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Text Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">T</span>
-                <span className="font-medium text-gray-800">�?ص �,ص�Sر</span>
+                <span className="font-medium text-gray-800">نص قصير</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">�.ا اس�. ا�"�.سجد ا�"ذ�S تص�"�S ف�S�?�Y</p>
+              <p className="text-sm text-gray-600 mb-2">ما اسم المسجد الذي تصلي فين؟</p>
               <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
-                إجابة: �.سجد ا�"�?�^ر
+                إجابة: مسجد النور
               </div>
             </div>
 
@@ -776,7 +776,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">¶</span>
-                <span className="font-medium text-gray-800">�?ص ط�^�S�"</span>
+                <span className="font-medium text-gray-800">نص طويل</span>
               </div>
               <p className="text-sm text-gray-600 mb-2">اكتب عن شعورك أثناء قراءة القرآن</p>
               <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">

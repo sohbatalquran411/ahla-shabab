@@ -28,19 +28,19 @@ export default function RegisterPage() {
 
   const validateStep1 = () => {
     if (!formData.name.trim()) {
-      setError('�Sرج�? إدخا�" ا�"اس�. ا�"�fا�.�"')
+      setError('يرجن إدخال الاسم الكامل')
       return false
     }
     if (!formData.email.trim() || !formData.email.includes('@')) {
-      setError('�Sرج�? إدخا�" بر�Sد إ�"�fتر�^�?�S صح�Sح')
+      setError('يرجن إدخال بريد إلكتروني صحيح')
       return false
     }
     if (!formData.phone.trim() || formData.phone.length < 10) {
-      setError('�Sرج�? إدخا�" ر�,�. �?اتف صح�Sح')
+      setError('يرجن إدخال رقم ناتف صحيح')
       return false
     }
     if (!formData.gender) {
-      setError('�Sرج�? اخت�Sار ا�"�?�^ع')
+      setError('يرجن اختيار النوع')
       return false
     }
     return true
@@ -48,11 +48,11 @@ export default function RegisterPage() {
 
   const validateStep2 = () => {
     if (formData.password.length < 6) {
-      setError('�f�"�.ة ا�"�.ر�^ر �Sجب أ�? ت�f�^�? 6 أحرف ع�"�? ا�"أ�,�"')
+      setError('كلمة المرور يجب أن تكون 6 أحرف علن الأقل')
       return false
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('�f�"�.تا ا�"�.ر�^ر غ�Sر �.تطاب�,ت�S�?')
+      setError('كلمتا المرور غير متطابقتين')
       return false
     }
     return true
@@ -81,7 +81,7 @@ export default function RegisterPage() {
       }).catch(() => ({ data: null }))
 
       if (existingAuth?.user) {
-        setError('�?ذا ا�"بر�Sد ا�"إ�"�fتر�^�?�S �.سج�" �.سب�,ا�<. حا�^�" تسج�S�" ا�"دخ�^�".')
+        setError('نذا البريد الإلكتروني مسجل مسبقاً. حاول تسجيل الدخول.')
         setLoading(false)
         return
       }
@@ -129,7 +129,7 @@ export default function RegisterPage() {
       }
     } catch (error: any) {
       console.error('Registration error:', error)
-      setError(error.message || 'حدث خطأ أث�?اء ا�"تسج�S�"')
+      setError(error.message || 'حدث خطأ أثناء التسجيل')
     } finally {
       setLoading(false)
     }
@@ -148,8 +148,8 @@ export default function RegisterPage() {
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-l from-blue-600 to-blue-700 px-8 py-8 text-center">
-            <h1 className="text-2xl font-bold text-white mb-1">إ�?شاء حساب جد�Sد</h1>
-            <p className="text-blue-100 text-sm">ا�?ض�. إ�"�S�?ا ف�S أح�"�? شباب</p>
+            <h1 className="text-2xl font-bold text-white mb-1">إنشاء حساب جديد</h1>
+            <p className="text-blue-100 text-sm">انضم إلينا في أحلن شباب</p>
             
             {/* Progress Steps */}
             <div className="flex items-center justify-center gap-4 mt-4">
@@ -159,7 +159,7 @@ export default function RegisterPage() {
                 }`}>
                   {step > 1 ? '�o"' : '1'}
                 </div>
-                <span className="text-sm hidden sm:block">ا�"�.ع�"�^�.ات</span>
+                <span className="text-sm hidden sm:block">المعلومات</span>
               </div>
               <div className="w-12 h-0.5 bg-blue-300" />
               <div className={`flex items-center gap-2 ${step >= 2 ? 'text-white' : 'text-blue-300'}`}>
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                 }`}>
                   2
                 </div>
-                <span className="text-sm hidden sm:block">ا�"أ�.ا�?</span>
+                <span className="text-sm hidden sm:block">الأمان</span>
               </div>
             </div>
           </div>
@@ -185,20 +185,20 @@ export default function RegisterPage() {
             {step === 1 && (
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">ا�"اس�. ا�"�fا�.�" *</label>
+                  <label className="block text-sm font-medium text-gray-700">الاسم الكامل *</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="�.ح�.د أح�.د"
+                    placeholder="محمد أحمد"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">ا�"بر�Sد ا�"إ�"�fتر�^�?�S *</label>
+                  <label className="block text-sm font-medium text-gray-700">البريد الإلكتروني *</label>
                   <input
                     type="email"
                     name="email"
@@ -211,7 +211,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-smfont-medium text-gray-700">ر�,�. ا�"�?اتف *</label>
+                  <label className="block text-smfont-medium text-gray-700">رقم الناتف *</label>
                   <input
                     type="tel"
                     name="phone"
@@ -225,7 +225,7 @@ export default function RegisterPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">ا�"�?�^ع *</label>
+                    <label className="block text-sm font-medium text-gray-700">النوع *</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -239,7 +239,7 @@ export default function RegisterPage() {
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        ذ�fر
+                        ذكر
                       </button>
                       <button
                         type="button"
@@ -253,13 +253,13 @@ export default function RegisterPage() {
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        أ�?ث�?
+                        أنثن
                       </button>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">�?�^ع ا�"حساب</label>
+                    <label className="block text-sm font-medium text-gray-700">نوع الحساب</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -270,7 +270,7 @@ export default function RegisterPage() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        �.تط�^ع
+                        متطوع
                       </button>
                       <button
                         type="button"
@@ -281,7 +281,7 @@ export default function RegisterPage() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        �.شرف
+                        مشرف
                       </button>
                     </div>
                   </div>
@@ -292,7 +292,7 @@ export default function RegisterPage() {
                     <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>�.�"احظة: حساب ا�"�.شرف �Sحتاج �.�^اف�,ة �.�? ا�"إدارة �,ب�" ا�"تفع�S�"</span>
+                    <span>ملاحظة: حساب المشرف يحتاج موافقة من الإدارة قبل التفعيل</span>
                   </div>
                 )}
 
@@ -301,7 +301,7 @@ export default function RegisterPage() {
                   onClick={handleNextStep}
                   className="w-full py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/30"
                 >
-                  ا�"تا�"�S: إعداد �f�"�.ة ا�"�.ر�^ر
+                  التالي: إعداد كلمة المرور
                 </button>
               </div>
             )}
@@ -317,26 +317,26 @@ export default function RegisterPage() {
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  تعد�S�" ا�"�.ع�"�^�.ات
+                  تعديل المعلومات
                 </button>
 
                 <div className="bg-gray-50 rounded-xl p-4 text-sm">
                   <p className="text-gray-600">
-                    <strong>ا�"بر�Sد:</strong> {formData.email}
+                    <strong>البريد:</strong> {formData.email}
                   </p>
                   <p className="text-gray-600">
-                    <strong>ا�"اس�.:</strong> {formData.name}
+                    <strong>الاسم:</strong> {formData.name}
                   </p>
                   <p className="text-gray-600">
-                    <strong>ا�"�?�^ع:</strong> {formData.gender === 'male' ? 'ذ�fر' : 'أ�?ث�?'}
+                    <strong>النوع:</strong> {formData.gender === 'male' ? 'ذكر' : 'أنثن'}
                   </p>
                   <p className="text-gray-600">
-                    <strong>ا�"د�^ر:</strong> {formData.role === 'volunteer' ? '�.تط�^ع' : '�.شرف'}
+                    <strong>الدور:</strong> {formData.role === 'volunteer' ? 'متطوع' : 'مشرف'}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">�f�"�.ة ا�"�.ر�^ر *</label>
+                  <label className="block text-sm font-medium text-gray-700">كلمة المرور *</label>
                   <input
                     type="password"
                     name="password"
@@ -349,7 +349,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">تأ�f�Sد �f�"�.ة ا�"�.ر�^ر *</label>
+                  <label className="block text-sm font-medium text-gray-700">تأكيد كلمة المرور *</label>
                   <input
                     type="password"
                     name="confirmPassword"
@@ -373,10 +373,10 @@ export default function RegisterPage() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        جار�S ا�"تسج�S�"...
+                        جاري التسجيل...
                       </span>
                     ) : (
-                      'إ�?شاء ا�"حساب'
+                      'إنشاء الحساب'
                     )}
                   </button>
                 </div>
@@ -385,9 +385,9 @@ export default function RegisterPage() {
 
             <div className="text-center pt-2 border-t">
               <p className="text-gray-600 text-sm">
-                �"د�S�f حساب با�"فع�"�Y{' '}
+                لديك حساب بالفعل؟{' '}
                 <Link href="/login" className="text-blue-600 font-semibold hover:text-blue-700">
-                  سج�" دخ�^�"�f
+                  سجل دخولك
                 </Link>
               </p>
             </div>
@@ -396,7 +396,7 @@ export default function RegisterPage() {
 
         {/* Footer */}
         <p className="text-center text-blue-100 text-xs mt-6">
-          © 2026 أح�"�? شباب. ج�.�Sع ا�"ح�,�^�, �.حف�^ظة
+          © 2026 أحلن شباب. جميع الحقوق محفوظة
         </p>
       </div>
     </div>
