@@ -94,7 +94,7 @@ export default function LoginPage() {
               <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30">
                 <img 
                   src={settings.app_logo} 
-                  alt="شعار ا�"تطب�S�," 
+                  alt="شعار التطبيق" 
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -106,7 +106,7 @@ export default function LoginPage() {
               </div>
             )}
             <h1 className="text-2xl font-bold text-white mb-2">{settings.app_name}</h1>
-            <p className="text-blue-100 text-sm">�.رحبا�< ب�f �.جددا�<</p>
+            <p className="text-blue-100 text-sm">مرحباً بك مجدداً</p>
           </div>
 
           {/* Form */}

@@ -29,7 +29,7 @@ const QUESTION_TYPES = {
   },
   multiple_choice: { 
     label: 'اخت�Sار �.تعدد', 
-    icon: '�~'', 
+    icon: '☑', 
     description: 'اخت�Sار عدة إجابات',
     explanation: 'سؤا�" �Sحت�^�S ع�"�? عدة خ�Sارات �^�S�.�f�? اخت�Sار أ�fثر �.�? �^احد. �.ثا�": "�.ا ا�"أع�.ا�" ا�"صا�"حة ا�"ت�S ت�,�^�. ب�?ا�Y" �.ع خ�Sارات: ا�"ص�"اة�O ا�"ص�Sا�.�O ا�"صد�,ة�O �,راءة ا�"�,رآ�?'
   },
@@ -434,7 +434,7 @@ function CreateFormContent() {
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="�.ثا�": ت�,�S�S�. أداء ا�"ص�"اة"
+                placeholder="مثال: تقييم أداء الصلاة"
               />
             </div>
 
@@ -445,7 +445,7 @@ function CreateFormContent() {
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={2}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="�^صف �.ختصر �"�"ف�^ر�...."
+                placeholder="وصف مختصر للنموذج..."
               />
             </div>
 
@@ -484,15 +484,15 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                   className="w-5 h-5 mt-1 text-blue-600 rounded focus:ring-blue-500"
                 />
                 <div>
-                  <span className="font-medium text-gray-800 block">ا�"س�.اح با�"تسج�S�" ا�"�.تعدد</span>
-                  <span className="text-sm text-gray-600">تفع�S�" �?ذا ا�"خ�Sار �Sس�.ح �"�"�.ستخد�. بإعادة �.�"ء ا�"ف�^ر�. عدة �.رات �S�^�.�S�<ا</span>
+                  <span className="font-medium text-gray-800 block">السماح بالتسجيل المتعدد</span>
+                  <span className="text-sm text-gray-600">تفعيل هذا الخيار يسمح للمستخدم بإعادة ملء النموذج عدة مرات يومياً</span>
                 </div>
               </label>
             </div>
 
             <div className="bg-blue-50 rounded-xl p-4">
-              <p className="text-blue-800 font-medium mb-2">ا�"�.شر�^ع: {projectName}</p>
-              <p className="text-blue-600 text-sm">ج�.�Sع ا�"أسئ�"ة ستُضاف �"�?ذا ا�"�.شر�^ع</p>
+              <p className="text-blue-800 font-medium mb-2">المشروع: {projectName}</p>
+              <p className="text-blue-600 text-sm">جميع الأسئلة ستضاف لهذا المشروع</p>
             </div>
           </div>
         </div>
@@ -557,7 +557,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       type="text"
                       value={question.text}
                       onChange={(e) => updateQuestion(qIndex, { text: e.target.value })}
-                      placeholder="ا�fتب ا�"سؤا�" �?�?ا..."
+                      placeholder="اكتب السؤال هنا..."
                       className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -631,7 +631,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             type="text"
                             value={option.text}
                             onChange={(e) => updateOption(qIndex, oIndex, { text: e.target.value })}
-                            placeholder="�?ص ا�"خ�Sار..."
+                            placeholder="نص الخيار..."
                             className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500"
                           />
                           <input
@@ -639,9 +639,9 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             min="0"
                             value={option.points}
                             onChange={(e) => updateOption(qIndex, oIndex, { points: Number(e.target.value) })}
-                            placeholder="ا�"�?�,اط"
+                            placeholder="النقاط"
                             className="w-20 px-2 py-2 border border-gray-200 rounded-lg text-center"
-                            title="ا�"�?�,اط"
+                            title="النقاط"
                           />
                           <button
                             onClick={() => removeOption(qIndex, oIndex)}
@@ -675,7 +675,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                                     type="text"
                                     value={subOpt.text}
                                     onChange={(e) => updateSubOption(qIndex, oIndex, sIndex, { text: e.target.value })}
-                                    placeholder="خ�Sار فرع�S..."
+                                    placeholder="خيار فرعي..."
                                     className="flex-1 px-2 py-1 border border-gray-200 rounded text-sm"
                                   />
                                   <input
@@ -684,7 +684,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                                     value={subOpt.points}
                                     onChange={(e) => updateSubOption(qIndex, oIndex, sIndex, { points: Number(e.target.value) })}
                                     className="w-16 px-1 py-1 border border-gray-200 rounded text-sm text-center"
-                                    title="ا�"�?�,اط"
+                                    title="النقاط"
                                   />
                                   <button
                                     onClick={() => removeSubOption(qIndex, oIndex, sIndex)}
@@ -778,51 +778,51 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">¶</span>
                 <span className="font-medium text-gray-800">�?ص ط�^�S�"</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">ا�fتب ع�? شع�^ر�f أث�?اء �,راءة ا�"�,رآ�?</p>
+              <p className="text-sm text-gray-600 mb-2">اكتب عن شعورك أثناء قراءة القرآن</p>
               <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
-                إجابة: أشعر با�"س�f�S�?ة �^ا�"ط�.أ�?�S�?ة...
+                إجابة: أشعر بالسكينة والطمأنينة...
               </div>
             </div>
 
             {/* Single Choice Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">�-<</span>
-                <span className="font-medium text-gray-800">اخت�Sار �^احد</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">○</span>
+                <span className="font-medium text-gray-800">اختيار واحد</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">ف�S أ�S �^�,ت تص�"�S ا�"فجر�Y</p>
+              <p className="text-sm text-gray-600 mb-2">في أي وقت تصلي الفجر؟</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>�-< �,ب�" ا�"أذا�? (5 �?�,اط)</div>
-                <div>�-� �.ع ا�"أذا�? (4 �?�,اط)</div>
-                <div>�-< بعد ا�"أذا�? ب�?15 د�,�S�,ة (3 �?�,اط)</div>
+                <div>○ قبل الأذان (5 نقاط)</div>
+                <div>○ مع الأذان (4 نقاط)</div>
+                <div>○ بعد الأذان بـ15 دقيقة (3 نقاط)</div>
               </div>
             </div>
 
             {/* Multiple Choice Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">�~'</span>
-                <span className="font-medium text-gray-800">اخت�Sار �.تعدد</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">☑</span>
+                <span className="font-medium text-gray-800">اختيار متعدد</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">�.ا ا�"أع�.ا�" ا�"صا�"حة ا�"ت�S ت�,�^�. ب�?ا�Y</p>
+              <p className="text-sm text-gray-600 mb-2">ما الأعمال الصالحة التي تقوم بها؟</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>�~' ا�"ص�"اة ف�S �^�,ت�?ا (2 �?�,اط)</div>
-                <div>�~' �,راءة ا�"�,رآ�? (2 �?�,اط)</div>
-                <div>�~� ا�"صد�,ة (2 �?�,اط)</div>
-                <div>�~' ا�"ذ�fر (1 �?�,طة)</div>
+                <div>☑ الصلاة في وقتها (2 نقاط)</div>
+                <div>☑ قراءة القرآن (2 نقاط)</div>
+                <div>☐ الصدقة (2 نقاط)</div>
+                <div>☑ الذكر (1 نقطة)</div>
               </div>
             </div>
 
             {/* Scale Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">�~.</span>
-                <span className="font-medium text-gray-800">ت�,�S�S�.</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">⭐</span>
+                <span className="font-medium text-gray-800">تقييم</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">�,�S�. �.ست�^�? خش�^ع�f ف�S ا�"ص�"اة</p>
+              <p className="text-sm text-gray-600 mb-2">قيم مستوى خشوعك في الصلاة</p>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>�~.�~?�~?�~?�~? ضع�Sف</span>
-                <span>�~.�~.�~.�~.�~. �.�.تاز</span>
+                <span>⭐☆☆☆☆ ضعيف</span>
+                <span>⭐⭐⭐⭐⭐ ممتاز</span>
               </div>
             </div>
 
@@ -830,22 +830,22 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">#</span>
-                <span className="font-medium text-gray-800">ترت�Sب</span>
+                <span className="font-medium text-gray-800">ترتيب</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">رتب ا�"عبادات حسب أ�^�"�^�Sت�f</p>
+              <p className="text-sm text-gray-600 mb-2">رتب العبادات حسب أولويتك</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>1. ا�"ص�"اة (5 �?�,اط)</div>
-                <div>2. �,راءة ا�"�,رآ�? (4 �?�,اط)</div>
-                <div>3. ا�"ذ�fر (3 �?�,اط)</div>
-                <div>4. ا�"صد�,ة (2 �?�,اط)</div>
+                <div>1. الصلاة (5 نقاط)</div>
+                <div>2. قراءة القرآن (4 نقاط)</div>
+                <div>3. الذكر (3 نقاط)</div>
+                <div>4. الصدقة (2 نقاط)</div>
               </div>
             </div>
           </div>
 
           <div className="mt-4 p-3 bg-amber-100 rounded-lg">
             <p className="text-sm text-amber-800">
-              <strong>�?ص�Sحة:</strong> استخد�. أ�?�^اع ا�"أسئ�"ة ا�"�.خت�"فة �"جع�" ا�"�?�.�^ذج أ�fثر تفاع�"ا�< �^ش�.�^�"�Sة. 
-              �S�.�f�?�f د�.ج عدة أ�?�^اع ف�S �?�.�^ذج �^احد �"تغط�Sة ج�^ا�?ب �.خت�"فة �.�? ا�"�.�^ض�^ع.
+              <strong>نصيحة:</strong> استخدم أنواع الأسئلة المختلفة لجعل النموذج أكثر تفاعلاً وشمولية.
+              يمكنك دمج عدة أنواع في نموذج واحد لتغطية جوانب مختلفة من الموضوع.
             </p>
           </div>
         </div>
@@ -857,7 +857,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowQuestionPicker(false)} />
           <div className="relative bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-xl">
             <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900">استرداد سؤا�" �.�? ف�^ر�. ساب�,ة</h3>
+              <h3 className="text-lg font-bold text-gray-900">استرداد سؤال من فورم سابقة</h3>
               <button onClick={() => setShowQuestionPicker(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -868,7 +868,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
             <div className="p-4 overflow-y-auto max-h-[calc(80vh-60px)]">
               {existingForms.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">�"ا ت�^جد ف�^ر�.ز ساب�,ة ف�S �?ذا ا�"�.شر�^ع</p>
+                  <p className="text-gray-500">لا توجد فورمز سابقة في هذا المشروع</p>
                 </div>
               ) : (
                 existingForms.map(form => (

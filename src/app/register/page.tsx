@@ -343,7 +343,7 @@ export default function RegisterPage() {
                     value={formData.password}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="6 أحرف ع�"�? ا�"أ�,�""
+                    placeholder="6 أحرف على الأقل"
                     required
                   />
                 </div>
@@ -356,7 +356,7 @@ export default function RegisterPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="أعد إدخا�" �f�"�.ة ا�"�.ر�^ر"
+                    placeholder="أعد إدخال كلمة المرور"
                     required
                   />
                 </div>

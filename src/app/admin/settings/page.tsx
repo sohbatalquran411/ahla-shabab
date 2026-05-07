@@ -390,7 +390,7 @@ export default function AdminSettingsPage() {
 
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 
-                placeholder="اس�. ا�"تطب�S�,"
+                placeholder="اسم التطبيق"
 
               />
 
@@ -414,7 +414,7 @@ export default function AdminSettingsPage() {
 
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 
-                placeholder="�^صف �.ختصر �"�"تطب�S�,"
+                placeholder="وصف مختصر للتطبيق"
 
               />
 
@@ -438,7 +438,7 @@ export default function AdminSettingsPage() {
 
                       src={settings.app_logo} 
 
-                      alt="شعار ا�"تطب�S�," 
+                      alt="شعار التطبيق"
 
                       className="w-full h-full object-cover"
 

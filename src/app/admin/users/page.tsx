@@ -297,7 +297,7 @@ export default function AdminUsersPage() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="بحث با�"اس�. أ�^ ا�"بر�Sد..."
+                placeholder="بحث بالاسم أو البريد..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

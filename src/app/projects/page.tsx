@@ -189,7 +189,7 @@ export default function ProjectsPage() {
                       setDeleteModal({ show: true, project })
                     }}
                     className="absolute top-3 left-3 p-2 bg-white/90 backdrop-blur-sm text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shadow-sm"
-                    title="حذف ا�"�.شر�^ع"
+                    title="حذف المشروع"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -234,7 +234,7 @@ export default function ProjectsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </div>
-              <p className="text-gray-500 text-lg">�"ا ت�^جد �.شار�Sع حا�"�Sا�<</p>
+              <p className="text-gray-500 text-lg">لا توجد مشاريع حاليا</p>
               {canManageProjects && (
                 <Link
                   href="/projects/create"

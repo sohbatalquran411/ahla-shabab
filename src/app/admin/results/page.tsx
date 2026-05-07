@@ -342,7 +342,7 @@ export default function ResultsPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="اس�. أ�^ بر�Sد ا�"�.ستخد�...."
+                placeholder="اسم أو بريد المستخدم..."
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               />
             </div>
@@ -580,7 +580,7 @@ export default function ResultsPage() {
                           </span>
                           {answer?.points !== undefined && (
                             <span className={answer.points > 0 ? 'text-emerald-600' : 'text-red-600'}>
-                              пол�f�?енн�<е: {answer.points}
+                              الدرجة: {answer.points}
                             </span>
                           )}
                         </div>

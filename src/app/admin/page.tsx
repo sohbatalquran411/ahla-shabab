@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { redirect } from 'next/navigation'
-import DashboardContent from './DashboardContent'
+import DashboardContent from '../dashboard/DashboardContent'
 
 export default async function AdminPage() {
   const supabase = await createClient()

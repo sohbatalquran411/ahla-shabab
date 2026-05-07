@@ -261,7 +261,7 @@ export default function ProfilePage() {
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="أدخ�" اس�.�f ا�"�fا�.�""
+                placeholder="أدخل اسمك الكامل"
                 required
               />
             </div>
@@ -353,7 +353,7 @@ export default function ProfilePage() {
                   value={passwordData.new_password}
                   onChange={(e) => setPasswordData(prev => ({ ...prev, new_password: e.target.value }))}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخ�" ا�"باس�^رد ا�"جد�Sد"
+                  placeholder="أدخل الباسوورد الجديد"
                   required
                 />
               </div>
@@ -365,7 +365,7 @@ export default function ProfilePage() {
                   value={passwordData.confirm_password}
                   onChange={(e) => setPasswordData(prev => ({ ...prev, confirm_password: e.target.value }))}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أعد إدخا�" ا�"باس�^رد"
+                  placeholder="أعد إدخال الباسوورد"
                   required
                 />
               </div>
