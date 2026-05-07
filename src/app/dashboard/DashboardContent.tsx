@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -84,23 +84,23 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <header className="bg-gradient-to-l from-blue-700 to-blue-800 shadow-lg lg:hidden sticky top-0 z-30">
+      <header className="bg-white shadow-lg lg:hidden sticky top-0 z-30">
         <div className="flex items-center justify-between px-4 py-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 text-white hover:bg-white/10 rounded-xl transition-colors"
+            className="p-2 text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
           >
             {Icons.menu}
           </button>
           <div className="text-center">
-            <h1 className="text-base font-bold text-white">{settings.app_name}</h1>
-            <p className="text-xs text-white/60">{settings.app_description}</p>
+            <h1 className="text-base font-bold text-blue-700">{settings.app_name}</h1>
+            <p className="text-xs text-blue-500">{settings.app_description}</p>
           </div>
-          <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
+          <div className="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center overflow-hidden border-2 border-blue-100">
             {settings.app_logo ? (
               <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-sm font-bold text-white">
+              <span className="text-sm font-bold text-blue-700">
                 {user.name.charAt(0)}
               </span>
             )}
@@ -115,7 +115,7 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
           ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}
         `}>
           {/* Sidebar Content */}
-          <div className="h-full flex flex-col bg-gradient-to-b from-blue-700 via-blue-800 to-blue-950 lg:rounded-tl-[80px] overflow-hidden">
+          <div className="h-full flex flex-col bg-gradient-to-b from-blue-400 via-blue-500 to-blue-600 lg:rounded-tl-[80px] overflow-hidden">
             {/* Decorative Pattern Overlay */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               {/* Large circle top-right */}
@@ -143,17 +143,28 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               </button>
             </div>
 
-            {/* Header Section - Centered Logo + App Name */}
+          {/* Header Section - Centered Logo + App Name */}
             <div className="relative z-10 px-6 pt-6 lg:pt-12 pb-6 text-center">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center border-2 border-white/30 shadow-xl overflow-hidden">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-200 shadow-xl overflow-hidden">
                 {settings.app_logo ? (
                   <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl font-bold text-white">
+                  <span className="text-3xl font-bold text-blue-700">
                     {user.name.charAt(0)}
                   </span>
                 )}
               </div>
+              <h1 className="text-blue-700 font-bold text-xl mb-1">{settings.app_name}</h1>
+              <p className="text-blue-500 text-sm">{settings.app_description}</p>
+              
+              {/* User Info */}
+              <div className="mt-4 pt-4 border-t border-blue-100">
+                <p className="text-blue-700 font-medium">{user.name}</p>
+                <p className="text-blue-400 text-xs mt-0.5">
+                  {user.role === 'admin' ? 'مدير النظام' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
+                </p>
+              </div>
+            </div>
               <h1 className="text-white font-bold text-xl mb-1">{settings.app_name}</h1>
               <p className="text-white/60 text-sm">{settings.app_description}</p>
               

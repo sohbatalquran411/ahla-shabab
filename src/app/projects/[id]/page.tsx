@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -202,7 +202,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                     ? 'bg-pink-100 text-pink-700'
                     : 'bg-purple-100 text-purple-700'
               }`}>
-                {project.target_gender === 'male' ? 'ذكور فقط' : project.target_gender === 'female' ? 'إناث فقط' : 'الجميع'}
+                {project.target_gender === 'male' ? 'للشباب فقط' : project.target_gender === 'female' ? 'للبنات فقط' : 'للجميع'}
               </span>
             </div>
           </div>
