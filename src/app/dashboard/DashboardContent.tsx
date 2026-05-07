@@ -84,17 +84,16 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <header className="bg-white shadow-lg lg:hidden sticky top-0 z-30">
-        <div className="flex items-center justify-between px-4 py-4">
+      <header className="bg-white shadow-sm lg:hidden sticky top-0 z-30 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 py-3">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
+            className="p-2 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
           >
             {Icons.menu}
           </button>
           <div className="text-center">
-            <h1 className="text-base font-bold text-blue-700">{settings.app_name}</h1>
-            <p className="text-xs text-blue-500">{settings.app_description}</p>
+            <h1 className="text-base font-bold text-gray-900">{settings.app_name}</h1>
           </div>
           <div className="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center overflow-hidden border-2 border-blue-100">
             {settings.app_logo ? (
@@ -109,43 +108,17 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
       </header>
 
       <div className="flex">
-        {/* Sidebar - Islamic Design */}
+        {/* Sidebar - Clean White Design */}
         <aside className={`
-          fixed inset-y-0 right-0 z-50 w-full bg-white shadow-2xl transform transition-transform duration-300 lg:w-80 lg:translate-x-0 lg:static lg:shadow-none
+          fixed inset-y-0 right-0 z-50 w-full bg-white shadow-2xl transform transition-transform duration-300 lg:w-80 lg:translate-x-0 lg:static lg:shadow-none lg:border-l lg:border-gray-100
           ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}
         `}>
           {/* Sidebar Content */}
-          <div className="h-full flex flex-col bg-gradient-to-b from-blue-400 via-blue-500 to-blue-600 lg:rounded-tl-[80px] overflow-hidden">
-            {/* Decorative Pattern Overlay */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {/* Large circle top-right */}
-              <div className="absolute -top-20 -right-20 w-64 h-64 border-[40px] border-white/5 rounded-full"></div>
-              {/* Small circle mid */}
-              <div className="absolute top-1/3 -right-10 w-32 h-32 bg-white/5 rounded-full"></div>
-              {/* Decorative dots */}
-              <div className="absolute top-1/4 left-8 w-3 h-3 bg-white/10 rounded-full"></div>
-              <div className="absolute top-2/4 left-12 w-2 h-2 bg-white/10 rounded-full"></div>
-              <div className="absolute top-3/4 left-6 w-4 h-4 bg-white/8 rounded-full"></div>
-              {/* Bottom decorative mandala-like arcs */}
-              <div className="absolute -bottom-20 -left-20 w-96 h-96 border-[30px] border-white/5 rounded-full"></div>
-              <div className="absolute -bottom-10 -left-10 w-48 h-48 border-[20px] border-white/8 rounded-full"></div>
-            </div>
-
-            {/* Mobile Close Button */}
-            <div className="lg:hidden relative z-10 p-4 flex justify-start">
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-          {/* Header Section - Centered Logo + App Name */}
-            <div className="relative z-10 px-6 pt-6 lg:pt-12 pb-6 text-center">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-200 shadow-xl overflow-hidden">
+          <div className="h-full flex flex-col bg-white">
+            
+            {/* Header Section */}
+            <div className="px-6 pt-8 pb-6 border-b border-gray-100 text-center">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-100 shadow-sm overflow-hidden">
                 {settings.app_logo ? (
                   <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
                 ) : (
@@ -154,37 +127,25 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
                   </span>
                 )}
               </div>
-              <h1 className="text-blue-700 font-bold text-xl mb-1">{settings.app_name}</h1>
-              <p className="text-blue-500 text-sm">{settings.app_description}</p>
+              <h1 className="text-gray-900 font-bold text-xl mb-1">{settings.app_name}</h1>
+              <p className="text-gray-500 text-sm">{settings.app_description}</p>
               
-              {/* User Info */}
-              <div className="mt-4 pt-4 border-t border-blue-100">
-                <p className="text-blue-700 font-medium">{user.name}</p>
-                <p className="text-blue-400 text-xs mt-0.5">
-                  {user.role === 'admin' ? 'مدير النظام' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
-                </p>
-              </div>
-            </div>
-              <h1 className="text-white font-bold text-xl mb-1">{settings.app_name}</h1>
-              <p className="text-white/60 text-sm">{settings.app_description}</p>
-              
-              {/* User Info */}
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <p className="text-white font-medium">{user.name}</p>
-                <p className="text-white/50 text-xs mt-0.5">
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <p className="text-gray-700 font-medium">{user.name}</p>
+                <p className="text-gray-400 text-xs mt-0.5">
                   {user.role === 'admin' ? 'مدير النظام' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
                 </p>
               </div>
             </div>
 
             {/* Navigation */}
-            <nav className="relative z-10 flex-1 px-4 py-4 overflow-y-auto">
+            <nav className="flex-1 px-4 py-6 overflow-y-auto">
               <Link
                 href="/dashboard"
                 onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-4 px-4 py-3.5 bg-white/10 text-white rounded-2xl font-medium mb-2 transition-all active:scale-95"
+                className="flex items-center gap-4 px-4 py-3 bg-blue-50 text-blue-700 rounded-2xl font-medium mb-2 transition-all active:scale-95"
               >
-                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-sm">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
@@ -195,9 +156,9 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               <Link
                 href="/profile"
                 onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-4 px-4 py-3.5 text-white/70 hover:text-white hover:bg-white/5 rounded-2xl transition-all duration-200 active:scale-95"
+                className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95"
               >
-                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -208,16 +169,16 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               {/* Admin Section */}
               {user.role === 'admin' && (
                 <>
-                  <div className="h-px bg-white/10 my-4 mx-3"></div>
-                  <p className="text-white/40 text-xs font-medium mb-3 px-3">الإدارة</p>
+                  <div className="h-px bg-gray-200 my-4"></div>
+                  <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3 px-3">الإدارة</p>
                   <Link
                     href="/admin"
                     onClick={() => setSidebarOpen(false)}
-                    className="flex items-center gap-4 px-4 py-3.5 text-white/70 hover:text-white hover:bg-white/5 rounded-2xl transition-all duration-200 active:scale-95"
+                    className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95"
                   >
-                    <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center">
-                      <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                       </svg>
                     </div>
                     <span className="font-medium">لوحة تحكم المدير</span>
@@ -226,20 +187,11 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               )}
             </nav>
 
-            {/* Footer - Decorative + Logout */}
-            <div className="relative z-10 px-4 pb-4">
-              {/* Decorative Islamic pattern (simplified) */}
-              <div className="flex justify-center mb-4 opacity-20">
-                <svg className="w-20 h-8" viewBox="0 0 80 24" fill="none">
-                  <path d="M10 12C10 5 20 2 30 8C40 14 50 14 60 8C70 2 74 5 74 12" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                  <circle cx="8" cy="12" r="2" fill="white"/>
-                  <circle cx="40" cy="16" r="2" fill="white"/>
-                  <circle cx="72" cy="12" r="2" fill="white"/>
-                </svg>
-              </div>
+            {/* Logout */}
+            <div className="p-4 border-t border-gray-100">
               <button
                 onClick={handleLogout}
-                className="flex items-center justify-center gap-3 w-full px-4 py-3.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl transition-all duration-200 active:scale-95"
+                className="flex items-center justify-center gap-3 w-full px-4 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl transition-all duration-200 active:scale-95"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
