@@ -188,7 +188,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           <h3 className="text-xl font-bold text-gray-900">الفورمز المتاحة</h3>
           {profile?.role === 'admin' && (
             <Link
-              href={`/forms/create?project=${project.id}`}
+              href={`/forms/create?project_id=${project.id}`}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

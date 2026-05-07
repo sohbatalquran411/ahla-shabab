@@ -18,18 +18,18 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function generateMetadata(): Promise<Metadata> {
   let appName = "أحلى شباب";
-  let appDesc = "منصة أحلى شباب لإدارة المتطوعين والمشاريع - المبادرات الشبابية";
+  let appDesc = "منصة إدارة المشاريع الدعوية";
   let appLogo = "/icon.svg";
 
   try {
     const supabase = await createClient();
     const { data } = await supabase.from('app_settings').select('key, value');
-    
+
     if (data) {
       const nameSetting = data.find(s => s.key === 'app_name');
       const descSetting = data.find(s => s.key === 'app_description');
       const logoSetting = data.find(s => s.key === 'app_logo');
-      
+
       if (nameSetting?.value) appName = nameSetting.value;
       if (descSetting?.value) appDesc = descSetting.value;
       if (logoSetting?.value) appLogo = logoSetting.value;

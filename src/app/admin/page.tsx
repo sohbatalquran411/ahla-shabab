@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import Header from '@/components/Header'
 import Link from 'next/link'
 
 const ADMIN_CARDS = [
@@ -97,36 +98,16 @@ export default async function AdminPage() {
     redirect('/dashboard')
   }
 
+  // Fetch settings
+  const { data: settingsData } = await supabase.from('app_settings').select('key, value')
+  const settings = settingsData?.reduce((acc: any, curr: any) => {
+    acc[curr.key] = curr.value;
+    return acc;
+  }, {}) || {}
+
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              رجوع للرئيسية
-            </Link>
-            <div className="h-6 w-px bg-gray-200"></div>
-            <h1 className="text-xl font-bold text-gray-900">لوحة تحكم الإدارة</h1>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="text-left">
-              <p className="text-sm font-semibold text-gray-900">{profile.full_name}</p>
-              <p className="text-xs text-blue-600">مدير النظام</p>
-            </div>
-            <div className="w-10 h-10 bg-blue-100 text-blue-700 rounded-xl flex items-center justify-center font-bold text-lg">
-              {profile.full_name?.charAt(0) || 'م'}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header user={profile as any} settings={settings} />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAppSettings } from '@/hooks/useAppSettings'
 import type { User, Project } from '@/types'
+import Header from '@/components/Header'
 
 interface DashboardContentProps {
   user: User
@@ -83,53 +84,7 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
-      {/* Universal Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-30 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
-            >
-              {Icons.menu}
-            </button>
-            
-            {/* Logo & Title */}
-            <Link href="/dashboard" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center overflow-hidden border-2 border-blue-100 shadow-sm">
-                {settings.app_logo ? (
-                  <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-sm font-bold text-blue-700">
-                    {user.name.charAt(0)}
-                  </span>
-                )}
-              </div>
-              <h1 className="text-lg font-bold text-gray-900 hidden sm:block">{settings.app_name}</h1>
-            </Link>
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-2">
-            <Link href="/dashboard" className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-colors">
-              الرئيسية
-            </Link>
-            <Link href="/profile" className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-colors">
-              الملف الشخصي
-            </Link>
-            {user.role === 'admin' && (
-              <Link href="/admin" className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-xl font-medium transition-colors">
-                لوحة تحكم المدير
-              </Link>
-            )}
-            <div className="w-px h-6 bg-gray-200 mx-2"></div>
-            <button onClick={handleLogout} className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors">
-              تسجيل الخروج
-            </button>
-          </nav>
-        </div>
-      </header>
+      <Header user={user} settings={settings} onMenuClick={() => setSidebarOpen(true)} />
 
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
@@ -168,12 +123,6 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
             <h1 className="text-gray-900 font-bold text-xl mb-1">{settings.app_name}</h1>
             <p className="text-gray-500 text-sm">{settings.app_description}</p>
             
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <p className="text-gray-700 font-medium">{user.name}</p>
-              <p className="text-gray-400 text-xs mt-0.5">
-                {user.role === 'admin' ? 'مدير النظام' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
-              </p>
-            </div>
           </div>
 
           <nav className="flex-1 px-4 py-6 overflow-y-auto space-y-2">
