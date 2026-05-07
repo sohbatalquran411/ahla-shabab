@@ -269,14 +269,20 @@ export default function ResultsPage() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">نتائج المتابعة</h1>
             <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+              <button
+                onClick={() => router.back()}
+                className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
               >
-                لوحة التحكم
-              </Link>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                رجوع
+              </button>
+              <div className="h-6 w-px bg-gray-200"></div>
+              <h1 className="text-2xl font-bold text-gray-900">ردود النماذج</h1>
+            </div>
+            <div className="flex items-center gap-4">
               <span className="text-gray-500">|</span>
               <span className="text-emerald-600 font-medium">
                 {user?.role === 'admin' ? 'مدير النظام' : 'مشرف'}

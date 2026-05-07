@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cairo } from "next/font/google";
+import { Cairo, Reem_Kufi } from "next/font/google";
 import "./globals.css";
 
 const cairo = Cairo({
@@ -8,22 +8,54 @@ const cairo = Cairo({
   variable: "--font-cairo",
 });
 
-export const metadata: Metadata = {
-  title: "أحلى شباب",
-  description: "منصة أحلى شباب لإدارة المتطوعين والمشاريع - المبادرات الشبابية",
-  keywords: ["تطوع", "شباب", "مشاريع", "أحلى شباب"],
-  authors: [{ name: "أحلى شباب" }],
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "أحلى شباب",
-  },
-  icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
-  },
-};
+const reemKufi = Reem_Kufi({
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-reem-kufi",
+});
+
+import { createClient } from '@/utils/supabase/server';
+
+export async function generateMetadata(): Promise<Metadata> {
+  let appName = "أحلى شباب";
+  let appDesc = "منصة أحلى شباب لإدارة المتطوعين والمشاريع - المبادرات الشبابية";
+  let appLogo = "/icon.svg";
+
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.from('app_settings').select('key, value');
+    
+    if (data) {
+      const nameSetting = data.find(s => s.key === 'app_name');
+      const descSetting = data.find(s => s.key === 'app_description');
+      const logoSetting = data.find(s => s.key === 'app_logo');
+      
+      if (nameSetting?.value) appName = nameSetting.value;
+      if (descSetting?.value) appDesc = descSetting.value;
+      if (logoSetting?.value) appLogo = logoSetting.value;
+    }
+  } catch (error) {
+    console.error("Error fetching metadata:", error);
+  }
+
+  return {
+    title: appName,
+    description: appDesc,
+    keywords: ["تطوع", "شباب", "مشاريع", appName],
+    authors: [{ name: appName }],
+    manifest: "/manifest.json",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: appName,
+    },
+    icons: {
+      icon: appLogo,
+      apple: appLogo,
+      shortcut: appLogo,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -39,7 +71,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={`${cairo.variable}`}>
+    <html lang="ar" dir="rtl" className={`${cairo.variable} ${reemKufi.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

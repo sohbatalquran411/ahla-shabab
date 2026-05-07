@@ -164,12 +164,14 @@ export default function PublicProjectsView({ projects: initialProjects }: Public
                   className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group bg-white"
                 >
                   {project.image_url ? (
-                    <img 
-                      src={project.image_url} 
-                      alt={project.name} 
-                      loading="lazy"
-                      className="w-full h-44 object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
+                    <div className="w-full h-44 bg-gray-50 flex items-center justify-center p-2 overflow-hidden">
+                      <img 
+                        src={project.image_url} 
+                        alt={project.name} 
+                        loading="lazy"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
                   ) : (
                     <div
                       className="w-full h-44 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-300"
@@ -179,8 +181,13 @@ export default function PublicProjectsView({ projects: initialProjects }: Public
                     </div>
                   )}
                   
-                  <div className="p-5">
-                    <h4 className="text-lg font-bold text-gray-900 mb-1.5 text-center">{project.name}</h4>
+                  <div className="p-5 bg-gradient-to-b from-white to-gray-50/50">
+                    <h4 
+                      className="text-xl lg:text-2xl font-bold text-blue-800 mb-1.5 text-center tracking-wide"
+                      style={{ fontFamily: 'var(--font-reem-kufi)' }}
+                    >
+                      {project.name}
+                    </h4>
                   </div>
                 </div>
               ))}

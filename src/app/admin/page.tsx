@@ -52,8 +52,8 @@ const ADMIN_CARDS = [
     lightColor: 'bg-amber-50'
   },
   {
-    title: 'النتائج التفصيلية',
-    description: 'استعراض وتحليل نتائج النماذج المدخلة',
+    title: 'ردود النماذج',
+    description: 'استعراض وتحليل ردود النماذج المدخلة',
     href: '/admin/results',
     icon: (
       <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

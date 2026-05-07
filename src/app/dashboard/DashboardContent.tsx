@@ -83,141 +83,140 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
-      {/* Mobile Header */}
-      <header className="bg-white shadow-sm lg:hidden sticky top-0 z-30 border-b border-gray-100">
-        <div className="flex items-center justify-between px-4 py-3">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            {Icons.menu}
-          </button>
-          <div className="text-center">
-            <h1 className="text-base font-bold text-gray-900">{settings.app_name}</h1>
-          </div>
-          <div className="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center overflow-hidden border-2 border-blue-100">
-            {settings.app_logo ? (
-              <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-sm font-bold text-blue-700">
-                {user.name.charAt(0)}
-              </span>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <div className="flex">
-        {/* Sidebar - Clean White Design */}
-        <aside className={`
-          fixed inset-y-0 right-0 z-50 w-full bg-white shadow-2xl transform transition-transform duration-300 lg:w-80 lg:translate-x-0 lg:static lg:shadow-none lg:border-l lg:border-gray-100
-          ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}
-        `}>
-          {/* Sidebar Content */}
-          <div className="h-full flex flex-col bg-white">
+      {/* Universal Header */}
+      <header className="bg-white shadow-sm sticky top-0 z-30 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
+            >
+              {Icons.menu}
+            </button>
             
-            {/* Header Section */}
-            <div className="px-6 pt-8 pb-6 border-b border-gray-100 text-center">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-100 shadow-sm overflow-hidden">
+            {/* Logo & Title */}
+            <Link href="/dashboard" className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center overflow-hidden border-2 border-blue-100 shadow-sm">
                 {settings.app_logo ? (
                   <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl font-bold text-blue-700">
+                  <span className="text-sm font-bold text-blue-700">
                     {user.name.charAt(0)}
                   </span>
                 )}
               </div>
-              <h1 className="text-gray-900 font-bold text-xl mb-1">{settings.app_name}</h1>
-              <p className="text-gray-500 text-sm">{settings.app_description}</p>
-              
-              {/* User Info */}
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-gray-700 font-medium">{user.name}</p>
-                <p className="text-gray-400 text-xs mt-0.5">
-                  {user.role === 'admin' ? 'مدير النظام' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
-                </p>
-              </div>
-            </div>
+              <h1 className="text-lg font-bold text-gray-900 hidden sm:block">{settings.app_name}</h1>
+            </Link>
+          </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 px-4 py-6 overflow-y-auto">
-              <Link
-                href="/dashboard"
-                onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-4 px-4 py-3 bg-blue-50 text-blue-700 rounded-2xl font-medium mb-2 transition-all active:scale-95"
-              >
-                <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-sm">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                </div>
-                <span className="font-medium">الرئيسية</span>
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-2">
+            <Link href="/dashboard" className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-colors">
+              الرئيسية
+            </Link>
+            <Link href="/profile" className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-colors">
+              الملف الشخصي
+            </Link>
+            {user.role === 'admin' && (
+              <Link href="/admin" className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-xl font-medium transition-colors">
+                لوحة تحكم المدير
               </Link>
+            )}
+            <div className="w-px h-6 bg-gray-200 mx-2"></div>
+            <button onClick={handleLogout} className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors">
+              تسجيل الخروج
+            </button>
+          </nav>
+        </div>
+      </header>
 
-              <Link
-                href="/profile"
-                onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95"
-              >
-                <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 01 8 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
-                <span className="font-medium">الملف الشخصي</span>
-              </Link>
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-              {/* Admin Section */}
-              {user.role === 'admin' && (
-                <>
-                    <div className="h-px bg-gray-200 my-4"></div>
-                    <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3 px-3">الإدارة</p>
-                    <Link
-                        href="/admin"
-                        onClick={() => setSidebarOpen(false)}
-                        className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95"
-                    >
-                        <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                        </div>
-                        <span className="font-medium">لوحة تحكم المدير</span>
-                    </Link>
-                </>
+      {/* Mobile Sidebar */}
+      <aside className={`
+        fixed inset-y-0 right-0 z-50 w-2/3 max-w-sm bg-white shadow-2xl transform transition-transform duration-300 lg:hidden
+        ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}
+      `}>
+        <div className="h-full flex flex-col bg-white">
+          <div className="px-6 pt-8 pb-6 border-b border-gray-100 text-center relative">
+            {/* Close Button */}
+            <button 
+              onClick={() => setSidebarOpen(false)}
+              className="absolute top-4 left-4 p-2 text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-100 shadow-sm overflow-hidden">
+              {settings.app_logo ? (
+                <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-3xl font-bold text-blue-700">
+                  {user.name.charAt(0)}
+                </span>
               )}
-            </nav>
-
-            {/* Logout */}
-            <div className="p-4 border-t border-gray-100">
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-3 w-full px-4 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl transition-all duration-200 active:scale-95"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <span className="font-medium">تسجيل الخروج</span>
-              </button>
+            </div>
+            <h1 className="text-gray-900 font-bold text-xl mb-1">{settings.app_name}</h1>
+            <p className="text-gray-500 text-sm">{settings.app_description}</p>
+            
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-gray-700 font-medium">{user.name}</p>
+              <p className="text-gray-400 text-xs mt-0.5">
+                {user.role === 'admin' ? 'مدير النظام' : user.role === 'supervisor' ? 'مشرف' : 'متطوع'}
+              </p>
             </div>
           </div>
-        </aside>
 
-        {/* Overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
+          <nav className="flex-1 px-4 py-6 overflow-y-auto space-y-2">
+            <Link href="/dashboard" onClick={() => setSidebarOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95">
+              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+              </div>
+              <span className="font-medium">الرئيسية</span>
+            </Link>
 
-        {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-8 pt-0 lg:pt-8">
-          {/* Mobile spacing */}
-          <div className="h-4 lg:hidden"></div>
-          
-          {/* Projects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <Link href="/profile" onClick={() => setSidebarOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95">
+              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 01 8 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              </div>
+              <span className="font-medium">الملف الشخصي</span>
+            </Link>
+
+            {user.role === 'admin' && (
+              <>
+                <div className="h-px bg-gray-200 my-4"></div>
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3 px-3">الإدارة</p>
+                <Link href="/admin" onClick={() => setSidebarOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95">
+                  <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                  </div>
+                  <span className="font-medium">لوحة تحكم المدير</span>
+                </Link>
+              </>
+            )}
+          </nav>
+
+          <div className="p-4 border-t border-gray-100">
+            <button onClick={handleLogout} className="flex items-center justify-center gap-3 w-full px-4 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl transition-all duration-200 active:scale-95">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              <span className="font-medium">تسجيل الخروج</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto p-4 lg:p-8 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {projects.map((project) => (
               <Link
                 key={project.id}
@@ -226,12 +225,12 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
                 className="block bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group active:scale-95"
               >
                 {project.image_url ? (
-                  <div className="w-full h-36 lg:h-44 overflow-hidden">
+                  <div className="w-full h-36 lg:h-44 overflow-hidden bg-gray-50 flex items-center justify-center p-2">
                     <img 
                       src={project.image_url} 
                       alt={project.name} 
                       loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 ) : (
@@ -242,8 +241,13 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
                     {getIcon(project.icon)}
                   </div>
                 )}
-                <div className="p-4 lg:p-5">
-                  <h3 className="text-base lg:text-lg font-bold text-gray-900 text-center">{project.name}</h3>
+                <div className="p-4 lg:p-5 bg-gradient-to-b from-white to-gray-50/50">
+                  <h3 
+                    className="text-xl lg:text-2xl font-bold text-blue-800 text-center tracking-wide" 
+                    style={{ fontFamily: 'var(--font-reem-kufi)' }}
+                  >
+                    {project.name}
+                  </h3>
                 </div>
               </Link>
             ))}
@@ -260,7 +264,6 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
             )}
           </div>
         </main>
-      </div>
     </div>
   )
 }
