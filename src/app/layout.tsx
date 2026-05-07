@@ -1,4 +1,4 @@
-﻿import type { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cairo } from "next/font/google";
 import "./globals.css";
 
@@ -9,15 +9,15 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨",
-  description: "Ù…Ù†ØµØ© Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨ Ù„Ù„ØªÙ‚ÙŠÙŠÙ… ÙˆØ§Ù„Ù…ØªØ§Ø¨Ø¹Ø© - Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø§Ù„Ø¥ÙŠÙ…Ø§Ù†ÙŠØ©",
-  keywords: ["Ø£Ø°ÙƒØ§Ø±", "ØªÙ‚ÙŠÙŠÙ…", "Ù…ØªØ§Ø¨Ø¹Ø©", "Ù…Ø¯Ø±Ø³Ø© Ø¥ÙŠÙ…Ø§Ù†ÙŠØ©"],
-  authors: [{ name: "Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨" }],
+  title: "أحلى شباب",
+  description: "منصة أحلى شباب للتقويم والمتابعة - المدرسة الإيمانية",
+  keywords: ["أذكار", "تقويم", "متابعة", "مدرسة إيمانية"],
+  authors: [{ name: "أحلى شباب" }],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨",
+    title: "أحلى شباب",
   },
   icons: {
     icon: "/icon.svg",
