@@ -25,26 +25,6 @@ export default async function AdminPage() {
     redirect('/dashboard')
   }
 
-  // Get stats
-  const [{ count: usersCount }, { count: projectsCount }, { count: pendingCount }] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
-    supabase.from('projects').select('*', { count: 'exact', head: true }),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'pending')
-  ])
-
-  const stats = {
-    total_users: usersCount || 0,
-    total_projects: projectsCount || 0,
-    pending_approvals: pendingCount || 0
-  }
-
-  return (
-    <div dir="rtl" className="min-h-screen bg-gray-50">
-      <DashboardContent 
-        user={profile} 
-        projects={[]} 
-        stats={stats ?? undefined}
-      />
-    </div>
-  )
+  // Redirect to projects as the default admin view
+  redirect('/admin/projects')
 }

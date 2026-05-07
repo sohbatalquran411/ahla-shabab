@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -192,7 +192,7 @@ export default function AdminUsersPage() {
     }
     const labels = {
       pending: 'معلق',
-      approved: 'موافق علين',
+      approved: 'موافق عليه',
       rejected: 'مرفوض'
     }
     return (
@@ -225,7 +225,7 @@ export default function AdminUsersPage() {
       <span className={`px-2 py-1 text-xs rounded-full ${
         gender === 'male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
       }`}>
-        {gender === 'male' ? 'ذكر' : 'أنثن'}
+        {gender === 'male' ? 'ذكر' : 'أنثى'}
       </span>
     )
   }
@@ -315,7 +315,7 @@ export default function AdminUsersPage() {
             >
               <option value="all">كل الحالات</option>
               <option value="pending">معلق</option>
-              <option value="approved">موافق علين</option>
+              <option value="approved">موافق عليه</option>
               <option value="rejected">مرفوض</option>
             </select>
 
@@ -487,7 +487,7 @@ export default function AdminUsersPage() {
                   >
                     <option value="">اختر...</option>
                     <option value="male">ذكر</option>
-                    <option value="female">أنثن</option>
+                    <option value="female">أنثى</option>
                   </select>
                 </div>
                 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -57,7 +57,7 @@ export default function AdminAnalyticsPage() {
 
   const cards = [
     { label: 'إجمالي المستخدمين', value: stats?.totalUsers, color: 'bg-blue-500' },
-    { label: 'مستخدمين موافق علينم', value: stats?.approvedUsers, color: 'bg-green-500' },
+    { label: 'مستخدمين موافق عليهم', value: stats?.approvedUsers, color: 'bg-green-500' },
     { label: 'طلبات معلقة', value: stats?.pendingUsers, color: 'bg-amber-500' },
     { label: 'المشاريع', value: stats?.totalProjects, color: 'bg-blue-500' },
     { label: 'الفورمز', value: stats?.totalForms, color: 'bg-purple-500' },

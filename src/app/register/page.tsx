@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -48,7 +48,7 @@ export default function RegisterPage() {
 
   const validateStep2 = () => {
     if (formData.password.length < 6) {
-      setError('كلمة المرور يجب أن تكون 6 أحرف علن الأقل')
+      setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل')
       return false
     }
     if (formData.password !== formData.confirmPassword) {
@@ -149,7 +149,7 @@ export default function RegisterPage() {
           {/* Header */}
           <div className="bg-gradient-to-l from-blue-600 to-blue-700 px-8 py-8 text-center">
             <h1 className="text-2xl font-bold text-white mb-1">إنشاء حساب جديد</h1>
-            <p className="text-blue-100 text-sm">انضم إلينا في أحلن شباب</p>
+            <p className="text-blue-100 text-sm">انضم إلينا في أحلى شباب</p>
             
             {/* Progress Steps */}
             <div className="flex items-center justify-center gap-4 mt-4">
@@ -253,7 +253,7 @@ export default function RegisterPage() {
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        أنثن
+                        أنثى
                       </button>
                     </div>
                   </div>
@@ -328,7 +328,7 @@ export default function RegisterPage() {
                     <strong>الاسم:</strong> {formData.name}
                   </p>
                   <p className="text-gray-600">
-                    <strong>النوع:</strong> {formData.gender === 'male' ? 'ذكر' : 'أنثن'}
+                    <strong>النوع:</strong> {formData.gender === 'male' ? 'ذكر' : 'أنثى'}
                   </p>
                   <p className="text-gray-600">
                     <strong>الدور:</strong> {formData.role === 'volunteer' ? 'متطوع' : 'مشرف'}
@@ -396,7 +396,7 @@ export default function RegisterPage() {
 
         {/* Footer */}
         <p className="text-center text-blue-100 text-xs mt-6">
-          © 2026 أحلن شباب. جميع الحقوق محفوظة
+          © 2026 أحلى شباب. جميع الحقوق محفوظة
         </p>
       </div>
     </div>

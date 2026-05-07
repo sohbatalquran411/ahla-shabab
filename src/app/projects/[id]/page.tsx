@@ -141,33 +141,8 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           </Link>
           <h1 className="text-lg font-bold text-blue-700">{project.name}</h1>
           
-          {/* Delete Button (Admin only) */}
-          {profile?.role === 'admin' && (
-            <button
-              onClick={() => setDeleteModal(true)}
-              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              title="حذف المشروع"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          )}
-          
-          {/* Edit Button (Admin/Supervisor) */}
-          {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
-            <Link
-              href={`/projects/${projectId}/edit`}
-              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-              title="تعديل المشروع"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </Link>
-          )}
-          
-          {profile?.role !== 'admin' && profile?.role !== 'supervisor' && <div className="w-8" />}
+          {/* Management buttons removed as requested - management should be in admin panel only */}
+          <div className="w-8" />
         </div>
       </header>
 
@@ -211,17 +186,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         {/* Forms */}
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-xl font-bold text-gray-900">الفورمز المتاحة</h3>
-          {(profile?.role === 'supervisor' || profile?.role === 'admin') && (
-            <Link
-              href={`/forms/create?project_id=${projectId}`}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              إنشاء فورم جديدة
-            </Link>
-          )}
+          {/* Add form button removed */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -247,17 +212,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                         مكتمل ✓
                       </span>
                     )}
-                    {profile?.role === 'admin' && (
-                      <Link
-                        href={`/forms/${form.id}/edit`}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="تعديل النموذج"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </Link>
-                    )}
+                    {/* Edit form button removed */}
                   </div>
                 </div>
                 <Link href={`/forms/${form.id}`}>

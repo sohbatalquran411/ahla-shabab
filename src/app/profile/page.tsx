@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -116,7 +116,7 @@ export default function ProfilePage() {
     }
 
     if (passwordData.new_password.length < 6) {
-      setError('الباسورد يجب أن يكون 6 أحرف علن الأقل')
+      setError('الباسورد يجب أن يكون 6 أحرف على الأقل')
       return
     }
 
@@ -146,7 +146,7 @@ export default function ProfilePage() {
   const getStatusBadge = (status: string) => {
     const badges: Record<string, { class: string, label: string }> = {
       pending: { class: 'bg-amber-100 text-amber-700', label: 'معلق' },
-      approved: { class: 'bg-green-100 text-green-700', label: 'موافق علين' },
+      approved: { class: 'bg-green-100 text-green-700', label: 'موافق عليه' },
       rejected: { class: 'bg-red-100 text-red-700', label: 'مرفوض' }
     }
     const badge = badges[status] || badges.pending
@@ -226,7 +226,7 @@ export default function ProfilePage() {
             <div className="bg-gray-50 rounded-xl p-4 text-center">
               <p className="text-gray-500 text-sm">النوع</p>
               <p className="font-bold text-gray-900">
-                {profile?.gender === 'male' ? 'ذكر' : profile?.gender === 'female' ? 'أنثن' : '-'}
+                {profile?.gender === 'male' ? 'ذكر' : profile?.gender === 'female' ? 'أنثى' : '-'}
               </p>
             </div>
           </div>
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                       : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  ؟'� ذكر
+                  👨 ذكر
                 </button>
                 <button
                   type="button"
@@ -300,7 +300,7 @@ export default function ProfilePage() {
                       : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  ؟'� أنثن
+                  👩 أنثى
                 </button>
               </div>
             </div>

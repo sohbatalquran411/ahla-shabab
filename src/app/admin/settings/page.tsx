@@ -20,7 +20,7 @@ export default function AdminSettingsPage() {
 
     app_logo: '',
 
-    app_name: 'أحلن شباب',
+    app_name: 'أحلى شباب',
 
     app_description: 'منصة إدارة المشاريع الدعوية'
 
@@ -304,7 +304,7 @@ export default function AdminSettingsPage() {
 
               <h3 className="font-medium text-amber-800">صلاحيات المدير</h3>
 
-              <p className="text-sm text-amber-700">نذن الصفحة متاحة للمديرين فقط. التغييرات ستؤثر علن التطبيق بالكامل.</p>
+              <p className="text-sm text-amber-700">نذن الصفحة متاحة للمديرين فقط. التغييرات ستؤثر على التطبيق بالكامل.</p>
 
             </div>
 
@@ -432,7 +432,7 @@ export default function AdminSettingsPage() {
 
                 {settings.app_logo ? (
 
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30">
+                  <div className="w-24 h-24 mx-auto mb-4 rounded-2xl overflow-hidden bg-white shadow-lg p-2">
 
                     <img 
 
@@ -440,7 +440,7 @@ export default function AdminSettingsPage() {
 
                       alt="شعار التطبيق"
 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
 
                     />
 

@@ -217,10 +217,6 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
           <div className="h-4 lg:hidden"></div>
           
           {/* Projects Grid */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900">المشاريع المتاحة</h2>
-          </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {projects.map((project) => (
               <Link
@@ -247,21 +243,7 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
                   </div>
                 )}
                 <div className="p-4 lg:p-5">
-                  <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-1.5">{project.name}</h3>
-                  <p className="text-sm text-gray-500 line-clamp-2">
-                    {project.description || 'لا يوجد وصف'}
-                  </p>
-                  <div className="mt-3 lg:mt-4 flex items-center gap-2">
-                    <span className={`px-2 lg:px-3 py-1 text-xs rounded-full ${
-                      project.target_gender === 'male' 
-                        ? 'bg-blue-100 text-blue-700' 
-                        : project.target_gender === 'female'
-                          ? 'bg-pink-100 text-pink-700'
-                          : 'bg-purple-100 text-purple-700'
-                    }`}>
-                      {project.target_gender === 'male' ? 'لشباب' : project.target_gender === 'female' ? 'لبنات' : 'للجميع'}
-                    </span>
-                  </div>
+                  <h3 className="text-base lg:text-lg font-bold text-gray-900 text-center">{project.name}</h3>
                 </div>
               </Link>
             ))}

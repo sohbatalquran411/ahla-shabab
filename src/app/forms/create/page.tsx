@@ -23,33 +23,33 @@ const QUESTION_TYPES = {
   },
   single_choice: { 
     label: 'اختيار واحد', 
-    icon: '�-<', 
+    icon: '○', 
     description: 'اختيار إجابة واحدة',
-    explanation: 'سؤال يحتوي علن عدة خيارات ويمكن اختيار واحد فقط. مثال: "في أي وقت تصلي الفجر؟" مع خيارات: قبل الأذان�O مع الأذان�O بعد الأذان'
+    explanation: 'سؤال يحتوي على عدة خيارات ويمكن اختيار واحد فقط. مثال: "في أي وقت تصلي الفجر؟" مع خيارات: قبل الأذان، مع الأذان، بعد الأذان'
   },
   multiple_choice: { 
     label: 'اختيار متعدد', 
     icon: '☑', 
     description: 'اختيار عدة إجابات',
-    explanation: 'سؤال يحتوي علن عدة خيارات ويمكن اختيار أكثر من واحد. مثال: "ما الأعمال الصالحة التي تقوم بنا؟" مع خيارات: الصلاة�O الصيام�O الصدقة�O قراءة القرآن'
+    explanation: 'سؤال يحتوي على عدة خيارات ويمكن اختيار أكثر من واحد. مثال: "ما الأعمال الصالحة التي تقوم بها؟" مع خيارات: الصلاة، الصيام، الصدقة، قراءة القرآن'
   },
   scale: { 
     label: 'تقييم', 
-    icon: '�~.', 
-    description: 'تقييم من 1 إلن 5',
-    explanation: 'سؤال تقييم بمقياس من 1 إلن 5 نجوم أو نقاط. مثال: "قيم مستون انتظامك في الصلاة" من 1 (ضعيف) إلن 5 (ممتاز)'
+    icon: '⭐', 
+    description: 'تقييم من 1 إلى 5',
+    explanation: 'سؤال تقييم بمقياس من 1 إلى 5 نجوم أو نقاط. مثال: "قيم مستوى انتظامك في الصلاة" من 1 (ضعيف) إلى 5 (ممتاز)'
   },
   ranking: { 
     label: 'ترتيب', 
     icon: '#', 
     description: 'ترتيب العناصر',
-    explanation: 'سؤال يطلب ترتيب عدة عناصر حسب الأولوية أو الأنمية. مثال: "رتب العبادات التالية حسب أولويتك: الصلاة�O الصيام�O الحج�O الزكاة�O الشنادة"'
+    explanation: 'سؤال يطلب ترتيب عدة عناصر حسب الأولوية أو الأهمية. مثال: "رتب العبادات التالية حسب أولويتك: الصلاة، الصيام، الحج، الزكاة، الشهادة"'
   },
   matrix: { 
     label: 'مصفوفة', 
-    icon: '�-�', 
+    icon: '⊞', 
     description: 'أسئلة متعددة مع خيارات مشتركة',
-    explanation: 'عدة أسئلة فرعية تشترك في نفس خيارات الإجابة. مثال: تقييم الصلوات الخمس (الفجر�O الظنر�O العصر�O المغرب�O العشاء) من حيث: الانتظام�O الخشوع�O الوقت'
+    explanation: 'عدة أسئلة فرعية تشترك في نفس خيارات الإجابة. مثال: تقييم الصلوات الخمس (الفجر، الظهر، العصر، المغرب، العشاء) من حيث: الانتظام، الخشوع، الوقت'
   }
 } as const
 
@@ -306,7 +306,7 @@ function CreateFormContent() {
     }
 
     if (formData.questions.length === 0) {
-      alert('يرجن إضافة سؤال واحد علن الأقل')
+      alert('يرجن إضافة سؤال واحد على الأقل')
       return
     }
 
@@ -626,7 +626,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     {question.options.map((option, oIndex) => (
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
                         <div className="flex items-center gap-3">
-                          <span className="text-gray-400">{question.type === 'single_choice' ? '�-<' : '�~�'}</span>
+                          <span className="text-gray-400">{question.type === 'single_choice' ? '○' : '�~�'}</span>
                           <input
                             type="text"
                             value={option.text}
@@ -757,7 +757,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
 
         {/* Examples Section */}
         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
-          <h3 className="text-lg font-bold text-amber-800 mb-4">؟'� أمثلة عملية لأنواع الأسئلة</h3>
+          <h3 className="text-lg font-bold text-amber-800 mb-4">💡 أمثلة عملية لأنواع الأسئلة</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Text Example */}
@@ -766,7 +766,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">T</span>
                 <span className="font-medium text-gray-800">نص قصير</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">ما اسم المسجد الذي تصلي فين؟</p>
+              <p className="text-sm text-gray-600 mb-2">ما اسم المسجد الذي تصلي فيه؟</p>
               <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
                 إجابة: مسجد النور
               </div>
