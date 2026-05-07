@@ -132,6 +132,7 @@ function EditProjectContent() {
           target_gender: formData.target_gender,
           icon: formData.icon,
           color: formData.color,
+          image_url: formData.image_url,
           updated_at: new Date().toISOString()
         })
         .eq('id', projectId)
@@ -181,6 +182,12 @@ function EditProjectContent() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Image Upload */}
+            <ImageUpload
+              onImageUploaded={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+              currentImage={formData.image_url}
+            />
+
             {/* Project Name */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">اسم المشروع *</label>
@@ -278,22 +285,34 @@ function EditProjectContent() {
             {/* Preview */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">معاينة</label>
-              <div className="bg-gray-50 rounded-xl p-6">
-                <div className="flex items-center gap-4">
+              <div className="relative rounded-xl overflow-hidden min-h-[250px] bg-gray-50">
+                {formData.image_url ? (
+                  <>
+                    <img 
+                      src={formData.image_url} 
+                      alt="صورة المشروع" 
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+                  </>
+                ) : (
                   <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
+                    className="absolute inset-0 w-full h-full"
                     style={{ backgroundColor: `${formData.color}20` }}
-                  >
-                    {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || '🕌'}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">
-                      {formData.name || 'اسم المشروع'}
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      {formData.description || 'وصف المشروع'}
-                    </p>
-                  </div>
+                  />
+                )}
+                <div className="relative h-full min-h-[250px] flex flex-col justify-end p-6">
+                  {!formData.image_url && (
+                    <div className="text-5xl mb-3" style={{ color: formData.color }}>
+                      {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || '🕌'}
+                    </div>
+                  )}
+                  <h3 className={`text-xl font-bold ${formData.image_url ? 'text-white' : 'text-gray-900'}`}>
+                    {formData.name || 'اسم المشروع'}
+                  </h3>
+                  <p className={`text-sm mt-1 ${formData.image_url ? 'text-white/80' : 'text-gray-500'}`}>
+                    {formData.description || 'وصف المشروع'}
+                  </p>
                 </div>
               </div>
             </div>

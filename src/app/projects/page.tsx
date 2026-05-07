@@ -159,37 +159,49 @@ export default function ProjectsPage() {
           {projects.map((project) => (
             <div
               key={project.id}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+              className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group min-h-[280px]"
             >
-              <div className="flex items-start justify-between mb-4">
+              {project.image_url ? (
+                <>
+                  <img 
+                    src={project.image_url} 
+                    alt={project.name} 
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+                </>
+              ) : (
                 <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"
-                  style={{ backgroundColor: `${project.color}20`, color: project.color }}
+                  className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-300"
+                  style={{ backgroundColor: `${project.color}20` }}
+                />
+              )}
+              
+              {/* Delete Button (Admin only) */}
+              {canDeleteProjects && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setDeleteModal({ show: true, project })
+                  }}
+                  className="absolute top-3 left-3 z-10 p-2 bg-white/90 backdrop-blur-sm text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shadow-sm"
+                  title="حذف المشروع"
                 >
-                  {getIcon(project.icon)}
-                </div>
-                
-                {/* Delete Button (Admin only) */}
-                {canDeleteProjects && (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setDeleteModal({ show: true, project })
-                    }}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                    title="حذف المشروع"
-                  >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                )}
-              </div>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              )}
 
-              <Link href={`/projects/${project.id}`} className="block">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{project.name}</h3>
-                <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+              <Link href={`/projects/${project.id}`} className="relative h-full min-h-[280px] flex flex-col justify-end p-6">
+                {!project.image_url && (
+                  <div className="text-5xl mb-3" style={{ color: project.color }}>
+                    {getIcon(project.icon)}
+                  </div>
+                )}
+                <h3 className={`text-lg font-bold mb-2 ${project.image_url ? 'text-white' : 'text-gray-900'}`}>{project.name}</h3>
+                <p className={`text-sm line-clamp-2 mb-4 ${project.image_url ? 'text-white/80' : 'text-gray-600'}`}>
                   {project.description || 'لا يوجد وصف'}
                 </p>
                 
@@ -205,7 +217,7 @@ export default function ProjectsPage() {
                      project.target_gender === 'female' ? 'إناث فقط' : 'الجميع'}
                   </span>
                   
-                  <span className="text-teal-600 font-medium text-sm flex items-center gap-1">
+                  <span className={`font-medium text-sm flex items-center gap-1 ${project.image_url ? 'text-white hover:text-white/80' : 'text-teal-600 hover:text-teal-700'}`}>
                     عرض التفاصيل
                     <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

@@ -191,28 +191,40 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Project Info */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
-          <div className="flex items-start gap-4">
+        <div className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 mb-8 min-h-[300px]">
+          {project.image_url ? (
+            <>
+              <img 
+                src={project.image_url} 
+                alt={project.name} 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30" />
+            </>
+          ) : (
             <div
-              className="w-20 h-20 rounded-2xl flex items-center justify-center"
-              style={{ backgroundColor: `${project.color}20`, color: project.color }}
-            >
-              {getIcon(project.icon)}
-            </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{project.name}</h2>
-              <p className="text-gray-600">{project.description}</p>
-              <div className="mt-3 flex items-center gap-2">
-                <span className={`px-3 py-1 text-sm rounded-full ${
-                  project.target_gender === 'male' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : project.target_gender === 'female'
-                      ? 'bg-pink-100 text-pink-700'
-                      : 'bg-purple-100 text-purple-700'
-                }`}>
-                  {project.target_gender === 'male' ? 'ذكور فقط' : project.target_gender === 'female' ? 'إناث فقط' : 'الجميع'}
-                </span>
+              className="absolute inset-0 w-full h-full"
+              style={{ backgroundColor: `${project.color}20` }}
+            />
+          )}
+          <div className="relative h-full min-h-[300px] flex flex-col justify-end p-8">
+            {!project.image_url && (
+              <div className="text-6xl mb-4" style={{ color: project.color }}>
+                {getIcon(project.icon)}
               </div>
+            )}
+            <h2 className={`text-3xl font-bold mb-3 ${project.image_url ? 'text-white' : 'text-gray-900'}`}>{project.name}</h2>
+            <p className={`text-lg mb-4 ${project.image_url ? 'text-white/80' : 'text-gray-600'}`}>{project.description}</p>
+            <div className="flex items-center gap-2">
+              <span className={`px-3 py-1 text-sm rounded-full ${
+                project.target_gender === 'male' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : project.target_gender === 'female'
+                    ? 'bg-pink-100 text-pink-700'
+                    : 'bg-purple-100 text-purple-700'
+              }`}>
+                {project.target_gender === 'male' ? 'ذكور فقط' : project.target_gender === 'female' ? 'إناث فقط' : 'الجميع'}
+              </span>
             </div>
           </div>
         </div>

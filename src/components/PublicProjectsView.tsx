@@ -158,53 +158,59 @@ export default function PublicProjectsView({ projects: initialProjects }: Public
 
           {projects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
+                {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+                  className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group min-h-[280px]"
                 >
                   {project.image_url ? (
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden mb-4 group-hover:scale-110 transition-transform">
+                    <>
                       <img 
                         src={project.image_url} 
                         alt={project.name} 
-                        className="w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
-                    </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+                    </>
                   ) : (
                     <div
-                      className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-3xl"
-                      style={{ backgroundColor: `${project.color}20`, color: project.color }}
-                    >
-                      {getIcon(project.icon)}
-                    </div>
+                      className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-300"
+                      style={{ backgroundColor: `${project.color}20` }}
+                    />
                   )}
                   
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">{project.name}</h4>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {project.description || 'لا يوجد وصف'}
-                  </p>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className={`px-3 py-1 text-xs rounded-full ${
-                      project.target_gender === 'male' 
-                        ? 'bg-blue-100 text-blue-700' 
-                        : project.target_gender === 'female'
-                          ? 'bg-pink-100 text-pink-700'
-                          : 'bg-purple-100 text-purple-700'
-                    }`}>
-                      {project.target_gender === 'male' ? 'ذكور' : project.target_gender === 'female' ? 'إناث' : 'الكل'}
-                    </span>
+                  <div className="relative h-full min-h-[280px] flex flex-col justify-end p-6">
+                    {!project.image_url && (
+                      <div className="text-5xl mb-3" style={{ color: project.color }}>
+                        {getIcon(project.icon)}
+                      </div>
+                    )}
+                    <h4 className={`text-xl font-bold mb-2 ${project.image_url ? 'text-white' : 'text-gray-900'}`}>{project.name}</h4>
+                    <p className={`text-sm mb-4 line-clamp-2 ${project.image_url ? 'text-white/80' : 'text-gray-600'}`}>
+                      {project.description || 'لا يوجد وصف'}
+                    </p>
                     
-                    <Link
-                      href="/login"
-                      className="text-teal-600 hover:text-teal-700 font-medium text-sm flex items-center gap-1"
-                    >
-                      انضم الآن
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H3m0 0l6-6m-6 6l6 6" />
-                      </svg>
-                    </Link>
+                    <div className="flex items-center justify-between">
+                      <span className={`px-3 py-1 text-xs rounded-full ${
+                        project.target_gender === 'male' 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : project.target_gender === 'female'
+                            ? 'bg-pink-100 text-pink-700'
+                            : 'bg-purple-100 text-purple-700'
+                      }`}>
+                        {project.target_gender === 'male' ? 'ذكور' : project.target_gender === 'female' ? 'إناث' : 'الكل'}
+                      </span>
+                      
+                      <Link
+                        href="/login"
+                        className={`font-medium text-sm flex items-center gap-1 ${project.image_url ? 'text-white hover:text-white/80' : 'text-teal-600 hover:text-teal-700'}`}
+                      >
+                        انضم الآن
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H3m0 0l6-6m-6 6l6 6" />
+                        </svg>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}

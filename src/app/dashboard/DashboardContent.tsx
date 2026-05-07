@@ -301,38 +301,44 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               <Link
                 key={project.id}
                 href={`/projects/${project.id}`}
-                className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group active:scale-95"
+                className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group active:scale-95 min-h-[240px] lg:min-h-[280px]"
               >
                 {project.image_url ? (
-                  <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl overflow-hidden mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
+                  <>
                     <img 
                       src={project.image_url} 
                       alt={project.name} 
-                      className="w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
-                  </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+                  </>
                 ) : (
                   <div
-                    className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center mb-3 lg:mb-4 group-hover:scale-110 transition-transform"
-                    style={{ backgroundColor: `${project.color}20`, color: project.color }}
-                  >
-                    {getIcon(project.icon)}
-                  </div>
+                    className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-300"
+                    style={{ backgroundColor: `${project.color}20` }}
+                  />
                 )}
-                <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-2">{project.name}</h3>
-                <p className="text-gray-600 text-sm line-clamp-2">
-                  {project.description || 'لا يوجد وصف'}
-                </p>
-                <div className="mt-3 lg:mt-4 flex items-center gap-2">
-                  <span className={`px-2 lg:px-3 py-1 text-xs rounded-full ${
-                    project.target_gender === 'male' 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : project.target_gender === 'female'
-                        ? 'bg-pink-100 text-pink-700'
-                        : 'bg-purple-100 text-purple-700'
-                  }`}>
-                    {project.target_gender === 'male' ? 'ذكور' : project.target_gender === 'female' ? 'إناث' : 'الكل'}
-                  </span>
+                <div className="relative h-full min-h-[240px] lg:min-h-[280px] flex flex-col justify-end p-4 lg:p-6">
+                  {!project.image_url && (
+                    <div className="text-4xl lg:text-5xl mb-3" style={{ color: project.color }}>
+                      {getIcon(project.icon)}
+                    </div>
+                  )}
+                  <h3 className={`text-base lg:text-lg font-bold mb-2 ${project.image_url ? 'text-white' : 'text-gray-900'}`}>{project.name}</h3>
+                  <p className={`text-sm line-clamp-2 ${project.image_url ? 'text-white/80' : 'text-gray-600'}`}>
+                    {project.description || 'لا يوجد وصف'}
+                  </p>
+                  <div className="mt-3 lg:mt-4 flex items-center gap-2">
+                    <span className={`px-2 lg:px-3 py-1 text-xs rounded-full ${
+                      project.target_gender === 'male' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : project.target_gender === 'female'
+                          ? 'bg-pink-100 text-pink-700'
+                          : 'bg-purple-100 text-purple-700'
+                    }`}>
+                      {project.target_gender === 'male' ? 'ذكور' : project.target_gender === 'female' ? 'إناث' : 'الكل'}
+                    </span>
+                  </div>
                 </div>
               </Link>
             ))}
