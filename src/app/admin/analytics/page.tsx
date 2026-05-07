@@ -1,4 +1,4 @@
-﻿'use client'
+﻿?'use client'
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -56,12 +56,12 @@ export default function AdminAnalyticsPage() {
   )
 
   const cards = [
-    { label: 'Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†', value: stats?.totalUsers, color: 'bg-blue-500' },
-    { label: 'Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ† Ù…ÙˆØ§ÙÙ‚ Ø¹Ù„ÙŠÙ‡Ù…', value: stats?.approvedUsers, color: 'bg-green-500' },
-    { label: 'Ø·Ù„Ø¨Ø§Øª Ù…Ø¹Ù„Ù‚Ø©', value: stats?.pendingUsers, color: 'bg-amber-500' },
-    { label: 'Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹', value: stats?.totalProjects, color: 'bg-blue-500' },
-    { label: 'Ø§Ù„ÙÙˆØ±Ù…Ø²', value: stats?.totalForms, color: 'bg-purple-500' },
-    { label: 'Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø±Ø¯ÙˆØ¯', value: stats?.totalResponses, color: 'bg-indigo-500' },
+    { label: 'إج�.ا�"�S ا�"�.ستخد�.�S�?', value: stats?.totalUsers, color: 'bg-blue-500' },
+    { label: '�.ستخد�.�S�? �.�^اف�, ع�"�S�?�.', value: stats?.approvedUsers, color: 'bg-green-500' },
+    { label: 'ط�"بات �.ع�"�,ة', value: stats?.pendingUsers, color: 'bg-amber-500' },
+    { label: 'ا�"�.شار�Sع', value: stats?.totalProjects, color: 'bg-blue-500' },
+    { label: 'ا�"ف�^ر�.ز', value: stats?.totalForms, color: 'bg-purple-500' },
+    { label: 'إج�.ا�"�S ا�"رد�^د', value: stats?.totalResponses, color: 'bg-indigo-500' },
   ]
 
   return (
@@ -72,9 +72,9 @@ export default function AdminAnalyticsPage() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            Ø±Ø¬ÙˆØ¹
+            رج�^ع
           </Link>
-          <h1 className="text-lg font-bold text-blue-700">Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª Ø§Ù„Ù…ØªÙ‚Ø¯Ù…Ø©</h1>
+          <h1 className="text-lg font-bold text-blue-700">ا�"إحصائ�Sات ا�"�.ت�,د�.ة</h1>
           <div className="w-16" />
         </div>
       </header>
@@ -101,3 +101,4 @@ export default function AdminAnalyticsPage() {
     </div>
   )
 }
+

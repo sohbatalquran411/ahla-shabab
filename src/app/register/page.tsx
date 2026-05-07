@@ -1,4 +1,4 @@
-﻿'use client'
+﻿?'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -28,19 +28,19 @@ export default function RegisterPage() {
 
   const validateStep1 = () => {
     if (!formData.name.trim()) {
-      setError('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„')
+      setError('�Sرج�? إدخا�" ا�"اس�. ا�"�fا�.�"')
       return false
     }
     if (!formData.email.trim() || !formData.email.includes('@')) {
-      setError('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø¨Ø±ÙŠØ¯ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ØµØ­ÙŠØ­')
+      setError('�Sرج�? إدخا�" بر�Sد إ�"�fتر�^�?�S صح�Sح')
       return false
     }
     if (!formData.phone.trim() || formData.phone.length < 10) {
-      setError('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø±Ù‚Ù… Ù‡Ø§ØªÙ ØµØ­ÙŠØ­')
+      setError('�Sرج�? إدخا�" ر�,�. �?اتف صح�Sح')
       return false
     }
     if (!formData.gender) {
-      setError('ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù†ÙˆØ¹')
+      setError('�Sرج�? اخت�Sار ا�"�?�^ع')
       return false
     }
     return true
@@ -48,11 +48,11 @@ export default function RegisterPage() {
 
   const validateStep2 = () => {
     if (formData.password.length < 6) {
-      setError('ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± ÙŠØ¬Ø¨ Ø£Ù† ØªÙƒÙˆÙ† 6 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„')
+      setError('�f�"�.ة ا�"�.ر�^ر �Sجب أ�? ت�f�^�? 6 أحرف ع�"�? ا�"أ�,�"')
       return false
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('ÙƒÙ„Ù…ØªØ§ Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± Ù…ØªØ·Ø§Ø¨Ù‚ØªÙŠÙ†')
+      setError('�f�"�.تا ا�"�.ر�^ر غ�Sر �.تطاب�,ت�S�?')
       return false
     }
     return true
@@ -81,7 +81,7 @@ export default function RegisterPage() {
       }).catch(() => ({ data: null }))
 
       if (existingAuth?.user) {
-        setError('Ù‡Ø°Ø§ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ Ù…Ø³Ø¬Ù„ Ù…Ø³Ø¨Ù‚Ø§Ù‹. Ø­Ø§ÙˆÙ„ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„.')
+        setError('�?ذا ا�"بر�Sد ا�"إ�"�fتر�^�?�S �.سج�" �.سب�,ا�<. حا�^�" تسج�S�" ا�"دخ�^�".')
         setLoading(false)
         return
       }
@@ -129,7 +129,7 @@ export default function RegisterPage() {
       }
     } catch (error: any) {
       console.error('Registration error:', error)
-      setError(error.message || 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„ØªØ³Ø¬ÙŠÙ„')
+      setError(error.message || 'حدث خطأ أث�?اء ا�"تسج�S�"')
     } finally {
       setLoading(false)
     }
@@ -148,8 +148,8 @@ export default function RegisterPage() {
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-l from-blue-600 to-blue-700 px-8 py-8 text-center">
-            <h1 className="text-2xl font-bold text-white mb-1">Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨ Ø¬Ø¯ÙŠØ¯</h1>
-            <p className="text-blue-100 text-sm">Ø§Ù†Ø¶Ù… Ø¥Ù„ÙŠÙ†Ø§ ÙÙŠ Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨</p>
+            <h1 className="text-2xl font-bold text-white mb-1">إ�?شاء حساب جد�Sد</h1>
+            <p className="text-blue-100 text-sm">ا�?ض�. إ�"�S�?ا ف�S أح�"�? شباب</p>
             
             {/* Progress Steps */}
             <div className="flex items-center justify-center gap-4 mt-4">
@@ -157,9 +157,9 @@ export default function RegisterPage() {
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
                   step >= 1 ? 'bg-white text-blue-700' : 'bg-blue-500 text-white'
                 }`}>
-                  {step > 1 ? 'âœ“' : '1'}
+                  {step > 1 ? '�o"' : '1'}
                 </div>
-                <span className="text-sm hidden sm:block">Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª</span>
+                <span className="text-sm hidden sm:block">ا�"�.ع�"�^�.ات</span>
               </div>
               <div className="w-12 h-0.5 bg-blue-300" />
               <div className={`flex items-center gap-2 ${step >= 2 ? 'text-white' : 'text-blue-300'}`}>
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                 }`}>
                   2
                 </div>
-                <span className="text-sm hidden sm:block">Ø§Ù„Ø£Ù…Ø§Ù†</span>
+                <span className="text-sm hidden sm:block">ا�"أ�.ا�?</span>
               </div>
             </div>
           </div>
@@ -185,20 +185,20 @@ export default function RegisterPage() {
             {step === 1 && (
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„ *</label>
+                  <label className="block text-sm font-medium text-gray-700">ا�"اس�. ا�"�fا�.�" *</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Ù…Ø­Ù…Ø¯ Ø£Ø­Ù…Ø¯"
+                    placeholder="�.ح�.د أح�.د"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ *</label>
+                  <label className="block text-sm font-medium text-gray-700">ا�"بر�Sد ا�"إ�"�fتر�^�?�S *</label>
                   <input
                     type="email"
                     name="email"
@@ -211,7 +211,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-smfont-medium text-gray-700">Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ *</label>
+                  <label className="block text-smfont-medium text-gray-700">ر�,�. ا�"�?اتف *</label>
                   <input
                     type="tel"
                     name="phone"
@@ -225,7 +225,7 @@ export default function RegisterPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ù†ÙˆØ¹ *</label>
+                    <label className="block text-sm font-medium text-gray-700">ا�"�?�^ع *</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -239,7 +239,7 @@ export default function RegisterPage() {
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        Ø°ÙƒØ±
+                        ذ�fر
                       </button>
                       <button
                         type="button"
@@ -253,13 +253,13 @@ export default function RegisterPage() {
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        Ø£Ù†Ø«Ù‰
+                        أ�?ث�?
                       </button>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Ù†ÙˆØ¹ Ø§Ù„Ø­Ø³Ø§Ø¨</label>
+                    <label className="block text-sm font-medium text-gray-700">�?�^ع ا�"حساب</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -270,7 +270,7 @@ export default function RegisterPage() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        Ù…ØªØ·ÙˆØ¹
+                        �.تط�^ع
                       </button>
                       <button
                         type="button"
@@ -281,7 +281,7 @@ export default function RegisterPage() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        Ù…Ø´Ø±Ù
+                        �.شرف
                       </button>
                     </div>
                   </div>
@@ -292,7 +292,7 @@ export default function RegisterPage() {
                     <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>Ù…Ù„Ø§Ø­Ø¸Ø©: Ø­Ø³Ø§Ø¨ Ø§Ù„Ù…Ø´Ø±Ù ÙŠØ­ØªØ§Ø¬ Ù…ÙˆØ§ÙÙ‚Ø© Ù…Ù† Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© Ù‚Ø¨Ù„ Ø§Ù„ØªÙØ¹ÙŠÙ„</span>
+                    <span>�.�"احظة: حساب ا�"�.شرف �Sحتاج �.�^اف�,ة �.�? ا�"إدارة �,ب�" ا�"تفع�S�"</span>
                   </div>
                 )}
 
@@ -301,7 +301,7 @@ export default function RegisterPage() {
                   onClick={handleNextStep}
                   className="w-full py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/30"
                 >
-                  Ø§Ù„ØªØ§Ù„ÙŠ: Ø¥Ø¹Ø¯Ø§Ø¯ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±
+                  ا�"تا�"�S: إعداد �f�"�.ة ا�"�.ر�^ر
                 </button>
               </div>
             )}
@@ -317,46 +317,46 @@ export default function RegisterPage() {
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª
+                  تعد�S�" ا�"�.ع�"�^�.ات
                 </button>
 
                 <div className="bg-gray-50 rounded-xl p-4 text-sm">
                   <p className="text-gray-600">
-                    <strong>Ø§Ù„Ø¨Ø±ÙŠØ¯:</strong> {formData.email}
+                    <strong>ا�"بر�Sد:</strong> {formData.email}
                   </p>
                   <p className="text-gray-600">
-                    <strong>Ø§Ù„Ø§Ø³Ù…:</strong> {formData.name}
+                    <strong>ا�"اس�.:</strong> {formData.name}
                   </p>
                   <p className="text-gray-600">
-                    <strong>Ø§Ù„Ù†ÙˆØ¹:</strong> {formData.gender === 'male' ? 'Ø°ÙƒØ±' : 'Ø£Ù†Ø«Ù‰'}
+                    <strong>ا�"�?�^ع:</strong> {formData.gender === 'male' ? 'ذ�fر' : 'أ�?ث�?'}
                   </p>
                   <p className="text-gray-600">
-                    <strong>Ø§Ù„Ø¯ÙˆØ±:</strong> {formData.role === 'volunteer' ? 'Ù…ØªØ·ÙˆØ¹' : 'Ù…Ø´Ø±Ù'}
+                    <strong>ا�"د�^ر:</strong> {formData.role === 'volunteer' ? '�.تط�^ع' : '�.شرف'}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± *</label>
+                  <label className="block text-sm font-medium text-gray-700">�f�"�.ة ا�"�.ر�^ر *</label>
                   <input
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="6 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„"
+                    placeholder="6 أحرف ع�"�? ا�"أ�,�""
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">ØªØ£ÙƒÙŠØ¯ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± *</label>
+                  <label className="block text-sm font-medium text-gray-700">تأ�f�Sد �f�"�.ة ا�"�.ر�^ر *</label>
                   <input
                     type="password"
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Ø£Ø¹Ø¯ Ø¥Ø¯Ø®Ø§Ù„ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±"
+                    placeholder="أعد إدخا�" �f�"�.ة ا�"�.ر�^ر"
                     required
                   />
                 </div>
@@ -373,10 +373,10 @@ export default function RegisterPage() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ³Ø¬ÙŠÙ„...
+                        جار�S ا�"تسج�S�"...
                       </span>
                     ) : (
-                      'Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø­Ø³Ø§Ø¨'
+                      'إ�?شاء ا�"حساب'
                     )}
                   </button>
                 </div>
@@ -385,9 +385,9 @@ export default function RegisterPage() {
 
             <div className="text-center pt-2 border-t">
               <p className="text-gray-600 text-sm">
-                Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ Ø¨Ø§Ù„ÙØ¹Ù„ØŸ{' '}
+                �"د�S�f حساب با�"فع�"�Y{' '}
                 <Link href="/login" className="text-blue-600 font-semibold hover:text-blue-700">
-                  Ø³Ø¬Ù„ Ø¯Ø®ÙˆÙ„Ùƒ
+                  سج�" دخ�^�"�f
                 </Link>
               </p>
             </div>
@@ -396,9 +396,9 @@ export default function RegisterPage() {
 
         {/* Footer */}
         <p className="text-center text-blue-100 text-xs mt-6">
-          Â© 2026 Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨. Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ‚ Ù…Ø­ÙÙˆØ¸Ø©
+          © 2026 أح�"�? شباب. ج�.�Sع ا�"ح�,�^�, �.حف�^ظة
         </p>
       </div>
     </div>
   )
-}
+}

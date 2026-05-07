@@ -1,4 +1,4 @@
-// User types
+﻿// User types
 export type UserRole = 'volunteer' | 'supervisor' | 'admin'
 export type Gender = 'male' | 'female'
 export type AccountStatus = 'pending' | 'approved' | 'rejected'
@@ -87,4 +87,4 @@ export interface DashboardStats {
   total_forms: number
   pending_approvals: number
   average_score: number
-}
+}

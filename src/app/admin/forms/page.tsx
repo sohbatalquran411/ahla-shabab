@@ -1,4 +1,4 @@
-﻿'use client'
+﻿?'use client'
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -52,9 +52,9 @@ export default function AdminFormsPage() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            Ø±Ø¬ÙˆØ¹
+            رج�^ع
           </Link>
-          <h1 className="text-lg font-bold text-blue-700">Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ÙÙˆØ±Ù…Ø²</h1>
+          <h1 className="text-lg font-bold text-blue-700">إدارة ا�"ف�^ر�.ز</h1>
           <div className="w-16" />
         </div>
       </header>
@@ -64,15 +64,15 @@ export default function AdminFormsPage() {
           <table className="w-full text-right">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">Ø§Ø³Ù… Ø§Ù„ÙÙˆØ±Ù…</th>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">Ø§Ù„Ù…Ø´Ø±ÙˆØ¹</th>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">اس�. ا�"ف�^ر�.</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">ا�"�.شر�^ع</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">تار�Sخ ا�"إ�?شاء</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {forms.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-gray-500">Ù„Ø§ ØªÙˆØ¬Ø¯ ÙÙˆØ±Ù…Ø² Ø¨Ø¹Ø¯</td>
+                  <td colSpan={3} className="px-6 py-12 text-center text-gray-500">�"ا ت�^جد ف�^ر�.ز بعد</td>
                 </tr>
               ) : forms.map(form => (
                 <tr key={form.id} className="hover:bg-gray-50 transition-colors">
@@ -90,3 +90,4 @@ export default function AdminFormsPage() {
     </div>
   )
 }
+

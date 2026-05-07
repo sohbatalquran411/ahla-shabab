@@ -1,4 +1,4 @@
-﻿'use client'
+﻿?'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -83,7 +83,7 @@ export default function AdminUsersPage() {
     setActionLoading(true)
     try {
       if (action === 'delete') {
-        const confirmed = confirm('Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ØŸ')
+        const confirmed = confirm('�?�" أ�?ت �.تأ�fد �.�? حذف �?ذا ا�"�.ستخد�.�Y')
         if (!confirmed) {
           setActionLoading(false)
           return
@@ -124,7 +124,7 @@ export default function AdminUsersPage() {
         
         if (resetError) throw resetError
         
-        alert('ØªÙ… Ø¥Ø¹Ø§Ø¯Ø© ØªØ¹ÙŠÙŠÙ† Ø§Ù„Ø¨Ø§Ø³ÙˆØ±Ø¯ Ø¨Ù†Ø¬Ø§Ø­. Ø§Ù„Ø¨Ø§Ø³ÙˆØ±Ø¯ Ø§Ù„Ø¬Ø¯ÙŠØ¯: 123456')
+        alert('ت�. إعادة تع�S�S�? ا�"باس�^رد ب�?جاح. ا�"باس�^رد ا�"جد�Sد: 123456')
         setActionLoading(false)
         return
       }
@@ -159,7 +159,7 @@ export default function AdminUsersPage() {
       setSelectedUser(null)
     } catch (error) {
       console.error('Error updating user:', error)
-      alert('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ ØªØ­Ø¯ÙŠØ« Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…')
+      alert('حدث خطأ أث�?اء تحد�Sث ا�"�.ستخد�.')
     } finally {
       setActionLoading(false)
     }
@@ -191,9 +191,9 @@ export default function AdminUsersPage() {
       rejected: 'bg-red-100 text-red-700'
     }
     const labels = {
-      pending: 'Ù…Ø¹Ù„Ù‚',
-      approved: 'Ù…ÙˆØ§ÙÙ‚ Ø¹Ù„ÙŠÙ‡',
-      rejected: 'Ù…Ø±ÙÙˆØ¶'
+      pending: '�.ع�"�,',
+      approved: '�.�^اف�, ع�"�S�?',
+      rejected: '�.رف�^ض'
     }
     return (
       <span className={`px-3 py-1 text-xs rounded-full font-medium ${badges[status]}`}>
@@ -209,9 +209,9 @@ export default function AdminUsersPage() {
       volunteer: 'bg-gray-100 text-gray-700'
     }
     const labels = {
-      admin: 'Ù…Ø¯ÙŠØ±',
-      supervisor: 'Ù…Ø´Ø±Ù',
-      volunteer: 'Ù…ØªØ·ÙˆØ¹'
+      admin: '�.د�Sر',
+      supervisor: '�.شرف',
+      volunteer: '�.تط�^ع'
     }
     return (
       <span className={`px-3 py-1 text-xs rounded-full font-medium ${badges[role]}`}>
@@ -225,7 +225,7 @@ export default function AdminUsersPage() {
       <span className={`px-2 py-1 text-xs rounded-full ${
         gender === 'male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
       }`}>
-        {gender === 'male' ? 'Ø°ÙƒØ±' : 'Ø£Ù†Ø«Ù‰'}
+        {gender === 'male' ? 'ذ�fر' : 'أ�?ث�?'}
       </span>
     )
   }
@@ -251,12 +251,12 @@ export default function AdminUsersPage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              Ø±Ø¬ÙˆØ¹
+              رج�^ع
             </Link>
-            <h1 className="text-lg font-bold text-blue-700">Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</h1>
+            <h1 className="text-lg font-bold text-blue-700">إدارة ا�"�.ستخد�.�S�?</h1>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">
-                {filteredUsers.length} Ù…Ø³ØªØ®Ø¯Ù…
+                {filteredUsers.length} �.ستخد�.
               </span>
             </div>
           </div>
@@ -267,23 +267,23 @@ export default function AdminUsersPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <p className="text-gray-500 text-sm">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</p>
+            <p className="text-gray-500 text-sm">إج�.ا�"�S ا�"�.ستخد�.�S�?</p>
             <p className="text-2xl font-bold text-gray-900">{users.length}</p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <p className="text-gray-500 text-sm">Ø·Ù„Ø¨Ø§Øª Ù…Ø¹Ù„Ù‚Ø©</p>
+            <p className="text-gray-500 text-sm">ط�"بات �.ع�"�,ة</p>
             <p className="text-2xl font-bold text-amber-600">
               {users.filter(u => u.status === 'pending').length}
             </p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <p className="text-gray-500 text-sm">Ø§Ù„Ù…Ø´Ø±ÙÙˆÙ†</p>
+            <p className="text-gray-500 text-sm">ا�"�.شرف�^�?</p>
             <p className="text-2xl font-bold text-blue-600">
               {users.filter(u => u.role === 'supervisor').length}
             </p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <p className="text-gray-500 text-sm">Ø§Ù„Ø§Ø¯Ø§Ø±Ø©</p>
+            <p className="text-gray-500 text-sm">ا�"ادارة</p>
             <p className="text-2xl font-bold text-purple-600">
               {users.filter(u => u.role === 'admin').length}
             </p>
@@ -297,7 +297,7 @@ export default function AdminUsersPage() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Ø¨Ø­Ø« Ø¨Ø§Ù„Ø§Ø³Ù… Ø£Ùˆ Ø§Ù„Ø¨Ø±ÙŠØ¯..."
+                placeholder="بحث با�"اس�. أ�^ ا�"بر�Sد..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -313,10 +313,10 @@ export default function AdminUsersPage() {
               onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
               className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">ÙƒÙ„ Ø§Ù„Ø­Ø§Ù„Ø§Øª</option>
-              <option value="pending">Ù…Ø¹Ù„Ù‚</option>
-              <option value="approved">Ù…ÙˆØ§ÙÙ‚ Ø¹Ù„ÙŠÙ‡</option>
-              <option value="rejected">Ù…Ø±ÙÙˆØ¶</option>
+              <option value="all">�f�" ا�"حا�"ات</option>
+              <option value="pending">�.ع�"�,</option>
+              <option value="approved">�.�^اف�, ع�"�S�?</option>
+              <option value="rejected">�.رف�^ض</option>
             </select>
 
             {/* Role Filter */}
@@ -325,10 +325,10 @@ export default function AdminUsersPage() {
               onChange={(e) => setFilterRole(e.target.value as FilterRole)}
               className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">ÙƒÙ„ Ø§Ù„Ø£Ø¯ÙˆØ§Ø±</option>
-              <option value="admin">Ù…Ø¯ÙŠØ±</option>
-              <option value="supervisor">Ù…Ø´Ø±Ù</option>
-              <option value="volunteer">Ù…ØªØ·ÙˆØ¹</option>
+              <option value="all">�f�" ا�"أد�^ار</option>
+              <option value="admin">�.د�Sر</option>
+              <option value="supervisor">�.شرف</option>
+              <option value="volunteer">�.تط�^ع</option>
             </select>
 
             {/* Gender Filter */}
@@ -337,9 +337,9 @@ export default function AdminUsersPage() {
               onChange={(e) => setFilterGender(e.target.value as FilterGender)}
               className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">ÙƒÙ„ Ø§Ù„Ø£Ù†ÙˆØ§Ø¹</option>
-              <option value="male">Ø°ÙƒÙˆØ±</option>
-              <option value="female">Ø¥Ù†Ø§Ø«</option>
+              <option value="all">�f�" ا�"أ�?�^اع</option>
+              <option value="male">ذ�f�^ر</option>
+              <option value="female">إ�?اث</option>
             </select>
           </div>
         </div>
@@ -350,12 +350,12 @@ export default function AdminUsersPage() {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ø§Ù„Ù†ÙˆØ¹</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ø§Ù„Ø¯ÙˆØ±</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ø§Ù„Ø­Ø§Ù„Ø©</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">ا�"�.ستخد�.</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">ا�"بر�Sد ا�"إ�"�fتر�^�?�S</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">ا�"�?�^ع</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">ا�"د�^ر</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">ا�"حا�"ة</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">ا�"إجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -387,14 +387,14 @@ export default function AdminUsersPage() {
                               disabled={actionLoading}
                               className="px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                             >
-                              Ù‚Ø¨ÙˆÙ„
+                              �,ب�^�"
                             </button>
                             <button
                               onClick={() => handleAction(user.id, 'reject')}
                               disabled={actionLoading}
                               className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
                             >
-                              Ø±ÙØ¶
+                              رفض
                             </button>
                           </>
                         )}
@@ -405,7 +405,7 @@ export default function AdminUsersPage() {
                           }}
                           className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors"
                         >
-                          Ø¥Ø¯Ø§Ø±Ø©
+                          إدارة
                         </button>
                       </div>
                     </td>
@@ -420,7 +420,7 @@ export default function AdminUsersPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                       </div>
-                      <p className="text-gray-500">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</p>
+                      <p className="text-gray-500">�"ا ت�^جد �.ستخد�.�S�?</p>
                     </td>
                   </tr>
                 )}
@@ -443,7 +443,7 @@ export default function AdminUsersPage() {
           />
           <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-bold text-gray-900 mb-4">
-              {editingUser ? 'ØªØ¹Ø¯ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…' : 'Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…'}
+              {editingUser ? 'تعد�S�" ب�Sا�?ات ا�"�.ستخد�.' : 'إدارة ا�"�.ستخد�.'}
             </h3>
             
             <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl">
@@ -460,7 +460,7 @@ export default function AdminUsersPage() {
             {editingUser ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ø§Ù„Ø§Ø³Ù…</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">ا�"اس�.</label>
                   <input
                     type="text"
                     value={editFormData.name}
@@ -469,7 +469,7 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">ر�,�. ا�"�?اتف</label>
                   <input
                     type="text"
                     value={editFormData.phone || ''}
@@ -479,15 +479,15 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ø§Ù„Ù†ÙˆØ¹</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">ا�"�?�^ع</label>
                   <select
                     value={editFormData.gender}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, gender: e.target.value as Gender }))}
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Ø§Ø®ØªØ±...</option>
-                    <option value="male">Ø°ÙƒØ±</option>
-                    <option value="female">Ø£Ù†Ø«Ù‰</option>
+                    <option value="">اختر...</option>
+                    <option value="male">ذ�fر</option>
+                    <option value="female">أ�?ث�?</option>
                   </select>
                 </div>
                 
@@ -503,13 +503,13 @@ export default function AdminUsersPage() {
                     disabled={actionLoading}
                     className="flex-1 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
                   >
-                    {actionLoading ? 'Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø­ÙØ¸...' : 'Ø­ÙØ¸ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„Ø§Øª'}
+                    {actionLoading ? 'جار�S ا�"حفظ...' : 'حفظ ا�"تعد�S�"ات'}
                   </button>
                   <button
                     onClick={() => setEditingUser(false)}
                     className="px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
                   >
-                    Ø¥Ù„ØºØ§Ø¡
+                    إ�"غاء
                   </button>
                 </div>
               </div>
@@ -531,7 +531,7 @@ export default function AdminUsersPage() {
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª
+                    تعد�S�" ا�"ب�Sا�?ات
                   </button>
 
                   {/* Reset Password */}
@@ -543,12 +543,12 @@ export default function AdminUsersPage() {
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                     </svg>
-                    Ø¥Ø¹Ø§Ø¯Ø© ØªØ¹ÙŠÙŠÙ† Ø§Ù„Ø¨Ø§Ø³ÙˆØ±Ø¯ (123456)
+                    إعادة تع�S�S�? ا�"باس�^رد (123456)
                   </button>
 
                   {/* Role Change */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">ØªØºÙŠÙŠØ± Ø§Ù„Ø¯ÙˆØ±</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">تغ�S�Sر ا�"د�^ر</label>
                     <div className="grid grid-cols-3 gap-2">
                       <button
                         onClick={() => handleAction(selectedUser.id, 'role', 'volunteer')}
@@ -559,7 +559,7 @@ export default function AdminUsersPage() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         } disabled:opacity-50`}
                       >
-                        Ù…ØªØ·ÙˆØ¹
+                        �.تط�^ع
                       </button>
                       <button
                         onClick={() => handleAction(selectedUser.id, 'role', 'supervisor')}
@@ -570,7 +570,7 @@ export default function AdminUsersPage() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         } disabled:opacity-50`}
                       >
-                        Ù…Ø´Ø±Ù
+                        �.شرف
                       </button>
                       <button
                         onClick={() => handleAction(selectedUser.id, 'role', 'admin')}
@@ -581,7 +581,7 @@ export default function AdminUsersPage() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         } disabled:opacity-50`}
                       >
-                        Ù…Ø¯ÙŠØ±
+                        �.د�Sر
                       </button>
                     </div>
                   </div>
@@ -589,7 +589,7 @@ export default function AdminUsersPage() {
                   {/* Status Change */}
                   {selectedUser.status !== 'pending' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">ØªØºÙŠÙŠØ± Ø§Ù„Ø­Ø§Ù„Ø©</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">تغ�S�Sر ا�"حا�"ة</label>
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           onClick={() => handleAction(selectedUser.id, 'approve')}
@@ -600,7 +600,7 @@ export default function AdminUsersPage() {
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                           } disabled:opacity-50`}
                         >
-                          ØªÙØ¹ÙŠÙ„
+                          تفع�S�"
                         </button>
                         <button
                           onClick={() => handleAction(selectedUser.id, 'reject')}
@@ -611,7 +611,7 @@ export default function AdminUsersPage() {
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                           } disabled:opacity-50`}
                         >
-                          ØªØ¹Ø·ÙŠÙ„
+                          تعط�S�"
                         </button>
                       </div>
                     </div>
@@ -622,12 +622,12 @@ export default function AdminUsersPage() {
                     onClick={() => handleAction(selectedUser.id, 'delete')}
                     disabled={actionLoading || selectedUser.id === currentUser?.id}
                     className="w-full py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                    title={selectedUser.id === currentUser?.id ? 'Ù„Ø§ ÙŠÙ…ÙƒÙ†Ùƒ Ø­Ø°Ù Ø­Ø³Ø§Ø¨Ùƒ Ø§Ù„Ø­Ø§Ù„ÙŠ' : 'Ø­Ø°Ù Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…'}
+                    title={selectedUser.id === currentUser?.id ? '�"ا �S�.�f�?�f حذف حساب�f ا�"حا�"�S' : 'حذف ا�"�.ستخد�.'}
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Ø­Ø°Ù Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…
+                    حذف ا�"�.ستخد�.
                   </button>
                 </div>
 
@@ -638,7 +638,7 @@ export default function AdminUsersPage() {
                   }}
                   className="w-full mt-6 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                 >
-                  Ø¥ØºÙ„Ø§Ù‚
+                  إغ�"ا�,
                 </button>
               </>
             )}
@@ -647,4 +647,4 @@ export default function AdminUsersPage() {
       )}
     </div>
   )
-}
+}

@@ -1,4 +1,4 @@
-﻿'use client'
+﻿?'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -7,14 +7,14 @@ import Link from 'next/link'
 import ImageUpload from '@/components/ImageUpload'
 
 const ICON_OPTIONS = [
-  { value: 'mosque', label: 'Ù…Ø³Ø¬Ø¯', icon: 'ðŸ•Œ' },
-  { value: 'sun', label: 'Ø´Ù…Ø³', icon: 'â˜€ï¸' },
-  { value: 'quran', label: 'Ù‚Ø±Ø¢Ù†', icon: 'ðŸ“–' },
-  { value: 'book', label: 'ÙƒØªØ§Ø¨', icon: 'ðŸ“š' },
-  { value: 'star', label: 'Ù†Ø¬Ù…Ø©', icon: 'â­' },
-  { value: 'heart', label: 'Ù‚Ù„Ø¨', icon: 'â¤ï¸' },
-  { value: 'hand', label: 'ÙŠØ¯', icon: 'ðŸ¤²' },
-  { value: 'moon', label: 'Ù‚Ù…Ø±', icon: 'ðŸŒ™' }
+  { value: 'mosque', label: '�.سجد', icon: '�Y.O' },
+  { value: 'sun', label: 'ش�.س', icon: '�~?️' },
+  { value: 'quran', label: '�,رآ�?', icon: '�Y"-' },
+  { value: 'book', label: '�fتاب', icon: '�Y"s' },
+  { value: 'star', label: '�?ج�.ة', icon: '⭐' },
+  { value: 'heart', label: '�,�"ب', icon: '❤️' },
+  { value: 'hand', label: '�Sد', icon: '�Y��' },
+  { value: 'moon', label: '�,�.ر', icon: '�YOT' }
 ]
 
 const COLOR_OPTIONS = [
@@ -47,7 +47,7 @@ export default function CreateProjectPage() {
     setError('')
 
     if (!formData.name.trim()) {
-      setError('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ø³Ù… Ø§Ù„Ù…Ø´Ø±ÙˆØ¹')
+      setError('�Sرج�? إدخا�" اس�. ا�"�.شر�^ع')
       return
     }
 
@@ -88,7 +88,7 @@ export default function CreateProjectPage() {
 
       router.push('/dashboard')
     } catch (err: any) {
-      setError(err.message || 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹')
+      setError(err.message || 'حدث خطأ أث�?اء إ�?شاء ا�"�.شر�^ع')
     } finally {
       setLoading(false)
     }
@@ -105,9 +105,9 @@ export default function CreateProjectPage() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            Ø±Ø¬ÙˆØ¹
+            رج�^ع
           </Link>
-          <h1 className="text-lg font-bold text-blue-700">Ø¥Ù†Ø´Ø§Ø¡ Ù…Ø´Ø±ÙˆØ¹ Ø¬Ø¯ÙŠØ¯</h1>
+          <h1 className="text-lg font-bold text-blue-700">إ�?شاء �.شر�^ع جد�Sد</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -129,37 +129,37 @@ export default function CreateProjectPage() {
 
             {/* Project Name */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Ø§Ø³Ù… Ø§Ù„Ù…Ø´Ø±ÙˆØ¹ *</label>
+              <label className="block text-sm font-medium text-gray-700">اس�. ا�"�.شر�^ع *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ù…Ø«Ø§Ù„: Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø§Ù„Ø¥ÙŠÙ…Ø§Ù†ÙŠØ©"
+                placeholder="�.ثا�": ا�"�.درسة ا�"إ�S�.ا�?�Sة"
                 required
               />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Ø§Ù„ÙˆØµÙ</label>
+              <label className="block text-sm font-medium text-gray-700">ا�"�^صف</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="ÙˆØµÙ Ù…Ø®ØªØµØ± Ù„Ù„Ù…Ø´Ø±ÙˆØ¹..."
+                placeholder="�^صف �.ختصر �"�"�.شر�^ع..."
               />
             </div>
 
             {/* Target Gender */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">Ø§Ù„ÙØ¦Ø© Ø§Ù„Ù…Ø³ØªÙ‡Ø¯ÙØ©</label>
+              <label className="block text-sm font-medium text-gray-700">ا�"فئة ا�"�.ست�?دفة</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: 'both', label: 'Ø§Ù„ÙƒÙ„', icon: 'ðŸ‘¥', color: 'purple' },
-                  { value: 'male', label: 'Ø°ÙƒÙˆØ± ÙÙ‚Ø·', icon: 'ðŸ‘¨', color: 'blue' },
-                  { value: 'female', label: 'Ø¥Ù†Ø§Ø« ÙÙ‚Ø·', icon: 'ðŸ‘©', color: 'pink' }
+                  { value: 'both', label: 'ا�"�f�"', icon: '�Y'�', color: 'purple' },
+                  { value: 'male', label: 'ذ�f�^ر ف�,ط', icon: '�Y'�', color: 'blue' },
+                  { value: 'female', label: 'إ�?اث ف�,ط', icon: '�Y'�', color: 'pink' }
                 ].map(option => (
                   <button
                     key={option.value}
@@ -182,7 +182,7 @@ export default function CreateProjectPage() {
 
             {/* Icon Selection */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ø£ÙŠÙ‚ÙˆÙ†Ø©</label>
+              <label className="block text-sm font-medium text-gray-700">ا�"أ�S�,�^�?ة</label>
               <div className="grid grid-cols-4 gap-3">
                 {ICON_OPTIONS.map(icon => (
                   <button
@@ -203,7 +203,7 @@ export default function CreateProjectPage() {
 
             {/* Color Selection */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ù„ÙˆÙ†</label>
+              <label className="block text-sm font-medium text-gray-700">ا�"�"�^�?</label>
               <div className="grid grid-cols-8 gap-3">
                 {COLOR_OPTIONS.map(color => (
                   <button
@@ -223,13 +223,13 @@ export default function CreateProjectPage() {
 
             {/* Preview */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">Ù…Ø¹Ø§ÙŠÙ†Ø©</label>
+              <label className="block text-sm font-medium text-gray-700">�.عا�S�?ة</label>
               <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
                 {formData.image_url ? (
                   <div className="w-full h-44 overflow-hidden">
                     <img 
                       src={formData.image_url} 
-                      alt="صورة المشروع" 
+                      alt="???? ???????" 
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />
@@ -239,15 +239,15 @@ export default function CreateProjectPage() {
                     className="w-full h-44 flex items-center justify-center text-5xl"
                     style={{ backgroundColor: `${formData.color}15` }}
                   >
-                    {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || 'ðŸ•Œ'}
+                    {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || '�Y.O'}
                   </div>
                 )}
                 <div className="p-5">
                   <h3 className="text-lg font-bold text-gray-900">
-                    {formData.name || 'Ø§Ø³Ù… Ø§Ù„Ù…Ø´Ø±ÙˆØ¹'}
+                    {formData.name || 'اس�. ا�"�.شر�^ع'}
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
-                    {formData.description || 'ÙˆØµÙ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹'}
+                    {formData.description || '�^صف ا�"�.شر�^ع'}
                   </p>
                 </div>
               </div>
@@ -266,14 +266,14 @@ export default function CreateProjectPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡...
+                    جار�S ا�"إ�?شاء...
                   </>
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹
+                    إ�?شاء ا�"�.شر�^ع
                   </>
                 )}
               </button>
@@ -281,7 +281,7 @@ export default function CreateProjectPage() {
                 href="/dashboard"
                 className="px-6 py-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
               >
-                Ø¥Ù„ØºØ§Ø¡
+                إ�"غاء
               </Link>
             </div>
           </form>
@@ -289,4 +289,4 @@ export default function CreateProjectPage() {
       </main>
     </div>
   )
-}
+}

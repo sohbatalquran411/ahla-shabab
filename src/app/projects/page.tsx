@@ -1,4 +1,4 @@
-﻿'use client'
+﻿?'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -89,7 +89,7 @@ export default function ProjectsPage() {
       setDeleteModal({ show: false, project: null })
     } catch (error) {
       console.error('Error deleting project:', error)
-      alert('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø­Ø°Ù Ø§Ù„Ù…Ø´Ø±ÙˆØ¹')
+      alert('حدث خطأ أث�?اء حذف ا�"�.شر�^ع')
     } finally {
       setDeleting(false)
     }
@@ -145,9 +145,9 @@ export default function ProjectsPage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              Ø±Ø¬ÙˆØ¹
+              رج�^ع
             </Link>
-            <h1 className="text-lg font-bold text-blue-700">Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹</h1>
+            <h1 className="text-lg font-bold text-blue-700">ا�"�.شار�Sع</h1>
             <div className="w-16" />
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function ProjectsPage() {
                       setDeleteModal({ show: true, project })
                     }}
                     className="absolute top-3 left-3 p-2 bg-white/90 backdrop-blur-sm text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shadow-sm"
-                    title="Ø­Ø°Ù Ø§Ù„Ù…Ø´Ø±ÙˆØ¹"
+                    title="حذف ا�"�.شر�^ع"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -201,7 +201,7 @@ export default function ProjectsPage() {
               <Link href={`/projects/${project.id}`} prefetch={true} className="block p-5">
                 <h3 className="text-lg font-bold text-gray-900 mb-1.5">{project.name}</h3>
                 <p className="text-sm text-gray-500 line-clamp-2 mb-4">
-                  {project.description || 'Ù„Ø§ ÙŠÙˆØ¬Ø¯ ÙˆØµÙ'}
+                  {project.description || '�"ا �S�^جد �^صف'}
                 </p>
                 
                 <div className="flex items-center justify-between">
@@ -212,12 +212,12 @@ export default function ProjectsPage() {
                         ? 'bg-pink-100 text-pink-700'
                         : 'bg-purple-100 text-purple-700'
                   }`}>
-                    {project.target_gender === 'male' ? 'Ø°ÙƒÙˆØ± ÙÙ‚Ø·' : 
-                     project.target_gender === 'female' ? 'Ø¥Ù†Ø§Ø« ÙÙ‚Ø·' : 'Ø§Ù„Ø¬Ù…ÙŠØ¹'}
+                    {project.target_gender === 'male' ? 'ذ�f�^ر ف�,ط' : 
+                     project.target_gender === 'female' ? 'إ�?اث ف�,ط' : 'ا�"ج�.�Sع'}
                   </span>
                   
                   <span className="text-blue-600 font-medium text-sm flex items-center gap-1">
-                    Ø¹Ø±Ø¶ Ø§Ù„ØªÙØ§ØµÙŠÙ„
+                    عرض ا�"تفاص�S�"
                     <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
@@ -234,7 +234,7 @@ export default function ProjectsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </div>
-              <p className="text-gray-500 text-lg">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø´Ø§Ø±ÙŠØ¹ Ø­Ø§Ù„ÙŠØ§Ù‹</p>
+              <p className="text-gray-500 text-lg">�"ا ت�^جد �.شار�Sع حا�"�Sا�<</p>
               {canManageProjects && (
                 <Link
                   href="/projects/create"
@@ -243,7 +243,7 @@ export default function ProjectsPage() {
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Ø¥Ù†Ø´Ø§Ø¡ Ù…Ø´Ø±ÙˆØ¹ Ø¬Ø¯ÙŠØ¯
+                  إ�?شاء �.شر�^ع جد�Sد
                 </Link>
               )}
             </div>
@@ -265,11 +265,11 @@ export default function ProjectsPage() {
               </svg>
             </div>
             
-            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">ØªØ£ÙƒÙŠØ¯ Ø§Ù„Ø­Ø°Ù</h3>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأ�f�Sد ا�"حذف</h3>
             <p className="text-gray-600 text-center mb-6">
-              Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø­Ø°Ù Ù…Ø´Ø±ÙˆØ¹ "<strong>{deleteModal.project.name}</strong>"ØŸ
+              �?�" أ�?ت �.تأ�fد �.�? حذف �.شر�^ع "<strong>{deleteModal.project.name}</strong>"�Y
               <br />
-              <span className="text-red-500 text-sm">Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡ Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø§Ù„ØªØ±Ø§Ø¬Ø¹ Ø¹Ù†Ù‡.</span>
+              <span className="text-red-500 text-sm">�?ذا ا�"إجراء �"ا �S�.�f�? ا�"تراجع ع�?�?.</span>
             </p>
 
             <div className="flex gap-3">
@@ -278,7 +278,7 @@ export default function ProjectsPage() {
                 disabled={deleting}
                 className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
-                Ø¥Ù„ØºØ§Ø¡
+                إ�"غاء
               </button>
               <button
                 onClick={handleDeleteProject}
@@ -288,14 +288,14 @@ export default function ProjectsPage() {
                 {deleting ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø­Ø°Ù...
+                    جار�S ا�"حذف...
                   </>
                 ) : (
                   <>
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Ø­Ø°Ù
+                    حذف
                   </>
                 )}
               </button>
@@ -305,4 +305,4 @@ export default function ProjectsPage() {
       )}
     </div>
   )
-}
+}

@@ -1,4 +1,4 @@
-﻿'use client'
+﻿?'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -47,14 +47,14 @@ export default function LoginPage() {
 
       if (profile?.status === 'pending') {
         await supabase.auth.signOut()
-        setError('Ø­Ø³Ø§Ø¨Ùƒ Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø©. Ø³ÙŠØªÙ… ØªÙØ¹ÙŠÙ„Ù‡ Ù…Ù† Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©.')
+        setError('حساب�f �,�Sد ا�"�.راجعة. س�Sت�. تفع�S�"�? �.�? ا�"إدارة.')
         setLoading(false)
         return
       }
 
       if (profile?.status === 'rejected') {
         await supabase.auth.signOut()
-        setError('ØªÙ… Ø±ÙØ¶ Ø­Ø³Ø§Ø¨Ùƒ. ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© Ù„Ù„Ù…Ø²ÙŠØ¯ Ù…Ù† Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª.')
+        setError('ت�. رفض حساب�f. ت�^اص�" �.ع ا�"إدارة �"�"�.ز�Sد �.�? ا�"�.ع�"�^�.ات.')
         setLoading(false)
         return
       }
@@ -71,7 +71,7 @@ export default function LoginPage() {
       router.push('/dashboard')
       router.refresh()
     } catch (error: any) {
-      setError(error.message || 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„')
+      setError(error.message || 'حدث خطأ أث�?اء تسج�S�" ا�"دخ�^�"')
     } finally {
       setLoading(false)
     }
@@ -94,7 +94,7 @@ export default function LoginPage() {
               <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30">
                 <img 
                   src={settings.app_logo} 
-                  alt="Ø´Ø¹Ø§Ø± Ø§Ù„ØªØ·Ø¨ÙŠÙ‚" 
+                  alt="شعار ا�"تطب�S�," 
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -106,7 +106,7 @@ export default function LoginPage() {
               </div>
             )}
             <h1 className="text-2xl font-bold text-white mb-2">{settings.app_name}</h1>
-            <p className="text-blue-100 text-sm">Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ Ù…Ø¬Ø¯Ø¯Ø§Ù‹</p>
+            <p className="text-blue-100 text-sm">�.رحبا�< ب�f �.جددا�<</p>
           </div>
 
           {/* Form */}
@@ -118,9 +118,9 @@ export default function LoginPage() {
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className="font-medium">ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­!</span>
+                  <span className="font-medium">ت�. إ�?شاء حساب�f ب�?جاح!</span>
                 </div>
-                <p className="mt-1">Ø­Ø³Ø§Ø¨Ùƒ ÙƒÙ…Ø´Ø±Ù Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø© Ù…Ù† Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©. Ø³ØªØªÙ…ÙƒÙ† Ù…Ù† ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ø¹Ø¯ Ø§Ù„Ù…ÙˆØ§ÙÙ‚Ø©.</p>
+                <p className="mt-1">حساب�f �f�.شرف �,�Sد ا�"�.راجعة �.�? ا�"إدارة. ستت�.�f�? �.�? تسج�S�" ا�"دخ�^�" بعد ا�"�.�^اف�,ة.</p>
               </div>
             )}
 
@@ -131,7 +131,7 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ</label>
+              <label className="block text-sm font-medium text-gray-700">ا�"بر�Sد ا�"إ�"�fتر�^�?�S</label>
               <div className="relative">
                 <input
                   type="email"
@@ -148,14 +148,14 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</label>
+              <label className="block text-sm font-medium text-gray-700">�f�"�.ة ا�"�.ر�^ر</label>
               <div className="relative">
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-right"
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="�?��?��?��?��?��?��?��?�"
                   required
                 />
                 <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,7 +173,7 @@ export default function LoginPage() {
                 className="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
               />
               <label htmlFor="remember-me" className="mr-2 text-sm text-gray-700">
-                ØªØ°ÙƒØ±Ù†ÙŠ
+                تذ�fر�?�S
               </label>
             </div>
 
@@ -188,18 +188,18 @@ export default function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...
+                  جار�S ا�"تح�.�S�"...
                 </span>
               ) : (
-                'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„'
+                'تسج�S�" ا�"دخ�^�"'
               )}
             </button>
 
             <div className="text-center">
               <p className="text-gray-600 text-sm">
-                Ù„ÙŠØ³ Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ØŸ{' '}
+                �"�Sس �"د�S�f حساب�Y{' '}
                 <Link href="/register" className="text-blue-600 font-semibold hover:text-blue-700">
-                  Ø³Ø¬Ù„ Ø§Ù„Ø¢Ù†
+                  سج�" ا�"آ�?
                 </Link>
               </p>
             </div>
@@ -208,9 +208,9 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-blue-100 text-xs mt-6">
-          Â© 2026 {settings.app_name}. Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ‚ Ù…Ø­ÙÙˆØ¸Ø©
+          © 2026 {settings.app_name}. ج�.�Sع ا�"ح�,�^�, �.حف�^ظة
         </p>
       </div>
     </div>
   )
-}
+}

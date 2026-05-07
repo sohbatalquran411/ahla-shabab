@@ -1,4 +1,4 @@
-﻿'use client'
+﻿?'use client'
 
 import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -10,46 +10,46 @@ import type { QuestionType, QuestionOption } from '@/types'
 // Question type definitions with detailed explanations
 const QUESTION_TYPES = {
   text: { 
-    label: 'Ù†Øµ', 
+    label: '�?ص', 
     icon: 'T', 
-    description: 'Ø¥Ø¬Ø§Ø¨Ø© Ù†ØµÙŠØ© Ù‚ØµÙŠØ±Ø©',
-    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØªØ·Ù„Ø¨ Ø¥Ø¬Ø§Ø¨Ø© Ù†ØµÙŠØ© Ù‚ØµÙŠØ±Ø© Ù…Ø«Ù„ Ø§Ù„Ø§Ø³Ù… Ø£Ùˆ ÙƒÙ„Ù…Ø© ÙˆØ§Ø­Ø¯Ø©. Ù…Ø«Ø§Ù„: "Ù…Ø§ Ø§Ø³Ù…ÙƒØŸ" Ø£Ùˆ "Ø§ÙƒØªØ¨ Ø¯Ø¹Ø§Ø¡ Ù‚ØµÙŠØ±"'
+    description: 'إجابة �?ص�Sة �,ص�Sرة',
+    explanation: 'سؤا�" �Sتط�"ب إجابة �?ص�Sة �,ص�Sرة �.ث�" ا�"اس�. أ�^ �f�"�.ة �^احدة. �.ثا�": "�.ا اس�.�f�Y" أ�^ "ا�fتب دعاء �,ص�Sر"'
   },
   textarea: { 
-    label: 'Ù†Øµ Ø·ÙˆÙŠÙ„', 
-    icon: 'Â¶', 
-    description: 'Ø¥Ø¬Ø§Ø¨Ø© Ù†ØµÙŠØ© Ù…ØªØ¹Ø¯Ø¯Ø© Ø§Ù„Ø£Ø³Ø·Ø±',
-    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØªØ·Ù„Ø¨ Ø¥Ø¬Ø§Ø¨Ø© Ù…ÙØµÙ„Ø© Ø£Ùˆ ÙÙ‚Ø±Ø© ÙƒØ§Ù…Ù„Ø©. Ù…Ø«Ø§Ù„: "Ø§ÙƒØªØ¨ Ø¹Ù† ØªØ¬Ø±Ø¨ØªÙƒ ÙÙŠ Ø§Ù„Ø­Ø¬" Ø£Ùˆ "ØµÙ Ø´Ø¹ÙˆØ±Ùƒ Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„ØµÙ„Ø§Ø©"'
+    label: '�?ص ط�^�S�"', 
+    icon: '¶', 
+    description: 'إجابة �?ص�Sة �.تعددة ا�"أسطر',
+    explanation: 'سؤا�" �Sتط�"ب إجابة �.فص�"ة أ�^ ف�,رة �fا�.�"ة. �.ثا�": "ا�fتب ع�? تجربت�f ف�S ا�"حج" أ�^ "صف شع�^ر�f أث�?اء ا�"ص�"اة"'
   },
   single_choice: { 
-    label: 'Ø§Ø®ØªÙŠØ§Ø± ÙˆØ§Ø­Ø¯', 
-    icon: 'â—‹', 
-    description: 'Ø§Ø®ØªÙŠØ§Ø± Ø¥Ø¬Ø§Ø¨Ø© ÙˆØ§Ø­Ø¯Ø©',
-    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØ­ØªÙˆÙŠ Ø¹Ù„Ù‰ Ø¹Ø¯Ø© Ø®ÙŠØ§Ø±Ø§Øª ÙˆÙŠÙ…ÙƒÙ† Ø§Ø®ØªÙŠØ§Ø± ÙˆØ§Ø­Ø¯ ÙÙ‚Ø·. Ù…Ø«Ø§Ù„: "ÙÙŠ Ø£ÙŠ ÙˆÙ‚Øª ØªØµÙ„ÙŠ Ø§Ù„ÙØ¬Ø±ØŸ" Ù…Ø¹ Ø®ÙŠØ§Ø±Ø§Øª: Ù‚Ø¨Ù„ Ø§Ù„Ø£Ø°Ø§Ù†ØŒ Ù…Ø¹ Ø§Ù„Ø£Ø°Ø§Ù†ØŒ Ø¨Ø¹Ø¯ Ø§Ù„Ø£Ø°Ø§Ù†'
+    label: 'اخت�Sار �^احد', 
+    icon: '�-<', 
+    description: 'اخت�Sار إجابة �^احدة',
+    explanation: 'سؤا�" �Sحت�^�S ع�"�? عدة خ�Sارات �^�S�.�f�? اخت�Sار �^احد ف�,ط. �.ثا�": "ف�S أ�S �^�,ت تص�"�S ا�"فجر�Y" �.ع خ�Sارات: �,ب�" ا�"أذا�?�O �.ع ا�"أذا�?�O بعد ا�"أذا�?'
   },
   multiple_choice: { 
-    label: 'Ø§Ø®ØªÙŠØ§Ø± Ù…ØªØ¹Ø¯Ø¯', 
-    icon: 'â˜‘', 
-    description: 'Ø§Ø®ØªÙŠØ§Ø± Ø¹Ø¯Ø© Ø¥Ø¬Ø§Ø¨Ø§Øª',
-    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØ­ØªÙˆÙŠ Ø¹Ù„Ù‰ Ø¹Ø¯Ø© Ø®ÙŠØ§Ø±Ø§Øª ÙˆÙŠÙ…ÙƒÙ† Ø§Ø®ØªÙŠØ§Ø± Ø£ÙƒØ«Ø± Ù…Ù† ÙˆØ§Ø­Ø¯. Ù…Ø«Ø§Ù„: "Ù…Ø§ Ø§Ù„Ø£Ø¹Ù…Ø§Ù„ Ø§Ù„ØµØ§Ù„Ø­Ø© Ø§Ù„ØªÙŠ ØªÙ‚ÙˆÙ… Ø¨Ù‡Ø§ØŸ" Ù…Ø¹ Ø®ÙŠØ§Ø±Ø§Øª: Ø§Ù„ØµÙ„Ø§Ø©ØŒ Ø§Ù„ØµÙŠØ§Ù…ØŒ Ø§Ù„ØµØ¯Ù‚Ø©ØŒ Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù‚Ø±Ø¢Ù†'
+    label: 'اخت�Sار �.تعدد', 
+    icon: '�~'', 
+    description: 'اخت�Sار عدة إجابات',
+    explanation: 'سؤا�" �Sحت�^�S ع�"�? عدة خ�Sارات �^�S�.�f�? اخت�Sار أ�fثر �.�? �^احد. �.ثا�": "�.ا ا�"أع�.ا�" ا�"صا�"حة ا�"ت�S ت�,�^�. ب�?ا�Y" �.ع خ�Sارات: ا�"ص�"اة�O ا�"ص�Sا�.�O ا�"صد�,ة�O �,راءة ا�"�,رآ�?'
   },
   scale: { 
-    label: 'ØªÙ‚ÙŠÙŠÙ…', 
-    icon: 'â˜…', 
-    description: 'ØªÙ‚ÙŠÙŠÙ… Ù…Ù† 1 Ø¥Ù„Ù‰ 5',
-    explanation: 'Ø³Ø¤Ø§Ù„ ØªÙ‚ÙŠÙŠÙ… Ø¨Ù…Ù‚ÙŠØ§Ø³ Ù…Ù† 1 Ø¥Ù„Ù‰ 5 Ù†Ø¬ÙˆÙ… Ø£Ùˆ Ù†Ù‚Ø§Ø·. Ù…Ø«Ø§Ù„: "Ù‚ÙŠÙ… Ù…Ø³ØªÙˆÙ‰ Ø§Ù†ØªØ¸Ø§Ù…Ùƒ ÙÙŠ Ø§Ù„ØµÙ„Ø§Ø©" Ù…Ù† 1 (Ø¶Ø¹ÙŠÙ) Ø¥Ù„Ù‰ 5 (Ù…Ù…ØªØ§Ø²)'
+    label: 'ت�,�S�S�.', 
+    icon: '�~.', 
+    description: 'ت�,�S�S�. �.�? 1 إ�"�? 5',
+    explanation: 'سؤا�" ت�,�S�S�. ب�.�,�Sاس �.�? 1 إ�"�? 5 �?ج�^�. أ�^ �?�,اط. �.ثا�": "�,�S�. �.ست�^�? ا�?تظا�.�f ف�S ا�"ص�"اة" �.�? 1 (ضع�Sف) إ�"�? 5 (�.�.تاز)'
   },
   ranking: { 
-    label: 'ØªØ±ØªÙŠØ¨', 
+    label: 'ترت�Sب', 
     icon: '#', 
-    description: 'ØªØ±ØªÙŠØ¨ Ø§Ù„Ø¹Ù†Ø§ØµØ±',
-    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØ·Ù„Ø¨ ØªØ±ØªÙŠØ¨ Ø¹Ø¯Ø© Ø¹Ù†Ø§ØµØ± Ø­Ø³Ø¨ Ø§Ù„Ø£ÙˆÙ„ÙˆÙŠØ© Ø£Ùˆ Ø§Ù„Ø£Ù‡Ù…ÙŠØ©. Ù…Ø«Ø§Ù„: "Ø±ØªØ¨ Ø§Ù„Ø¹Ø¨Ø§Ø¯Ø§Øª Ø§Ù„ØªØ§Ù„ÙŠØ© Ø­Ø³Ø¨ Ø£ÙˆÙ„ÙˆÙŠØªÙƒ: Ø§Ù„ØµÙ„Ø§Ø©ØŒ Ø§Ù„ØµÙŠØ§Ù…ØŒ Ø§Ù„Ø­Ø¬ØŒ Ø§Ù„Ø²ÙƒØ§Ø©ØŒ Ø§Ù„Ø´Ù‡Ø§Ø¯Ø©"'
+    description: 'ترت�Sب ا�"ع�?اصر',
+    explanation: 'سؤا�" �Sط�"ب ترت�Sب عدة ع�?اصر حسب ا�"أ�^�"�^�Sة أ�^ ا�"أ�?�.�Sة. �.ثا�": "رتب ا�"عبادات ا�"تا�"�Sة حسب أ�^�"�^�Sت�f: ا�"ص�"اة�O ا�"ص�Sا�.�O ا�"حج�O ا�"ز�fاة�O ا�"ش�?ادة"'
   },
   matrix: { 
-    label: 'Ù…ØµÙÙˆÙØ©', 
-    icon: 'â–¦', 
-    description: 'Ø£Ø³Ø¦Ù„Ø© Ù…ØªØ¹Ø¯Ø¯Ø© Ù…Ø¹ Ø®ÙŠØ§Ø±Ø§Øª Ù…Ø´ØªØ±ÙƒØ©',
-    explanation: 'Ø¹Ø¯Ø© Ø£Ø³Ø¦Ù„Ø© ÙØ±Ø¹ÙŠØ© ØªØ´ØªØ±Ùƒ ÙÙŠ Ù†ÙØ³ Ø®ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©. Ù…Ø«Ø§Ù„: ØªÙ‚ÙŠÙŠÙ… Ø§Ù„ØµÙ„ÙˆØ§Øª Ø§Ù„Ø®Ù…Ø³ (Ø§Ù„ÙØ¬Ø±ØŒ Ø§Ù„Ø¸Ù‡Ø±ØŒ Ø§Ù„Ø¹ØµØ±ØŒ Ø§Ù„Ù…ØºØ±Ø¨ØŒ Ø§Ù„Ø¹Ø´Ø§Ø¡) Ù…Ù† Ø­ÙŠØ«: Ø§Ù„Ø§Ù†ØªØ¸Ø§Ù…ØŒ Ø§Ù„Ø®Ø´ÙˆØ¹ØŒ Ø§Ù„ÙˆÙ‚Øª'
+    label: '�.صف�^فة', 
+    icon: '�-�', 
+    description: 'أسئ�"ة �.تعددة �.ع خ�Sارات �.شتر�fة',
+    explanation: 'عدة أسئ�"ة فرع�Sة تشتر�f ف�S �?فس خ�Sارات ا�"إجابة. �.ثا�": ت�,�S�S�. ا�"ص�"�^ات ا�"خ�.س (ا�"فجر�O ا�"ظ�?ر�O ا�"عصر�O ا�"�.غرب�O ا�"عشاء) �.�? ح�Sث: ا�"ا�?تظا�.�O ا�"خش�^ع�O ا�"�^�,ت'
   }
 } as const
 
@@ -301,12 +301,12 @@ function CreateFormContent() {
 
   const saveForm = async () => {
     if (!formData.name.trim()) {
-      alert('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ø³Ù… Ø§Ù„ÙÙˆØ±Ù…')
+      alert('�Sرج�? إدخا�" اس�. ا�"ف�^ر�.')
       return
     }
 
     if (formData.questions.length === 0) {
-      alert('ÙŠØ±Ø¬Ù‰ Ø¥Ø¶Ø§ÙØ© Ø³Ø¤Ø§Ù„ ÙˆØ§Ø­Ø¯ Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„')
+      alert('�Sرج�? إضافة سؤا�" �^احد ع�"�? ا�"أ�,�"')
       return
     }
 
@@ -353,7 +353,7 @@ function CreateFormContent() {
       router.push(`/projects/${projectId}`)
     } catch (error) {
       console.error('Error saving form:', error)
-      alert('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø­ÙØ¸ Ø§Ù„ÙÙˆØ±Ù…')
+      alert('حدث خطأ أث�?اء حفظ ا�"ف�^ر�.')
     } finally {
       setSaving(false)
     }
@@ -390,9 +390,9 @@ function CreateFormContent() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            Ø±Ø¬ÙˆØ¹
+            رج�^ع
           </Link>
-          <h1 className="text-lg font-bold text-blue-700">Ø¥Ù†Ø´Ø§Ø¡ ÙÙˆØ±Ù… Ø¬Ø¯ÙŠØ¯</h1>
+          <h1 className="text-lg font-bold text-blue-700">إ�?شاء ف�^ر�. جد�Sد</h1>
           <button
             onClick={saveForm}
             disabled={saving}
@@ -401,14 +401,14 @@ function CreateFormContent() {
             {saving ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø­ÙØ¸...
+                جار�S ا�"حفظ...
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Ø­ÙØ¸
+                حفظ
               </>
             )}
           </button>
@@ -418,7 +418,7 @@ function CreateFormContent() {
       <main className="max-w-4xl mx-auto px-4 py-6">
         {/* Form Basic Info */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„ÙÙˆØ±Ù…</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">�.ع�"�^�.ات ا�"ف�^ر�.</h2>
           
           <div className="space-y-4">
             {/* Image Upload */}
@@ -428,34 +428,34 @@ function CreateFormContent() {
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ø§Ø³Ù… Ø§Ù„ÙÙˆØ±Ù… *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">اس�. ا�"ف�^ر�. *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ù…Ø«Ø§Ù„: ØªÙ‚ÙŠÙŠÙ… Ø£Ø¯Ø§Ø¡ Ø§Ù„ØµÙ„Ø§Ø©"
+                placeholder="�.ثا�": ت�,�S�S�. أداء ا�"ص�"اة"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ø§Ù„ÙˆØµÙ</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">ا�"�^صف</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={2}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="ÙˆØµÙ Ù…Ø®ØªØµØ± Ù„Ù„ÙÙˆØ±Ù…..."
+                placeholder="�^صف �.ختصر �"�"ف�^ر�...."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ø§Ù„ÙØ¦Ø© Ø§Ù„Ù…Ø³ØªÙ‡Ø¯ÙØ©</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">ا�"فئة ا�"�.ست�?دفة</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: 'both', label: 'Ø§Ù„ÙƒÙ„', color: 'purple' },
-                  { value: 'male', label: 'Ø°ÙƒÙˆØ± ÙÙ‚Ø·', color: 'blue' },
-                  { value: 'female', label: 'Ø¥Ù†Ø§Ø« ÙÙ‚Ø·', color: 'pink' }
+                  { value: 'both', label: 'ا�"�f�"', color: 'purple' },
+                  { value: 'male', label: 'ذ�f�^ر ف�,ط', color: 'blue' },
+                  { value: 'female', label: 'إ�?اث ف�,ط', color: 'pink' }
                 ].map(option => (
                   <button
                     key={option.value}
@@ -484,15 +484,15 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                   className="w-5 h-5 mt-1 text-blue-600 rounded focus:ring-blue-500"
                 />
                 <div>
-                  <span className="font-medium text-gray-800 block">Ø§Ù„Ø³Ù…Ø§Ø­ Ø¨Ø§Ù„ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ù…ØªØ¹Ø¯Ø¯</span>
-                  <span className="text-sm text-gray-600">ØªÙØ¹ÙŠÙ„ Ù‡Ø°Ø§ Ø§Ù„Ø®ÙŠØ§Ø± ÙŠØ³Ù…Ø­ Ù„Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¨Ø¥Ø¹Ø§Ø¯Ø© Ù…Ù„Ø¡ Ø§Ù„ÙÙˆØ±Ù… Ø¹Ø¯Ø© Ù…Ø±Ø§Øª ÙŠÙˆÙ…ÙŠÙ‹Ø§</span>
+                  <span className="font-medium text-gray-800 block">ا�"س�.اح با�"تسج�S�" ا�"�.تعدد</span>
+                  <span className="text-sm text-gray-600">تفع�S�" �?ذا ا�"خ�Sار �Sس�.ح �"�"�.ستخد�. بإعادة �.�"ء ا�"ف�^ر�. عدة �.رات �S�^�.�S�<ا</span>
                 </div>
               </label>
             </div>
 
             <div className="bg-blue-50 rounded-xl p-4">
-              <p className="text-blue-800 font-medium mb-2">Ø§Ù„Ù…Ø´Ø±ÙˆØ¹: {projectName}</p>
-              <p className="text-blue-600 text-sm">Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø£Ø³Ø¦Ù„Ø© Ø³ØªÙØ¶Ø§Ù Ù„Ù‡Ø°Ø§ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹</p>
+              <p className="text-blue-800 font-medium mb-2">ا�"�.شر�^ع: {projectName}</p>
+              <p className="text-blue-600 text-sm">ج�.�Sع ا�"أسئ�"ة ستُضاف �"�?ذا ا�"�.شر�^ع</p>
             </div>
           </div>
         </div>
@@ -501,7 +501,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">
-              Ø§Ù„Ø£Ø³Ø¦Ù„Ø© ({formData.questions.length})
+              ا�"أسئ�"ة ({formData.questions.length})
             </h2>
             <div className="flex gap-2">
               <button
@@ -511,7 +511,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                Ø§Ø³ØªØ±Ø¯Ø§Ø¯ Ø³Ø¤Ø§Ù„
+                استرداد سؤا�"
               </button>
             </div>
           </div>
@@ -557,7 +557,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       type="text"
                       value={question.text}
                       onChange={(e) => updateQuestion(qIndex, { text: e.target.value })}
-                      placeholder="Ø§ÙƒØªØ¨ Ø§Ù„Ø³Ø¤Ø§Ù„ Ù‡Ù†Ø§..."
+                      placeholder="ا�fتب ا�"سؤا�" �?�?ا..."
                       className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
@@ -600,11 +600,11 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       onChange={(e) => updateQuestion(qIndex, { required: e.target.checked })}
                       className="w-4 h-4 text-blue-600 rounded"
                     />
-                    <span className="text-sm text-gray-700">Ù…Ø·Ù„ÙˆØ¨</span>
+                    <span className="text-sm text-gray-700">�.ط�"�^ب</span>
                   </label>
                   
                   <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-700">Ø§Ù„Ù†Ù‚Ø§Ø·:</label>
+                    <label className="text-sm text-gray-700">ا�"�?�,اط:</label>
                     <input
                       type="number"
                       min="0"
@@ -622,16 +622,16 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 {/* Options for choice questions */}
                 {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
                   <div className="mr-11 space-y-3">
-                    <p className="text-sm font-medium text-gray-700">Ø§Ù„Ø®ÙŠØ§Ø±Ø§Øª:</p>
+                    <p className="text-sm font-medium text-gray-700">ا�"خ�Sارات:</p>
                     {question.options.map((option, oIndex) => (
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
                         <div className="flex items-center gap-3">
-                          <span className="text-gray-400">{question.type === 'single_choice' ? 'â—‹' : 'â˜'}</span>
+                          <span className="text-gray-400">{question.type === 'single_choice' ? '�-<' : '�~�'}</span>
                           <input
                             type="text"
                             value={option.text}
                             onChange={(e) => updateOption(qIndex, oIndex, { text: e.target.value })}
-                            placeholder="Ù†Øµ Ø§Ù„Ø®ÙŠØ§Ø±..."
+                            placeholder="�?ص ا�"خ�Sار..."
                             className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500"
                           />
                           <input
@@ -639,9 +639,9 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             min="0"
                             value={option.points}
                             onChange={(e) => updateOption(qIndex, oIndex, { points: Number(e.target.value) })}
-                            placeholder="Ø§Ù„Ù†Ù‚Ø§Ø·"
+                            placeholder="ا�"�?�,اط"
                             className="w-20 px-2 py-2 border border-gray-200 rounded-lg text-center"
-                            title="Ø§Ù„Ù†Ù‚Ø§Ø·"
+                            title="ا�"�?�,اط"
                           />
                           <button
                             onClick={() => removeOption(qIndex, oIndex)}
@@ -662,20 +662,20 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            Ø¥Ø¶Ø§ÙØ© Ø®ÙŠØ§Ø±Ø§Øª ÙØ±Ø¹ÙŠØ©
+                            إضافة خ�Sارات فرع�Sة
                           </button>
                           
                           {option.sub_options && option.sub_options.length > 0 && (
                             <div className="bg-amber-50 rounded-lg p-2 space-y-2 border border-amber-200">
-                              <p className="text-xs text-amber-700 font-medium">Ø®ÙŠØ§Ø±Ø§Øª ÙØ±Ø¹ÙŠØ©:</p>
+                              <p className="text-xs text-amber-700 font-medium">خ�Sارات فرع�Sة:</p>
                               {option.sub_options.map((subOpt, sIndex) => (
                                 <div key={subOpt.id} className="flex items-center gap-2 bg-white rounded-lg p-2">
-                                  <span className="text-gray-400 text-sm">â†’</span>
+                                  <span className="text-gray-400 text-sm">�?'</span>
                                   <input
                                     type="text"
                                     value={subOpt.text}
                                     onChange={(e) => updateSubOption(qIndex, oIndex, sIndex, { text: e.target.value })}
-                                    placeholder="Ø®ÙŠØ§Ø± ÙØ±Ø¹ÙŠ..."
+                                    placeholder="خ�Sار فرع�S..."
                                     className="flex-1 px-2 py-1 border border-gray-200 rounded text-sm"
                                   />
                                   <input
@@ -684,7 +684,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                                     value={subOpt.points}
                                     onChange={(e) => updateSubOption(qIndex, oIndex, sIndex, { points: Number(e.target.value) })}
                                     className="w-16 px-1 py-1 border border-gray-200 rounded text-sm text-center"
-                                    title="Ø§Ù„Ù†Ù‚Ø§Ø·"
+                                    title="ا�"�?�,اط"
                                   />
                                   <button
                                     onClick={() => removeSubOption(qIndex, oIndex, sIndex)}
@@ -709,7 +709,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                       </svg>
-                      Ø¥Ø¶Ø§ÙØ© Ø®ÙŠØ§Ø±
+                      إضافة خ�Sار
                     </button>
                   </div>
                 )}
@@ -717,7 +717,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 {/* Scale Options */}
                 {question.type === 'scale' && (
                   <div className="mr-11 bg-blue-50 rounded-lg p-4">
-                    <p className="text-sm font-medium text-blue-700 mb-3">Ù…Ù‚ÙŠØ§Ø³ Ø§Ù„ØªÙ‚ÙŠÙŠÙ… (1-5)</p>
+                    <p className="text-sm font-medium text-blue-700 mb-3">�.�,�Sاس ا�"ت�,�S�S�. (1-5)</p>
                     <div className="flex justify-between items-center">
                       {question.options.map((opt) => (
                         <div key={opt.id} className="text-center">
@@ -748,8 +748,8 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-gray-500 mb-4">Ù„Ù… ØªØ¶Ù Ø£ÙŠ Ø£Ø³Ø¦Ù„Ø© Ø¨Ø¹Ø¯</p>
-                <p className="text-gray-400 text-sm">Ø§Ø®ØªØ± Ù†ÙˆØ¹ Ø§Ù„Ø³Ø¤Ø§Ù„ Ù…Ù† Ø§Ù„Ø£Ø¹Ù„Ù‰ Ù„Ù„Ø¨Ø¯Ø¡</p>
+                <p className="text-gray-500 mb-4">�"�. تضف أ�S أسئ�"ة بعد</p>
+                <p className="text-gray-400 text-sm">اختر �?�^ع ا�"سؤا�" �.�? ا�"أع�"�? �"�"بدء</p>
               </div>
             )}
           </div>
@@ -757,72 +757,72 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
 
         {/* Examples Section */}
         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
-          <h3 className="text-lg font-bold text-amber-800 mb-4">ðŸ’¡ Ø£Ù…Ø«Ù„Ø© Ø¹Ù…Ù„ÙŠØ© Ù„Ø£Ù†ÙˆØ§Ø¹ Ø§Ù„Ø£Ø³Ø¦Ù„Ø©</h3>
+          <h3 className="text-lg font-bold text-amber-800 mb-4">�Y'� أ�.ث�"ة ع�.�"�Sة �"أ�?�^اع ا�"أسئ�"ة</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Text Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">T</span>
-                <span className="font-medium text-gray-800">Ù†Øµ Ù‚ØµÙŠØ±</span>
+                <span className="font-medium text-gray-800">�?ص �,ص�Sر</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">Ù…Ø§ Ø§Ø³Ù… Ø§Ù„Ù…Ø³Ø¬Ø¯ Ø§Ù„Ø°ÙŠ ØªØµÙ„ÙŠ ÙÙŠÙ‡ØŸ</p>
+              <p className="text-sm text-gray-600 mb-2">�.ا اس�. ا�"�.سجد ا�"ذ�S تص�"�S ف�S�?�Y</p>
               <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
-                Ø¥Ø¬Ø§Ø¨Ø©: Ù…Ø³Ø¬Ø¯ Ø§Ù„Ù†ÙˆØ±
+                إجابة: �.سجد ا�"�?�^ر
               </div>
             </div>
 
             {/* Textarea Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">Â¶</span>
-                <span className="font-medium text-gray-800">Ù†Øµ Ø·ÙˆÙŠÙ„</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">¶</span>
+                <span className="font-medium text-gray-800">�?ص ط�^�S�"</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">Ø§ÙƒØªØ¨ Ø¹Ù† Ø´Ø¹ÙˆØ±Ùƒ Ø£Ø«Ù†Ø§Ø¡ Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù‚Ø±Ø¢Ù†</p>
+              <p className="text-sm text-gray-600 mb-2">ا�fتب ع�? شع�^ر�f أث�?اء �,راءة ا�"�,رآ�?</p>
               <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
-                Ø¥Ø¬Ø§Ø¨Ø©: Ø£Ø´Ø¹Ø± Ø¨Ø§Ù„Ø³ÙƒÙŠÙ†Ø© ÙˆØ§Ù„Ø·Ù…Ø£Ù†ÙŠÙ†Ø©...
+                إجابة: أشعر با�"س�f�S�?ة �^ا�"ط�.أ�?�S�?ة...
               </div>
             </div>
 
             {/* Single Choice Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">â—‹</span>
-                <span className="font-medium text-gray-800">Ø§Ø®ØªÙŠØ§Ø± ÙˆØ§Ø­Ø¯</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">�-<</span>
+                <span className="font-medium text-gray-800">اخت�Sار �^احد</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">ÙÙŠ Ø£ÙŠ ÙˆÙ‚Øª ØªØµÙ„ÙŠ Ø§Ù„ÙØ¬Ø±ØŸ</p>
+              <p className="text-sm text-gray-600 mb-2">ف�S أ�S �^�,ت تص�"�S ا�"فجر�Y</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>â—‹ Ù‚Ø¨Ù„ Ø§Ù„Ø£Ø°Ø§Ù† (5 Ù†Ù‚Ø§Ø·)</div>
-                <div>â— Ù…Ø¹ Ø§Ù„Ø£Ø°Ø§Ù† (4 Ù†Ù‚Ø§Ø·)</div>
-                <div>â—‹ Ø¨Ø¹Ø¯ Ø§Ù„Ø£Ø°Ø§Ù† Ø¨Ù€15 Ø¯Ù‚ÙŠÙ‚Ø© (3 Ù†Ù‚Ø§Ø·)</div>
+                <div>�-< �,ب�" ا�"أذا�? (5 �?�,اط)</div>
+                <div>�-� �.ع ا�"أذا�? (4 �?�,اط)</div>
+                <div>�-< بعد ا�"أذا�? ب�?15 د�,�S�,ة (3 �?�,اط)</div>
               </div>
             </div>
 
             {/* Multiple Choice Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">â˜‘</span>
-                <span className="font-medium text-gray-800">Ø§Ø®ØªÙŠØ§Ø± Ù…ØªØ¹Ø¯Ø¯</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">�~'</span>
+                <span className="font-medium text-gray-800">اخت�Sار �.تعدد</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">Ù…Ø§ Ø§Ù„Ø£Ø¹Ù…Ø§Ù„ Ø§Ù„ØµØ§Ù„Ø­Ø© Ø§Ù„ØªÙŠ ØªÙ‚ÙˆÙ… Ø¨Ù‡Ø§ØŸ</p>
+              <p className="text-sm text-gray-600 mb-2">�.ا ا�"أع�.ا�" ا�"صا�"حة ا�"ت�S ت�,�^�. ب�?ا�Y</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>â˜‘ Ø§Ù„ØµÙ„Ø§Ø© ÙÙŠ ÙˆÙ‚ØªÙ‡Ø§ (2 Ù†Ù‚Ø§Ø·)</div>
-                <div>â˜‘ Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù‚Ø±Ø¢Ù† (2 Ù†Ù‚Ø§Ø·)</div>
-                <div>â˜ Ø§Ù„ØµØ¯Ù‚Ø© (2 Ù†Ù‚Ø§Ø·)</div>
-                <div>â˜‘ Ø§Ù„Ø°ÙƒØ± (1 Ù†Ù‚Ø·Ø©)</div>
+                <div>�~' ا�"ص�"اة ف�S �^�,ت�?ا (2 �?�,اط)</div>
+                <div>�~' �,راءة ا�"�,رآ�? (2 �?�,اط)</div>
+                <div>�~� ا�"صد�,ة (2 �?�,اط)</div>
+                <div>�~' ا�"ذ�fر (1 �?�,طة)</div>
               </div>
             </div>
 
             {/* Scale Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">â˜…</span>
-                <span className="font-medium text-gray-800">ØªÙ‚ÙŠÙŠÙ…</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">�~.</span>
+                <span className="font-medium text-gray-800">ت�,�S�S�.</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">Ù‚ÙŠÙ… Ù…Ø³ØªÙˆÙ‰ Ø®Ø´ÙˆØ¹Ùƒ ÙÙŠ Ø§Ù„ØµÙ„Ø§Ø©</p>
+              <p className="text-sm text-gray-600 mb-2">�,�S�. �.ست�^�? خش�^ع�f ف�S ا�"ص�"اة</p>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>â˜…â˜†â˜†â˜†â˜† Ø¶Ø¹ÙŠÙ</span>
-                <span>â˜…â˜…â˜…â˜…â˜… Ù…Ù…ØªØ§Ø²</span>
+                <span>�~.�~?�~?�~?�~? ضع�Sف</span>
+                <span>�~.�~.�~.�~.�~. �.�.تاز</span>
               </div>
             </div>
 
@@ -830,22 +830,22 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">#</span>
-                <span className="font-medium text-gray-800">ØªØ±ØªÙŠØ¨</span>
+                <span className="font-medium text-gray-800">ترت�Sب</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">Ø±ØªØ¨ Ø§Ù„Ø¹Ø¨Ø§Ø¯Ø§Øª Ø­Ø³Ø¨ Ø£ÙˆÙ„ÙˆÙŠØªÙƒ</p>
+              <p className="text-sm text-gray-600 mb-2">رتب ا�"عبادات حسب أ�^�"�^�Sت�f</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>1. Ø§Ù„ØµÙ„Ø§Ø© (5 Ù†Ù‚Ø§Ø·)</div>
-                <div>2. Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù‚Ø±Ø¢Ù† (4 Ù†Ù‚Ø§Ø·)</div>
-                <div>3. Ø§Ù„Ø°ÙƒØ± (3 Ù†Ù‚Ø§Ø·)</div>
-                <div>4. Ø§Ù„ØµØ¯Ù‚Ø© (2 Ù†Ù‚Ø§Ø·)</div>
+                <div>1. ا�"ص�"اة (5 �?�,اط)</div>
+                <div>2. �,راءة ا�"�,رآ�? (4 �?�,اط)</div>
+                <div>3. ا�"ذ�fر (3 �?�,اط)</div>
+                <div>4. ا�"صد�,ة (2 �?�,اط)</div>
               </div>
             </div>
           </div>
 
           <div className="mt-4 p-3 bg-amber-100 rounded-lg">
             <p className="text-sm text-amber-800">
-              <strong>Ù†ØµÙŠØ­Ø©:</strong> Ø§Ø³ØªØ®Ø¯Ù… Ø£Ù†ÙˆØ§Ø¹ Ø§Ù„Ø£Ø³Ø¦Ù„Ø© Ø§Ù„Ù…Ø®ØªÙ„ÙØ© Ù„Ø¬Ø¹Ù„ Ø§Ù„Ù†Ù…ÙˆØ°Ø¬ Ø£ÙƒØ«Ø± ØªÙØ§Ø¹Ù„Ø§Ù‹ ÙˆØ´Ù…ÙˆÙ„ÙŠØ©. 
-              ÙŠÙ…ÙƒÙ†Ùƒ Ø¯Ù…Ø¬ Ø¹Ø¯Ø© Ø£Ù†ÙˆØ§Ø¹ ÙÙŠ Ù†Ù…ÙˆØ°Ø¬ ÙˆØ§Ø­Ø¯ Ù„ØªØºØ·ÙŠØ© Ø¬ÙˆØ§Ù†Ø¨ Ù…Ø®ØªÙ„ÙØ© Ù…Ù† Ø§Ù„Ù…ÙˆØ¶ÙˆØ¹.
+              <strong>�?ص�Sحة:</strong> استخد�. أ�?�^اع ا�"أسئ�"ة ا�"�.خت�"فة �"جع�" ا�"�?�.�^ذج أ�fثر تفاع�"ا�< �^ش�.�^�"�Sة. 
+              �S�.�f�?�f د�.ج عدة أ�?�^اع ف�S �?�.�^ذج �^احد �"تغط�Sة ج�^ا�?ب �.خت�"فة �.�? ا�"�.�^ض�^ع.
             </p>
           </div>
         </div>
@@ -857,7 +857,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowQuestionPicker(false)} />
           <div className="relative bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-xl">
             <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900">Ø§Ø³ØªØ±Ø¯Ø§Ø¯ Ø³Ø¤Ø§Ù„ Ù…Ù† ÙÙˆØ±Ù… Ø³Ø§Ø¨Ù‚Ø©</h3>
+              <h3 className="text-lg font-bold text-gray-900">استرداد سؤا�" �.�? ف�^ر�. ساب�,ة</h3>
               <button onClick={() => setShowQuestionPicker(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -868,7 +868,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
             <div className="p-4 overflow-y-auto max-h-[calc(80vh-60px)]">
               {existingForms.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">Ù„Ø§ ØªÙˆØ¬Ø¯ ÙÙˆØ±Ù…Ø² Ø³Ø§Ø¨Ù‚Ø© ÙÙŠ Ù‡Ø°Ø§ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹</p>
+                  <p className="text-gray-500">�"ا ت�^جد ف�^ر�.ز ساب�,ة ف�S �?ذا ا�"�.شر�^ع</p>
                 </div>
               ) : (
                 existingForms.map(form => (
@@ -903,4 +903,4 @@ export default function CreateFormPage() {
       <CreateFormContent />
     </Suspense>
   )
-}
+}
