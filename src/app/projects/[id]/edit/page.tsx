@@ -150,7 +150,7 @@ function EditProjectContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
       </div>
     )
   }
@@ -161,14 +161,14 @@ function EditProjectContent() {
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href={`/projects/${projectId}`}
-            className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             رجوع
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">تعديل المشروع</h1>
+          <h1 className="text-lg font-bold text-blue-700">تعديل المشروع</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -195,7 +195,7 @@ function EditProjectContent() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="مثال: المدرسة الإيمانية"
                 required
               />
@@ -208,7 +208,7 @@ function EditProjectContent() {
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="وصف مختصر للمشروع..."
               />
             </div>
@@ -252,7 +252,7 @@ function EditProjectContent() {
                     onClick={() => setFormData(prev => ({ ...prev, icon: icon.value }))}
                     className={`p-4 rounded-xl transition-all border-2 ${
                       formData.icon === icon.value
-                        ? 'border-teal-600 bg-teal-50'
+                        ? 'border-blue-600 bg-blue-50'
                         : 'border-gray-200 bg-gray-50 hover:border-gray-300'
                     }`}
                   >
@@ -285,32 +285,29 @@ function EditProjectContent() {
             {/* Preview */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">معاينة</label>
-              <div className="relative rounded-xl overflow-hidden min-h-[250px] bg-gray-50">
+              <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
                 {formData.image_url ? (
-                  <>
+                  <div className="w-full h-44 overflow-hidden">
                     <img 
                       src={formData.image_url} 
                       alt="صورة المشروع" 
-                      className="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
+                      className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
-                  </>
+                  </div>
                 ) : (
                   <div
-                    className="absolute inset-0 w-full h-full"
-                    style={{ backgroundColor: `${formData.color}20` }}
-                  />
+                    className="w-full h-44 flex items-center justify-center text-5xl"
+                    style={{ backgroundColor: `${formData.color}15` }}
+                  >
+                    {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || '🕌'}
+                  </div>
                 )}
-                <div className="relative h-full min-h-[250px] flex flex-col justify-end p-6">
-                  {!formData.image_url && (
-                    <div className="text-5xl mb-3" style={{ color: formData.color }}>
-                      {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || '🕌'}
-                    </div>
-                  )}
-                  <h3 className={`text-xl font-bold ${formData.image_url ? 'text-white' : 'text-gray-900'}`}>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-900">
                     {formData.name || 'اسم المشروع'}
                   </h3>
-                  <p className={`text-sm mt-1 ${formData.image_url ? 'text-white/80' : 'text-gray-500'}`}>
+                  <p className="text-sm text-gray-500 mt-1">
                     {formData.description || 'وصف المشروع'}
                   </p>
                 </div>
@@ -322,7 +319,7 @@ function EditProjectContent() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 py-4 bg-gradient-to-l from-teal-600 to-teal-700 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all disabled:opacity-50 shadow-lg shadow-teal-500/30 flex items-center justify-center gap-2"
+                className="flex-1 py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
               >
                 {saving ? (
                   <>
@@ -357,7 +354,7 @@ function EditProjectContent() {
 
 export default function EditProjectPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div></div>}>
       <EditProjectContent />
     </Suspense>
   )

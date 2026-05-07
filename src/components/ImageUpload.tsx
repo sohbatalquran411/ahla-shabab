@@ -19,27 +19,27 @@ export default function ImageUpload({ onImageUploaded, currentImage, className =
       setUploading(true)
 
       if (!event.target.files || event.target.files.length === 0) {
-        throw new Error('يجب اختيار صورة')
+        throw new Error('ÙŠØ¬Ø¨ Ø§Ø®ØªÙŠØ§Ø± ØµÙˆØ±Ø©')
       }
 
       const file = event.target.files[0]
       
-      // التحقق من نوع الملف
+      // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ù†ÙˆØ¹ Ø§Ù„Ù…Ù„Ù
       if (!file.type.startsWith('image/')) {
-        throw new Error('يجب اختيار ملف صورة')
+        throw new Error('ÙŠØ¬Ø¨ Ø§Ø®ØªÙŠØ§Ø± Ù…Ù„Ù ØµÙˆØ±Ø©')
       }
 
-      // التحقق من حجم الملف (أقل من 5 ميجا)
+      // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø­Ø¬Ù… Ø§Ù„Ù…Ù„Ù (Ø£Ù‚Ù„ Ù…Ù† 5 Ù…ÙŠØ¬Ø§)
       if (file.size > 5 * 1024 * 1024) {
-        throw new Error('حجم الصورة يجب أن يكون أقل من 5 ميجابايت')
+        throw new Error('Ø­Ø¬Ù… Ø§Ù„ØµÙˆØ±Ø© ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† Ø£Ù‚Ù„ Ù…Ù† 5 Ù…ÙŠØ¬Ø§Ø¨Ø§ÙŠØª')
       }
 
-      // إنشاء اسم فريد للملف
+      // Ø¥Ù†Ø´Ø§Ø¡ Ø§Ø³Ù… ÙØ±ÙŠØ¯ Ù„Ù„Ù…Ù„Ù
       const fileExt = file.name.split('.').pop()
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
       const filePath = `projects/${fileName}`
 
-      // رفع الصورة
+      // Ø±ÙØ¹ Ø§Ù„ØµÙˆØ±Ø©
       const { error: uploadError } = await supabase.storage
         .from('project-images')
         .upload(filePath, file)
@@ -48,7 +48,7 @@ export default function ImageUpload({ onImageUploaded, currentImage, className =
         throw uploadError
       }
 
-      // الحصول على رابط الصورة
+      // Ø§Ù„Ø­ØµÙˆÙ„ Ø¹Ù„Ù‰ Ø±Ø§Ø¨Ø· Ø§Ù„ØµÙˆØ±Ø©
       const { data } = supabase.storage
         .from('project-images')
         .getPublicUrl(filePath)
@@ -58,7 +58,7 @@ export default function ImageUpload({ onImageUploaded, currentImage, className =
       onImageUploaded(imageUrl)
 
     } catch (error: any) {
-      alert(error.message || 'حدث خطأ أثناء رفع الصورة')
+      alert(error.message || 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø±ÙØ¹ Ø§Ù„ØµÙˆØ±Ø©')
     } finally {
       setUploading(false)
     }
@@ -67,38 +67,38 @@ export default function ImageUpload({ onImageUploaded, currentImage, className =
   return (
     <div className={`space-y-4 ${className}`}>
       <label className="block text-sm font-medium text-gray-700">
-        صورة المشروع
+        ØµÙˆØ±Ø© Ø§Ù„Ù…Ø´Ø±ÙˆØ¹
       </label>
       
       <div className="flex items-center gap-4">
-        {/* معاينة الصورة */}
+        {/* Ù…Ø¹Ø§ÙŠÙ†Ø© Ø§Ù„ØµÙˆØ±Ø© */}
         {preview && (
           <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-200">
             <img 
               src={preview} 
-              alt="معاينة الصورة" 
+              alt="Ù…Ø¹Ø§ÙŠÙ†Ø© Ø§Ù„ØµÙˆØ±Ø©" 
               className="w-full h-full object-cover"
             />
           </div>
         )}
 
-        {/* زر رفع الصورة */}
+        {/* Ø²Ø± Ø±ÙØ¹ Ø§Ù„ØµÙˆØ±Ø© */}
         <label className="cursor-pointer">
-          <div className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors">
+          <div className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
             {uploading ? (
               <>
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                جاري الرفع...
+                Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø±ÙØ¹...
               </>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                {preview ? 'تغيير الصورة' : 'اختيار صورة'}
+                {preview ? 'ØªØºÙŠÙŠØ± Ø§Ù„ØµÙˆØ±Ø©' : 'Ø§Ø®ØªÙŠØ§Ø± ØµÙˆØ±Ø©'}
               </>
             )}
           </div>
@@ -113,7 +113,7 @@ export default function ImageUpload({ onImageUploaded, currentImage, className =
       </div>
 
       <p className="text-xs text-gray-500">
-        الحد الأقصى: 5 ميجابايت • الأنواع المدعومة: JPG, PNG, GIF
+        Ø§Ù„Ø­Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰: 5 Ù…ÙŠØ¬Ø§Ø¨Ø§ÙŠØª â€¢ Ø§Ù„Ø£Ù†ÙˆØ§Ø¹ Ø§Ù„Ù…Ø¯Ø¹ÙˆÙ…Ø©: JPG, PNG, GIF
       </p>
     </div>
   )

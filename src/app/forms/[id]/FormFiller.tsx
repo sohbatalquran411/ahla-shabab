@@ -234,7 +234,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
               <label
                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                   subSelected
-                    ? 'border-teal-500 bg-teal-50'
+                    ? 'border-blue-500 bg-blue-50'
                     : mainOptionSelected
                       ? 'border-amber-200 bg-amber-50 hover:border-amber-400'
                       : 'border-gray-200 bg-gray-50 opacity-50'
@@ -258,11 +258,11 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
                     }
                   }}
                   disabled={!mainOptionSelected && question.type === 'single_choice'}
-                  className={`w-4 h-4 ${question.type === 'multiple_choice' ? 'text-teal-600' : 'text-teal-600'}`}
+                  className={`w-4 h-4 ${question.type === 'multiple_choice' ? 'text-blue-600' : 'text-blue-600'}`}
                 />
                 <span className="flex-1 text-sm">{subOpt.text}</span>
                 {subOpt.points > 0 && (
-                  <span className="text-xs text-teal-600">({subOpt.points} نقطة)</span>
+                  <span className="text-xs text-blue-600">({subOpt.points} نقطة)</span>
                 )}
               </label>
             </div>
@@ -284,7 +284,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
             type="text"
             value={currentAnswer || ''}
             onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="اكتب إجابتك هنا..."
             onFocus={() => setCurrentQuestionIndex(index)}
           />
@@ -295,7 +295,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
           <textarea
             value={currentAnswer || ''}
             onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent min-h-[120px]"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[120px]"
             placeholder="اكتب إجابتك هنا..."
             onFocus={() => setCurrentQuestionIndex(index)}
           />
@@ -313,8 +313,8 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
                   <label
                     className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
                       isSelected
-                        ? 'border-teal-500 bg-teal-50'
-                        : 'border-gray-200 hover:border-teal-300'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-300'
                     }`}
                   >
                     <input
@@ -326,11 +326,11 @@ checked={isSelected}
                         setAnswers({ ...answers, [question.id]: optionId })
                         setCurrentQuestionIndex(index)
                       }}
-                      className="w-5 h-5 text-teal-600"
+                      className="w-5 h-5 text-blue-600"
                     />
                     <span className="flex-1 font-medium">{option.text}</span>
                     {option.points > 0 && (
-                      <span className="text-sm text-teal-600">({option.points} نقطة)</span>
+                      <span className="text-sm text-blue-600">({option.points} نقطة)</span>
                     )}
                   </label>
                   
@@ -355,8 +355,8 @@ checked={isSelected}
                   <label
                     className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
                       isSelected
-                        ? 'border-teal-500 bg-teal-50'
-                        : 'border-gray-200 hover:border-teal-300'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-300'
                     }`}
                   >
                     <input
@@ -373,11 +373,11 @@ checked={isSelected}
                         setAnswers({ ...answers, [question.id]: newAnswers })
                         setCurrentQuestionIndex(index)
                       }}
-                      className="w-5 h-5 text-teal-600 rounded"
+                      className="w-5 h-5 text-blue-600 rounded"
                     />
                     <span className="flex-1 font-medium">{option.text}</span>
                     {option.points > 0 && (
-                      <span className="text-sm text-teal-600">({option.points} نقطة)</span>
+                      <span className="text-sm text-blue-600">({option.points} نقطة)</span>
                     )}
                   </label>
                   
@@ -408,8 +408,8 @@ checked={isSelected}
                     }}
                     className={`w-12 h-12 rounded-xl font-bold transition-all ${
                       currentAnswer === points
-                        ? 'bg-teal-600 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-teal-100'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-blue-100'
                     }`}
                   >
                     {num}
@@ -431,7 +431,7 @@ checked={isSelected}
             <div className="bg-gray-50 rounded-xl p-4">
               {options.map((option: any, idx: number) => (
                 <div key={option.id || idx} className="flex items-center gap-3 p-2 bg-white rounded-lg mb-2">
-                  <span className="w-6 h-6 bg-teal-100 text-teal-700 rounded-full flex items-center justify-center text-xs">
+                  <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs">
                     {idx + 1}
                   </span>
                   <span className="flex-1">{option.text}</span>
@@ -456,7 +456,7 @@ checked={isSelected}
                         type="button"
                         className={`w-8 h-8 rounded text-sm ${
                           currentAnswer?.[option.id] === num
-                            ? 'bg-teal-600 text-white'
+                            ? 'bg-blue-600 text-white'
                             : 'bg-white text-gray-600 border'
                         }`}
                         onClick={() => {
@@ -503,7 +503,7 @@ checked={isSelected}
     else resultMessage = 'يحتاج تحسين'
 
     return (
-      <div dir="rtl" className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
+      <div dir="rtl" className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
           <div className="w-24 h-24 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
             <svg className="w-12 h-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -555,7 +555,7 @@ checked={isSelected}
                   setShowRetryConfirm(true)
                 }
               }}
-              className="flex-1 py-3 bg-teal-600 text-white rounded-xl font-medium hover:bg-teal-700 transition-colors"
+              className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
             >
               {form.allow_multiple ? 'تسجيل جديد' : 'إعادة المحاولة'}
             </button>
@@ -568,7 +568,7 @@ checked={isSelected}
   // Confirmation Modal for retry
   if (showRetryConfirm) {
     return (
-      <div dir="rtl" className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
+      <div dir="rtl" className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
           <div className="text-center mb-6">
             <div className="w-16 h-16 mx-auto mb-4 bg-amber-100 rounded-full flex items-center justify-center">
@@ -613,14 +613,14 @@ checked={isSelected}
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href={project ? `/projects/${project.id}` : '/dashboard'}
-            className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             رجوع
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">{form.name}</h1>
+          <h1 className="text-lg font-bold text-blue-700">{form.name}</h1>
           <span className="text-sm text-gray-500">
             {questions.length} سؤال
           </span>
@@ -629,7 +629,7 @@ checked={isSelected}
         {/* Progress Bar */}
         <div className="h-1 bg-gray-100">
           <div 
-            className="h-full bg-teal-500 transition-all"
+            className="h-full bg-blue-500 transition-all"
             style={{ 
               width: `${(Object.keys(answers).length / questions.length) * 100}%` 
             }}
@@ -668,7 +668,7 @@ checked={isSelected}
               className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
             >
               <div className="flex items-start gap-3 mb-4">
-                <span className="w-8 h-8 bg-teal-100 text-teal-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                <span className="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold text-sm">
                   {index + 1}
                 </span>
                 <div className="flex-1">
@@ -677,7 +677,7 @@ checked={isSelected}
                     {question.required && <span className="text-red-500 mr-1">*</span>}
                   </h3>
                   {question.points > 0 && (
-                    <p className="text-teal-600 text-sm mt-1">
+                    <p className="text-blue-600 text-sm mt-1">
                       {question.points} نقطة
                     </p>
                   )}
@@ -694,7 +694,7 @@ checked={isSelected}
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="w-full py-4 bg-gradient-to-l from-teal-600 to-teal-700 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/30"
+              className="w-full py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
             >
               {submitting ? (
                 <span className="flex items-center justify-center gap-2">

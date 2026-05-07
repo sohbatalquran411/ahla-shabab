@@ -93,7 +93,7 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
       </div>
     )
   }
@@ -104,17 +104,17 @@ export default function AdminDashboardPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رجوع للداشبورد
+            Ø±Ø¬ÙˆØ¹ Ù„Ù„Ø¯Ø§Ø´Ø¨ÙˆØ±Ø¯
           </Link>
-          <h1 className="text-xl font-bold text-teal-700">لوحة تحكم المدير</h1>
+          <h1 className="text-xl font-bold text-blue-700">Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„Ù…Ø¯ÙŠØ±</h1>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">مرحباً، {profile?.name}</span>
-            <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+            <span className="text-sm text-gray-600">Ù…Ø±Ø­Ø¨Ø§Ù‹ØŒ {profile?.name}</span>
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
               {profile?.name?.charAt(0)}
             </div>
           </div>
@@ -132,7 +132,7 @@ export default function AdminDashboardPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-gray-600 text-sm">إجمالي المستخدمين</p>
+                <p className="text-gray-600 text-sm">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.total_users}</p>
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function AdminDashboardPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-gray-600 text-sm">إجمالي المشاريع</p>
+                <p className="text-gray-600 text-sm">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.total_projects}</p>
               </div>
             </div>
@@ -159,7 +159,7 @@ export default function AdminDashboardPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-gray-600 text-sm">إجمالي الفورمز</p>
+                <p className="text-gray-600 text-sm">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„ÙÙˆØ±Ù…Ø²</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.total_forms}</p>
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function AdminDashboardPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-gray-600 text-sm">إجمالي الردود</p>
+                <p className="text-gray-600 text-sm">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø±Ø¯ÙˆØ¯</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.total_responses}</p>
               </div>
             </div>
@@ -186,7 +186,7 @@ export default function AdminDashboardPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-gray-600 text-sm">طلبات معلقة</p>
+                <p className="text-gray-600 text-sm">Ø·Ù„Ø¨Ø§Øª Ù…Ø¹Ù„Ù‚Ø©</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.pending_users}</p>
               </div>
             </div>
@@ -198,7 +198,7 @@ export default function AdminDashboardPage() {
           {/* User Management */}
           <Link
             href="/admin/users"
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group"
           >
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
@@ -206,18 +206,18 @@ export default function AdminDashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-teal-700">إدارة المستخدمين</h3>
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700">Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</h3>
             </div>
-            <p className="text-gray-600 mb-4">تعديل صلاحيات المستخدمين وإدارة الحسابات</p>
+            <p className="text-gray-600 mb-4">ØªØ¹Ø¯ÙŠÙ„ ØµÙ„Ø§Ø­ÙŠØ§Øª Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ† ÙˆØ¥Ø¯Ø§Ø±Ø© Ø§Ù„Ø­Ø³Ø§Ø¨Ø§Øª</p>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">المستخدمين النشطين</span>
+              <span className="text-sm text-gray-500">Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ† Ø§Ù„Ù†Ø´Ø·ÙŠÙ†</span>
               <span className="text-lg font-bold text-blue-600">{stats.total_users}</span>
             </div>
           </Link>
           {/* Project Management */}
           <Link
             href="/admin/projects"
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group"
           >
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
@@ -225,11 +225,11 @@ export default function AdminDashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-teal-700">إدارة المشاريع</h3>
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700">Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹</h3>
             </div>
-            <p className="text-gray-600 mb-4">إنشاء وتعديل وحذف المشاريع</p>
+            <p className="text-gray-600 mb-4">Ø¥Ù†Ø´Ø§Ø¡ ÙˆØªØ¹Ø¯ÙŠÙ„ ÙˆØ­Ø°Ù Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹</p>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">المشاريع النشطة</span>
+              <span className="text-sm text-gray-500">Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹ Ø§Ù„Ù†Ø´Ø·Ø©</span>
               <span className="text-lg font-bold text-green-600">{stats.total_projects}</span>
             </div>
           </Link>
@@ -237,7 +237,7 @@ export default function AdminDashboardPage() {
           {/* Forms Management */}
           <Link
             href="/admin/forms"
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group"
           >
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
@@ -245,18 +245,18 @@ export default function AdminDashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-teal-700">إدارة الفورمز</h3>
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700">Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ÙÙˆØ±Ù…Ø²</h3>
             </div>
-            <p className="text-gray-600 mb-4">إنشاء وتعديل وحذف الفورمز</p>
+            <p className="text-gray-600 mb-4">Ø¥Ù†Ø´Ø§Ø¡ ÙˆØªØ¹Ø¯ÙŠÙ„ ÙˆØ­Ø°Ù Ø§Ù„ÙÙˆØ±Ù…Ø²</p>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">الفورمز النشطة</span>
+              <span className="text-sm text-gray-500">Ø§Ù„ÙÙˆØ±Ù…Ø² Ø§Ù„Ù†Ø´Ø·Ø©</span>
               <span className="text-lg font-bold text-purple-600">{stats.total_forms}</span>
             </div>
           </Link>
           {/* Results Management */}
           <Link
             href="/admin/results"
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group"
           >
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
@@ -264,11 +264,11 @@ export default function AdminDashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-teal-700">النتائج والتقارير</h3>
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700">Ø§Ù„Ù†ØªØ§Ø¦Ø¬ ÙˆØ§Ù„ØªÙ‚Ø§Ø±ÙŠØ±</h3>
             </div>
-            <p className="text-gray-600 mb-4">عرض نتائج الفورمز والإحصائيات</p>
+            <p className="text-gray-600 mb-4">Ø¹Ø±Ø¶ Ù†ØªØ§Ø¦Ø¬ Ø§Ù„ÙÙˆØ±Ù…Ø² ÙˆØ§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª</p>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">إجمالي الردود</span>
+              <span className="text-sm text-gray-500">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø±Ø¯ÙˆØ¯</span>
               <span className="text-lg font-bold text-indigo-600">{stats.total_responses}</span>
             </div>
           </Link>
@@ -276,7 +276,7 @@ export default function AdminDashboardPage() {
           {/* Statistics */}
           <Link
             href="/admin/analytics"
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group"
           >
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
@@ -284,18 +284,18 @@ export default function AdminDashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-teal-700">الإحصائيات المتقدمة</h3>
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700">Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª Ø§Ù„Ù…ØªÙ‚Ø¯Ù…Ø©</h3>
             </div>
-            <p className="text-gray-600 mb-4">تحليلات مفصلة وتقارير شاملة</p>
+            <p className="text-gray-600 mb-4">ØªØ­Ù„ÙŠÙ„Ø§Øª Ù…ÙØµÙ„Ø© ÙˆØªÙ‚Ø§Ø±ÙŠØ± Ø´Ø§Ù…Ù„Ø©</p>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">التقارير المتاحة</span>
+              <span className="text-sm text-gray-500">Ø§Ù„ØªÙ‚Ø§Ø±ÙŠØ± Ø§Ù„Ù…ØªØ§Ø­Ø©</span>
               <span className="text-lg font-bold text-orange-600">5</span>
             </div>
           </Link>
           {/* App Settings */}
           <Link
             href="/admin/settings"
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group"
+            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group"
           >
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-gray-500 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
@@ -304,12 +304,12 @@ export default function AdminDashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-teal-700">إعدادات التطبيق</h3>
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700">Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</h3>
             </div>
-            <p className="text-gray-600 mb-4">تخصيص اللوجو والإعدادات العامة</p>
+            <p className="text-gray-600 mb-4">ØªØ®ØµÙŠØµ Ø§Ù„Ù„ÙˆØ¬Ùˆ ÙˆØ§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø¹Ø§Ù…Ø©</p>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">الإعدادات</span>
-              <span className="text-lg font-bold text-gray-600">⚙️</span>
+              <span className="text-sm text-gray-500">Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª</span>
+              <span className="text-lg font-bold text-gray-600">âš™ï¸</span>
             </div>
           </Link>
         </div>

@@ -28,19 +28,19 @@ export default function RegisterPage() {
 
   const validateStep1 = () => {
     if (!formData.name.trim()) {
-      setError('يرجى إدخال الاسم الكامل')
+      setError('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„')
       return false
     }
     if (!formData.email.trim() || !formData.email.includes('@')) {
-      setError('يرجى إدخال بريد إلكتروني صحيح')
+      setError('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø¨Ø±ÙŠØ¯ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ØµØ­ÙŠØ­')
       return false
     }
     if (!formData.phone.trim() || formData.phone.length < 10) {
-      setError('يرجى إدخال رقم هاتف صحيح')
+      setError('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø±Ù‚Ù… Ù‡Ø§ØªÙ ØµØ­ÙŠØ­')
       return false
     }
     if (!formData.gender) {
-      setError('يرجى اختيار النوع')
+      setError('ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù†ÙˆØ¹')
       return false
     }
     return true
@@ -48,11 +48,11 @@ export default function RegisterPage() {
 
   const validateStep2 = () => {
     if (formData.password.length < 6) {
-      setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل')
+      setError('ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± ÙŠØ¬Ø¨ Ø£Ù† ØªÙƒÙˆÙ† 6 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„')
       return false
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('كلمتا المرور غير متطابقتين')
+      setError('ÙƒÙ„Ù…ØªØ§ Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± Ù…ØªØ·Ø§Ø¨Ù‚ØªÙŠÙ†')
       return false
     }
     return true
@@ -81,7 +81,7 @@ export default function RegisterPage() {
       }).catch(() => ({ data: null }))
 
       if (existingAuth?.user) {
-        setError('هذا البريد الإلكتروني مسجل مسبقاً. حاول تسجيل الدخول.')
+        setError('Ù‡Ø°Ø§ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ Ù…Ø³Ø¬Ù„ Ù…Ø³Ø¨Ù‚Ø§Ù‹. Ø­Ø§ÙˆÙ„ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„.')
         setLoading(false)
         return
       }
@@ -129,46 +129,46 @@ export default function RegisterPage() {
       }
     } catch (error: any) {
       console.error('Registration error:', error)
-      setError(error.message || 'حدث خطأ أثناء التسجيل')
+      setError(error.message || 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„ØªØ³Ø¬ÙŠÙ„')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
+    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
       {/* Decorative Pattern */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-teal-400/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl" />
       </div>
 
       {/* Register Card */}
       <div className="relative w-full max-w-lg">
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-l from-teal-600 to-teal-700 px-8 py-8 text-center">
-            <h1 className="text-2xl font-bold text-white mb-1">إنشاء حساب جديد</h1>
-            <p className="text-teal-100 text-sm">انضم إلينا في أوراد أحلى شباب</p>
+          <div className="bg-gradient-to-l from-blue-600 to-blue-700 px-8 py-8 text-center">
+            <h1 className="text-2xl font-bold text-white mb-1">Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨ Ø¬Ø¯ÙŠØ¯</h1>
+            <p className="text-blue-100 text-sm">Ø§Ù†Ø¶Ù… Ø¥Ù„ÙŠÙ†Ø§ ÙÙŠ Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨</p>
             
             {/* Progress Steps */}
             <div className="flex items-center justify-center gap-4 mt-4">
-              <div className={`flex items-center gap-2 ${step >= 1 ? 'text-white' : 'text-teal-300'}`}>
+              <div className={`flex items-center gap-2 ${step >= 1 ? 'text-white' : 'text-blue-300'}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  step >= 1 ? 'bg-white text-teal-700' : 'bg-teal-500 text-white'
+                  step >= 1 ? 'bg-white text-blue-700' : 'bg-blue-500 text-white'
                 }`}>
-                  {step > 1 ? '✓' : '1'}
+                  {step > 1 ? 'âœ“' : '1'}
                 </div>
-                <span className="text-sm hidden sm:block">المعلومات</span>
+                <span className="text-sm hidden sm:block">Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª</span>
               </div>
-              <div className="w-12 h-0.5 bg-teal-300" />
-              <div className={`flex items-center gap-2 ${step >= 2 ? 'text-white' : 'text-teal-300'}`}>
+              <div className="w-12 h-0.5 bg-blue-300" />
+              <div className={`flex items-center gap-2 ${step >= 2 ? 'text-white' : 'text-blue-300'}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  step >= 2 ? 'bg-white text-teal-700' : 'bg-teal-500 text-white'
+                  step >= 2 ? 'bg-white text-blue-700' : 'bg-blue-500 text-white'
                 }`}>
                   2
                 </div>
-                <span className="text-sm hidden sm:block">الأمان</span>
+                <span className="text-sm hidden sm:block">Ø§Ù„Ø£Ù…Ø§Ù†</span>
               </div>
             </div>
           </div>
@@ -185,39 +185,39 @@ export default function RegisterPage() {
             {step === 1 && (
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">الاسم الكامل *</label>
+                  <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„ *</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                    placeholder="محمد أحمد"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Ù…Ø­Ù…Ø¯ Ø£Ø­Ù…Ø¯"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">البريد الإلكتروني *</label>
+                  <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ *</label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="example@email.com"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-smfont-medium text-gray-700">رقم الهاتف *</label>
+                  <label className="block text-smfont-medium text-gray-700">Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ *</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="01xxxxxxxxx"
                     required
                   />
@@ -225,7 +225,7 @@ export default function RegisterPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">النوع *</label>
+                    <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ù†ÙˆØ¹ *</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -239,7 +239,7 @@ export default function RegisterPage() {
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        ذكر
+                        Ø°ÙƒØ±
                       </button>
                       <button
                         type="button"
@@ -253,24 +253,24 @@ export default function RegisterPage() {
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        أنثى
+                        Ø£Ù†Ø«Ù‰
                       </button>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">نوع الحساب</label>
+                    <label className="block text-sm font-medium text-gray-700">Ù†ÙˆØ¹ Ø§Ù„Ø­Ø³Ø§Ø¨</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => setFormData(prev => ({ ...prev, role: 'volunteer' }))}
                         className={`py-3 rounded-xl font-medium transition-all ${
                           formData.role === 'volunteer'
-                            ? 'bg-teal-600 text-white'
+                            ? 'bg-blue-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        متطوع
+                        Ù…ØªØ·ÙˆØ¹
                       </button>
                       <button
                         type="button"
@@ -281,7 +281,7 @@ export default function RegisterPage() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        مشرف
+                        Ù…Ø´Ø±Ù
                       </button>
                     </div>
                   </div>
@@ -292,16 +292,16 @@ export default function RegisterPage() {
                     <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>ملاحظة: حساب المشرف يحتاج موافقة من الإدارة قبل التفعيل</span>
+                    <span>Ù…Ù„Ø§Ø­Ø¸Ø©: Ø­Ø³Ø§Ø¨ Ø§Ù„Ù…Ø´Ø±Ù ÙŠØ­ØªØ§Ø¬ Ù…ÙˆØ§ÙÙ‚Ø© Ù…Ù† Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© Ù‚Ø¨Ù„ Ø§Ù„ØªÙØ¹ÙŠÙ„</span>
                   </div>
                 )}
 
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="w-full py-4 bg-gradient-to-l from-teal-600 to-teal-700 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all shadow-lg shadow-teal-500/30"
+                  className="w-full py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/30"
                 >
-                  التالي: إعداد كلمة المرور
+                  Ø§Ù„ØªØ§Ù„ÙŠ: Ø¥Ø¹Ø¯Ø§Ø¯ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±
                 </button>
               </div>
             )}
@@ -312,51 +312,51 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex items-center gap-2 text-teal-600 hover:text-teal-700 text-sm"
+                  className="flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  تعديل المعلومات
+                  ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª
                 </button>
 
                 <div className="bg-gray-50 rounded-xl p-4 text-sm">
                   <p className="text-gray-600">
-                    <strong>البريد:</strong> {formData.email}
+                    <strong>Ø§Ù„Ø¨Ø±ÙŠØ¯:</strong> {formData.email}
                   </p>
                   <p className="text-gray-600">
-                    <strong>الاسم:</strong> {formData.name}
+                    <strong>Ø§Ù„Ø§Ø³Ù…:</strong> {formData.name}
                   </p>
                   <p className="text-gray-600">
-                    <strong>النوع:</strong> {formData.gender === 'male' ? 'ذكر' : 'أنثى'}
+                    <strong>Ø§Ù„Ù†ÙˆØ¹:</strong> {formData.gender === 'male' ? 'Ø°ÙƒØ±' : 'Ø£Ù†Ø«Ù‰'}
                   </p>
                   <p className="text-gray-600">
-                    <strong>الدور:</strong> {formData.role === 'volunteer' ? 'متطوع' : 'مشرف'}
+                    <strong>Ø§Ù„Ø¯ÙˆØ±:</strong> {formData.role === 'volunteer' ? 'Ù…ØªØ·ÙˆØ¹' : 'Ù…Ø´Ø±Ù'}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">كلمة المرور *</label>
+                  <label className="block text-sm font-medium text-gray-700">ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± *</label>
                   <input
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                    placeholder="6 أحرف على الأقل"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="6 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">تأكيد كلمة المرور *</label>
+                  <label className="block text-sm font-medium text-gray-700">ØªØ£ÙƒÙŠØ¯ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± *</label>
                   <input
                     type="password"
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                    placeholder="أعد إدخال كلمة المرور"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Ø£Ø¹Ø¯ Ø¥Ø¯Ø®Ø§Ù„ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±"
                     required
                   />
                 </div>
@@ -365,7 +365,7 @@ export default function RegisterPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 py-4 bg-gradient-to-l from-teal-600 to-teal-700 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all disabled:opacity-50 shadow-lg shadow-teal-500/30"
+                    className="flex-1 py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 shadow-lg shadow-blue-500/30"
                   >
                     {loading ? (
                       <span className="flex items-center justify-center gap-2">
@@ -373,10 +373,10 @@ export default function RegisterPage() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        جاري التسجيل...
+                        Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ³Ø¬ÙŠÙ„...
                       </span>
                     ) : (
-                      'إنشاء الحساب'
+                      'Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø­Ø³Ø§Ø¨'
                     )}
                   </button>
                 </div>
@@ -385,9 +385,9 @@ export default function RegisterPage() {
 
             <div className="text-center pt-2 border-t">
               <p className="text-gray-600 text-sm">
-                لديك حساب بالفعل؟{' '}
-                <Link href="/login" className="text-teal-600 font-semibold hover:text-teal-700">
-                  سجل دخولك
+                Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ Ø¨Ø§Ù„ÙØ¹Ù„ØŸ{' '}
+                <Link href="/login" className="text-blue-600 font-semibold hover:text-blue-700">
+                  Ø³Ø¬Ù„ Ø¯Ø®ÙˆÙ„Ùƒ
                 </Link>
               </p>
             </div>
@@ -395,8 +395,8 @@ export default function RegisterPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-teal-100 text-xs mt-6">
-          © 2026 أوراد أحلى شباب. جميع الحقوق محفوظة
+        <p className="text-center text-blue-100 text-xs mt-6">
+          Â© 2026 Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨. Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ‚ Ù…Ø­ÙÙˆØ¸Ø©
         </p>
       </div>
     </div>

@@ -7,14 +7,14 @@ import Link from 'next/link'
 import ImageUpload from '@/components/ImageUpload'
 
 const ICON_OPTIONS = [
-  { value: 'mosque', label: 'مسجد', icon: '🕌' },
-  { value: 'sun', label: 'شمس', icon: '☀️' },
-  { value: 'quran', label: 'قرآن', icon: '📖' },
-  { value: 'book', label: 'كتاب', icon: '📚' },
-  { value: 'star', label: 'نجمة', icon: '⭐' },
-  { value: 'heart', label: 'قلب', icon: '❤️' },
-  { value: 'hand', label: 'يد', icon: '🤲' },
-  { value: 'moon', label: 'قمر', icon: '🌙' }
+  { value: 'mosque', label: 'Ù…Ø³Ø¬Ø¯', icon: 'ðŸ•Œ' },
+  { value: 'sun', label: 'Ø´Ù…Ø³', icon: 'â˜€ï¸' },
+  { value: 'quran', label: 'Ù‚Ø±Ø¢Ù†', icon: 'ðŸ“–' },
+  { value: 'book', label: 'ÙƒØªØ§Ø¨', icon: 'ðŸ“š' },
+  { value: 'star', label: 'Ù†Ø¬Ù…Ø©', icon: 'â­' },
+  { value: 'heart', label: 'Ù‚Ù„Ø¨', icon: 'â¤ï¸' },
+  { value: 'hand', label: 'ÙŠØ¯', icon: 'ðŸ¤²' },
+  { value: 'moon', label: 'Ù‚Ù…Ø±', icon: 'ðŸŒ™' }
 ]
 
 const COLOR_OPTIONS = [
@@ -47,7 +47,7 @@ export default function CreateProjectPage() {
     setError('')
 
     if (!formData.name.trim()) {
-      setError('يرجى إدخال اسم المشروع')
+      setError('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ø³Ù… Ø§Ù„Ù…Ø´Ø±ÙˆØ¹')
       return
     }
 
@@ -88,7 +88,7 @@ export default function CreateProjectPage() {
 
       router.push('/dashboard')
     } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء إنشاء المشروع')
+      setError(err.message || 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹')
     } finally {
       setLoading(false)
     }
@@ -100,14 +100,14 @@ export default function CreateProjectPage() {
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رجوع
+            Ø±Ø¬ÙˆØ¹
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">إنشاء مشروع جديد</h1>
+          <h1 className="text-lg font-bold text-blue-700">Ø¥Ù†Ø´Ø§Ø¡ Ù…Ø´Ø±ÙˆØ¹ Ø¬Ø¯ÙŠØ¯</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -129,37 +129,37 @@ export default function CreateProjectPage() {
 
             {/* Project Name */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">اسم المشروع *</label>
+              <label className="block text-sm font-medium text-gray-700">Ø§Ø³Ù… Ø§Ù„Ù…Ø´Ø±ÙˆØ¹ *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                placeholder="مثال: المدرسة الإيمانية"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Ù…Ø«Ø§Ù„: Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø§Ù„Ø¥ÙŠÙ…Ø§Ù†ÙŠØ©"
                 required
               />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">الوصف</label>
+              <label className="block text-sm font-medium text-gray-700">Ø§Ù„ÙˆØµÙ</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                placeholder="وصف مختصر للمشروع..."
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="ÙˆØµÙ Ù…Ø®ØªØµØ± Ù„Ù„Ù…Ø´Ø±ÙˆØ¹..."
               />
             </div>
 
             {/* Target Gender */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">الفئة المستهدفة</label>
+              <label className="block text-sm font-medium text-gray-700">Ø§Ù„ÙØ¦Ø© Ø§Ù„Ù…Ø³ØªÙ‡Ø¯ÙØ©</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: 'both', label: 'الكل', icon: '👥', color: 'purple' },
-                  { value: 'male', label: 'ذكور فقط', icon: '👨', color: 'blue' },
-                  { value: 'female', label: 'إناث فقط', icon: '👩', color: 'pink' }
+                  { value: 'both', label: 'Ø§Ù„ÙƒÙ„', icon: 'ðŸ‘¥', color: 'purple' },
+                  { value: 'male', label: 'Ø°ÙƒÙˆØ± ÙÙ‚Ø·', icon: 'ðŸ‘¨', color: 'blue' },
+                  { value: 'female', label: 'Ø¥Ù†Ø§Ø« ÙÙ‚Ø·', icon: 'ðŸ‘©', color: 'pink' }
                 ].map(option => (
                   <button
                     key={option.value}
@@ -182,7 +182,7 @@ export default function CreateProjectPage() {
 
             {/* Icon Selection */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">الأيقونة</label>
+              <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ø£ÙŠÙ‚ÙˆÙ†Ø©</label>
               <div className="grid grid-cols-4 gap-3">
                 {ICON_OPTIONS.map(icon => (
                   <button
@@ -191,7 +191,7 @@ export default function CreateProjectPage() {
                     onClick={() => setFormData(prev => ({ ...prev, icon: icon.value }))}
                     className={`p-4 rounded-xl transition-all border-2 ${
                       formData.icon === icon.value
-                        ? 'border-teal-600 bg-teal-50'
+                        ? 'border-blue-600 bg-blue-50'
                         : 'border-gray-200 bg-gray-50 hover:border-gray-300'
                     }`}
                   >
@@ -203,7 +203,7 @@ export default function CreateProjectPage() {
 
             {/* Color Selection */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">اللون</label>
+              <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ù„ÙˆÙ†</label>
               <div className="grid grid-cols-8 gap-3">
                 {COLOR_OPTIONS.map(color => (
                   <button
@@ -223,34 +223,31 @@ export default function CreateProjectPage() {
 
             {/* Preview */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">معاينة</label>
-              <div className="relative rounded-xl overflow-hidden min-h-[250px] bg-gray-50">
+              <label className="block text-sm font-medium text-gray-700">Ù…Ø¹Ø§ÙŠÙ†Ø©</label>
+              <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
                 {formData.image_url ? (
-                  <>
+                  <div className="w-full h-44 overflow-hidden">
                     <img 
                       src={formData.image_url} 
                       alt="صورة المشروع" 
-                      className="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
+                      className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
-                  </>
+                  </div>
                 ) : (
                   <div
-                    className="absolute inset-0 w-full h-full"
-                    style={{ backgroundColor: `${formData.color}20` }}
-                  />
+                    className="w-full h-44 flex items-center justify-center text-5xl"
+                    style={{ backgroundColor: `${formData.color}15` }}
+                  >
+                    {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || 'ðŸ•Œ'}
+                  </div>
                 )}
-                <div className="relative h-full min-h-[250px] flex flex-col justify-end p-6">
-                  {!formData.image_url && (
-                    <div className="text-5xl mb-3" style={{ color: formData.color }}>
-                      {ICON_OPTIONS.find(i => i.value === formData.icon)?.icon || '🕌'}
-                    </div>
-                  )}
-                  <h3 className={`text-xl font-bold ${formData.image_url ? 'text-white' : 'text-gray-900'}`}>
-                    {formData.name || 'اسم المشروع'}
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {formData.name || 'Ø§Ø³Ù… Ø§Ù„Ù…Ø´Ø±ÙˆØ¹'}
                   </h3>
-                  <p className={`text-sm mt-1 ${formData.image_url ? 'text-white/80' : 'text-gray-500'}`}>
-                    {formData.description || 'وصف المشروع'}
+                  <p className="text-sm text-gray-500 mt-1">
+                    {formData.description || 'ÙˆØµÙ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹'}
                   </p>
                 </div>
               </div>
@@ -261,7 +258,7 @@ export default function CreateProjectPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 py-4 bg-gradient-to-l from-teal-600 to-teal-700 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all disabled:opacity-50 shadow-lg shadow-teal-500/30 flex items-center justify-center gap-2"
+                className="flex-1 py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -269,14 +266,14 @@ export default function CreateProjectPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    جاري الإنشاء...
+                    Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡...
                   </>
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    إنشاء المشروع
+                    Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹
                   </>
                 )}
               </button>
@@ -284,7 +281,7 @@ export default function CreateProjectPage() {
                 href="/dashboard"
                 className="px-6 py-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
               >
-                إلغاء
+                Ø¥Ù„ØºØ§Ø¡
               </Link>
             </div>
           </form>

@@ -89,7 +89,7 @@ export default function ProjectsPage() {
       setDeleteModal({ show: false, project: null })
     } catch (error) {
       console.error('Error deleting project:', error)
-      alert('حدث خطأ أثناء حذف المشروع')
+      alert('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø­Ø°Ù Ø§Ù„Ù…Ø´Ø±ÙˆØ¹')
     } finally {
       setDeleting(false)
     }
@@ -127,7 +127,7 @@ export default function ProjectsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
       </div>
     )
   }
@@ -140,14 +140,14 @@ export default function ProjectsPage() {
           <div className="flex items-center justify-between">
             <Link 
               href="/dashboard" 
-              className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              رجوع
+              Ø±Ø¬ÙˆØ¹
             </Link>
-            <h1 className="text-lg font-bold text-teal-700">المشاريع</h1>
+            <h1 className="text-lg font-bold text-blue-700">Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹</h1>
             <div className="w-16" />
           </div>
         </div>
@@ -159,50 +159,49 @@ export default function ProjectsPage() {
           {projects.map((project) => (
             <div
               key={project.id}
-              className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:border-teal-200 transition-all group min-h-[280px]"
+              className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group"
             >
-              {project.image_url ? (
-                <>
-                  <img 
-                    src={project.image_url} 
-                    alt={project.name} 
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
-                </>
-              ) : (
-                <div
-                  className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-300"
-                  style={{ backgroundColor: `${project.color}20` }}
-                />
-              )}
-              
-              {/* Delete Button (Admin only) */}
-              {canDeleteProjects && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    setDeleteModal({ show: true, project })
-                  }}
-                  className="absolute top-3 left-3 z-10 p-2 bg-white/90 backdrop-blur-sm text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shadow-sm"
-                  title="حذف المشروع"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              )}
-
-              <Link href={`/projects/${project.id}`} className="relative h-full min-h-[280px] flex flex-col justify-end p-6">
-                {!project.image_url && (
-                  <div className="text-5xl mb-3" style={{ color: project.color }}>
+              <div className="relative">
+                {project.image_url ? (
+                  <div className="w-full h-44 overflow-hidden">
+                    <img 
+                      src={project.image_url} 
+                      alt={project.name} 
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="w-full h-44 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform duration-300"
+                    style={{ backgroundColor: `${project.color}15`, color: project.color }}
+                  >
                     {getIcon(project.icon)}
                   </div>
                 )}
-                <h3 className={`text-lg font-bold mb-2 ${project.image_url ? 'text-white' : 'text-gray-900'}`}>{project.name}</h3>
-                <p className={`text-sm line-clamp-2 mb-4 ${project.image_url ? 'text-white/80' : 'text-gray-600'}`}>
-                  {project.description || 'لا يوجد وصف'}
+                
+                {/* Delete Button (Admin only) */}
+                {canDeleteProjects && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setDeleteModal({ show: true, project })
+                    }}
+                    className="absolute top-3 left-3 p-2 bg-white/90 backdrop-blur-sm text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shadow-sm"
+                    title="Ø­Ø°Ù Ø§Ù„Ù…Ø´Ø±ÙˆØ¹"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              <Link href={`/projects/${project.id}`} prefetch={true} className="block p-5">
+                <h3 className="text-lg font-bold text-gray-900 mb-1.5">{project.name}</h3>
+                <p className="text-sm text-gray-500 line-clamp-2 mb-4">
+                  {project.description || 'Ù„Ø§ ÙŠÙˆØ¬Ø¯ ÙˆØµÙ'}
                 </p>
                 
                 <div className="flex items-center justify-between">
@@ -213,12 +212,12 @@ export default function ProjectsPage() {
                         ? 'bg-pink-100 text-pink-700'
                         : 'bg-purple-100 text-purple-700'
                   }`}>
-                    {project.target_gender === 'male' ? 'ذكور فقط' : 
-                     project.target_gender === 'female' ? 'إناث فقط' : 'الجميع'}
+                    {project.target_gender === 'male' ? 'Ø°ÙƒÙˆØ± ÙÙ‚Ø·' : 
+                     project.target_gender === 'female' ? 'Ø¥Ù†Ø§Ø« ÙÙ‚Ø·' : 'Ø§Ù„Ø¬Ù…ÙŠØ¹'}
                   </span>
                   
-                  <span className={`font-medium text-sm flex items-center gap-1 ${project.image_url ? 'text-white hover:text-white/80' : 'text-teal-600 hover:text-teal-700'}`}>
-                    عرض التفاصيل
+                  <span className="text-blue-600 font-medium text-sm flex items-center gap-1">
+                    Ø¹Ø±Ø¶ Ø§Ù„ØªÙØ§ØµÙŠÙ„
                     <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
@@ -235,16 +234,16 @@ export default function ProjectsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
               </div>
-              <p className="text-gray-500 text-lg">لا توجد مشاريع حالياً</p>
+              <p className="text-gray-500 text-lg">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø´Ø§Ø±ÙŠØ¹ Ø­Ø§Ù„ÙŠØ§Ù‹</p>
               {canManageProjects && (
                 <Link
                   href="/projects/create"
-                  className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors"
+                  className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  إنشاء مشروع جديد
+                  Ø¥Ù†Ø´Ø§Ø¡ Ù…Ø´Ø±ÙˆØ¹ Ø¬Ø¯ÙŠØ¯
                 </Link>
               )}
             </div>
@@ -266,11 +265,11 @@ export default function ProjectsPage() {
               </svg>
             </div>
             
-            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد الحذف</h3>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">ØªØ£ÙƒÙŠØ¯ Ø§Ù„Ø­Ø°Ù</h3>
             <p className="text-gray-600 text-center mb-6">
-              هل أنت متأكد من حذف مشروع "<strong>{deleteModal.project.name}</strong>"؟
+              Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø­Ø°Ù Ù…Ø´Ø±ÙˆØ¹ "<strong>{deleteModal.project.name}</strong>"ØŸ
               <br />
-              <span className="text-red-500 text-sm">هذا الإجراء لا يمكن التراجع عنه.</span>
+              <span className="text-red-500 text-sm">Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡ Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø§Ù„ØªØ±Ø§Ø¬Ø¹ Ø¹Ù†Ù‡.</span>
             </p>
 
             <div className="flex gap-3">
@@ -279,7 +278,7 @@ export default function ProjectsPage() {
                 disabled={deleting}
                 className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
-                إلغاء
+                Ø¥Ù„ØºØ§Ø¡
               </button>
               <button
                 onClick={handleDeleteProject}
@@ -289,14 +288,14 @@ export default function ProjectsPage() {
                 {deleting ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    جاري الحذف...
+                    Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø­Ø°Ù...
                   </>
                 ) : (
                   <>
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    حذف
+                    Ø­Ø°Ù
                   </>
                 )}
               </button>

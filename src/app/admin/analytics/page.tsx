@@ -51,30 +51,30 @@ export default function AdminAnalyticsPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent" />
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent" />
     </div>
   )
 
   const cards = [
-    { label: 'إجمالي المستخدمين', value: stats?.totalUsers, color: 'bg-blue-500' },
-    { label: 'مستخدمين موافق عليهم', value: stats?.approvedUsers, color: 'bg-green-500' },
-    { label: 'طلبات معلقة', value: stats?.pendingUsers, color: 'bg-amber-500' },
-    { label: 'المشاريع', value: stats?.totalProjects, color: 'bg-teal-500' },
-    { label: 'الفورمز', value: stats?.totalForms, color: 'bg-purple-500' },
-    { label: 'إجمالي الردود', value: stats?.totalResponses, color: 'bg-indigo-500' },
+    { label: 'Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†', value: stats?.totalUsers, color: 'bg-blue-500' },
+    { label: 'Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ† Ù…ÙˆØ§ÙÙ‚ Ø¹Ù„ÙŠÙ‡Ù…', value: stats?.approvedUsers, color: 'bg-green-500' },
+    { label: 'Ø·Ù„Ø¨Ø§Øª Ù…Ø¹Ù„Ù‚Ø©', value: stats?.pendingUsers, color: 'bg-amber-500' },
+    { label: 'Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹', value: stats?.totalProjects, color: 'bg-blue-500' },
+    { label: 'Ø§Ù„ÙÙˆØ±Ù…Ø²', value: stats?.totalForms, color: 'bg-purple-500' },
+    { label: 'Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø±Ø¯ÙˆØ¯', value: stats?.totalResponses, color: 'bg-indigo-500' },
   ]
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors">
+          <Link href="/admin" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رجوع
+            Ø±Ø¬ÙˆØ¹
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">الإحصائيات المتقدمة</h1>
+          <h1 className="text-lg font-bold text-blue-700">Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª Ø§Ù„Ù…ØªÙ‚Ø¯Ù…Ø©</h1>
           <div className="w-16" />
         </div>
       </header>

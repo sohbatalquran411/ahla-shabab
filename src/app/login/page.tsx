@@ -47,14 +47,14 @@ export default function LoginPage() {
 
       if (profile?.status === 'pending') {
         await supabase.auth.signOut()
-        setError('حسابك قيد المراجعة. سيتم تفعيله من الإدارة.')
+        setError('Ø­Ø³Ø§Ø¨Ùƒ Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø©. Ø³ÙŠØªÙ… ØªÙØ¹ÙŠÙ„Ù‡ Ù…Ù† Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©.')
         setLoading(false)
         return
       }
 
       if (profile?.status === 'rejected') {
         await supabase.auth.signOut()
-        setError('تم رفض حسابك. تواصل مع الإدارة للمزيد من المعلومات.')
+        setError('ØªÙ… Ø±ÙØ¶ Ø­Ø³Ø§Ø¨Ùƒ. ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¥Ø¯Ø§Ø±Ø© Ù„Ù„Ù…Ø²ÙŠØ¯ Ù…Ù† Ø§Ù„Ù…Ø¹Ù„ÙˆÙ…Ø§Øª.')
         setLoading(false)
         return
       }
@@ -71,30 +71,30 @@ export default function LoginPage() {
       router.push('/dashboard')
       router.refresh()
     } catch (error: any) {
-      setError(error.message || 'حدث خطأ أثناء تسجيل الدخول')
+      setError(error.message || 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
+    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
       {/* Decorative Pattern */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-400/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl" />
       </div>
 
       {/* Login Card */}
       <div className="relative w-full max-w-md">
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-l from-teal-600 to-teal-700 px-8 py-10 text-center">
+          <div className="bg-gradient-to-l from-blue-600 to-blue-700 px-8 py-10 text-center">
             {settings.app_logo ? (
               <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30">
                 <img 
                   src={settings.app_logo} 
-                  alt="شعار التطبيق" 
+                  alt="Ø´Ø¹Ø§Ø± Ø§Ù„ØªØ·Ø¨ÙŠÙ‚" 
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -106,7 +106,7 @@ export default function LoginPage() {
               </div>
             )}
             <h1 className="text-2xl font-bold text-white mb-2">{settings.app_name}</h1>
-            <p className="text-teal-100 text-sm">مرحباً بك مجدداً</p>
+            <p className="text-blue-100 text-sm">Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ Ù…Ø¬Ø¯Ø¯Ø§Ù‹</p>
           </div>
 
           {/* Form */}
@@ -118,9 +118,9 @@ export default function LoginPage() {
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className="font-medium">تم إنشاء حسابك بنجاح!</span>
+                  <span className="font-medium">ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­!</span>
                 </div>
-                <p className="mt-1">حسابك كمشرف قيد المراجعة من الإدارة. ستتمكن من تسجيل الدخول بعد الموافقة.</p>
+                <p className="mt-1">Ø­Ø³Ø§Ø¨Ùƒ ÙƒÙ…Ø´Ø±Ù Ù‚ÙŠØ¯ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø© Ù…Ù† Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©. Ø³ØªØªÙ…ÙƒÙ† Ù…Ù† ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ø¹Ø¯ Ø§Ù„Ù…ÙˆØ§ÙÙ‚Ø©.</p>
               </div>
             )}
 
@@ -131,13 +131,13 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">البريد الإلكتروني</label>
+              <label className="block text-sm font-medium text-gray-700">Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ</label>
               <div className="relative">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all text-right"
+                  className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-right"
                   placeholder="example@email.com"
                   required
                 />
@@ -148,14 +148,14 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">كلمة المرور</label>
+              <label className="block text-sm font-medium text-gray-700">ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</label>
               <div className="relative">
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all text-right"
-                  placeholder="••••••••"
+                  className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-right"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   required
                 />
                 <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -170,17 +170,17 @@ export default function LoginPage() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-teal-600 bg-gray-50 border-gray-300 rounded focus:ring-teal-500 focus:ring-2"
+                className="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
               />
               <label htmlFor="remember-me" className="mr-2 text-sm text-gray-700">
-                تذكرني
+                ØªØ°ÙƒØ±Ù†ÙŠ
               </label>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-gradient-to-l from-teal-600 to-teal-700 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/30"
+              className="w-full py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -188,18 +188,18 @@ export default function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  جاري التحميل...
+                  Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...
                 </span>
               ) : (
-                'تسجيل الدخول'
+                'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„'
               )}
             </button>
 
             <div className="text-center">
               <p className="text-gray-600 text-sm">
-                ليس لديك حساب؟{' '}
-                <Link href="/register" className="text-teal-600 font-semibold hover:text-teal-700">
-                  سجل الآن
+                Ù„ÙŠØ³ Ù„Ø¯ÙŠÙƒ Ø­Ø³Ø§Ø¨ØŸ{' '}
+                <Link href="/register" className="text-blue-600 font-semibold hover:text-blue-700">
+                  Ø³Ø¬Ù„ Ø§Ù„Ø¢Ù†
                 </Link>
               </p>
             </div>
@@ -207,8 +207,8 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-teal-100 text-xs mt-6">
-          © 2026 {settings.app_name}. جميع الحقوق محفوظة
+        <p className="text-center text-blue-100 text-xs mt-6">
+          Â© 2026 {settings.app_name}. Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ‚ Ù…Ø­ÙÙˆØ¸Ø©
         </p>
       </div>
     </div>

@@ -335,7 +335,7 @@ function EditFormContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
       </div>
     )
   }
@@ -345,7 +345,7 @@ function EditFormContent() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-500">لم يتم العثور على النموذج</p>
-          <Link href="/dashboard" className="text-teal-600 hover:text-teal-700 mt-2 inline-block">
+          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 mt-2 inline-block">
             العودة للوحة التحكم
           </Link>
         </div>
@@ -360,14 +360,14 @@ function EditFormContent() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href={`/projects/${formData.project_id}`}
-            className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             رجوع
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">تعديل النموذج</h1>
+          <h1 className="text-lg font-bold text-blue-700">تعديل النموذج</h1>
           <div className="flex gap-2">
             <button
               onClick={() => setFormData(prev => prev ? ({ ...prev, is_active: !prev.is_active }) : null)}
@@ -382,7 +382,7 @@ function EditFormContent() {
             <button
               onClick={saveForm}
               disabled={saving}
-              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               {saving ? (
                 <>
@@ -414,7 +414,7 @@ function EditFormContent() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => prev ? ({ ...prev, name: e.target.value }) : null)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="مثال: تقييم أداء الصلاة"
               />
             </div>
@@ -425,7 +425,7 @@ function EditFormContent() {
                 value={formData.description}
                 onChange={(e) => setFormData(prev => prev ? ({ ...prev, description: e.target.value }) : null)}
                 rows={2}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="وصف مختصر للنموذج..."
               />
             </div>
@@ -462,7 +462,7 @@ function EditFormContent() {
                   type="checkbox"
                   checked={formData.allow_multiple}
                   onChange={(e) => setFormData(prev => prev ? ({ ...prev, allow_multiple: e.target.checked }) : null)}
-                  className="w-5 h-5 mt-1 text-teal-600 rounded focus:ring-teal-500"
+                  className="w-5 h-5 mt-1 text-blue-600 rounded focus:ring-blue-500"
                 />
                 <div>
                   <span className="font-medium text-gray-800 block">السماح بالتسجيل المتعدد</span>
@@ -471,9 +471,9 @@ function EditFormContent() {
               </label>
             </div>
 
-            <div className="bg-teal-50 rounded-xl p-4">
-              <p className="text-teal-800 font-medium mb-2">المشروع: {projectName}</p>
-              <p className="text-teal-600 text-sm">جميع الأسئلة ستُضاف لهذا المشروع</p>
+            <div className="bg-blue-50 rounded-xl p-4">
+              <p className="text-blue-800 font-medium mb-2">المشروع: {projectName}</p>
+              <p className="text-blue-600 text-sm">جميع الأسئلة ستُضاف لهذا المشروع</p>
             </div>
           </div>
         </div>
@@ -491,13 +491,13 @@ function EditFormContent() {
               <div key={type} className="relative group">
                 <button
                   onClick={() => addQuestion(type)}
-                  className="w-full p-4 bg-gray-50 hover:bg-teal-50 border border-gray-200 hover:border-teal-300 rounded-xl transition-all group text-right"
+                  className="w-full p-4 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl transition-all group text-right"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="w-8 h-8 bg-teal-600 text-white rounded-lg flex items-center justify-center font-bold">
+                    <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">
                       {info.icon}
                     </span>
-                    <span className="font-medium text-gray-800 group-hover:text-teal-700">{info.label}</span>
+                    <span className="font-medium text-gray-800 group-hover:text-blue-700">{info.label}</span>
                   </div>
                   <p className="text-xs text-gray-500">{info.description}</p>
                 </button>
@@ -518,7 +518,7 @@ function EditFormContent() {
             {formData.questions.map((question, qIndex) => (
               <div key={question.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                 <div className="flex items-start gap-3 mb-4">
-                  <span className="w-8 h-8 bg-teal-100 text-teal-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                  <span className="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold text-sm">
                     {qIndex + 1}
                   </span>
                   <div className="flex-1">
@@ -527,7 +527,7 @@ function EditFormContent() {
                       value={question.text}
                       onChange={(e) => updateQuestion(qIndex, { text: e.target.value })}
                       placeholder="اكتب السؤال هنا..."
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   <div className="flex items-center gap-1">
@@ -567,7 +567,7 @@ function EditFormContent() {
                       type="checkbox"
                       checked={question.required}
                       onChange={(e) => updateQuestion(qIndex, { required: e.target.checked })}
-                      className="w-4 h-4 text-teal-600 rounded"
+                      className="w-4 h-4 text-blue-600 rounded"
                     />
                     <span className="text-sm text-gray-700">مطلوب</span>
                   </label>
@@ -583,7 +583,7 @@ function EditFormContent() {
                     />
                   </div>
 
-                  <span className="px-3 py-1 bg-teal-100 text-teal-700 text-sm rounded-full">
+                  <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
                     {QUESTION_TYPES[question.type]?.label}
                   </span>
                 </div>
@@ -601,7 +601,7 @@ function EditFormContent() {
                             value={option.text}
                             onChange={(e) => updateOption(qIndex, oIndex, { text: e.target.value })}
                             placeholder="نص الخيار..."
-                            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-teal-500"
+                            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500"
                           />
                           <input
                             type="number"
@@ -626,7 +626,7 @@ function EditFormContent() {
                     
                     <button
                       onClick={() => addOption(qIndex)}
-                      className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-teal-400 hover:text-teal-600 transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -683,7 +683,7 @@ function EditFormContent() {
 
 export default function EditFormPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div></div>}>
       <EditFormContent />
     </Suspense>
   )

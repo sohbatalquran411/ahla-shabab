@@ -10,46 +10,46 @@ import type { QuestionType, QuestionOption } from '@/types'
 // Question type definitions with detailed explanations
 const QUESTION_TYPES = {
   text: { 
-    label: 'نص', 
+    label: 'Ù†Øµ', 
     icon: 'T', 
-    description: 'إجابة نصية قصيرة',
-    explanation: 'سؤال يتطلب إجابة نصية قصيرة مثل الاسم أو كلمة واحدة. مثال: "ما اسمك؟" أو "اكتب دعاء قصير"'
+    description: 'Ø¥Ø¬Ø§Ø¨Ø© Ù†ØµÙŠØ© Ù‚ØµÙŠØ±Ø©',
+    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØªØ·Ù„Ø¨ Ø¥Ø¬Ø§Ø¨Ø© Ù†ØµÙŠØ© Ù‚ØµÙŠØ±Ø© Ù…Ø«Ù„ Ø§Ù„Ø§Ø³Ù… Ø£Ùˆ ÙƒÙ„Ù…Ø© ÙˆØ§Ø­Ø¯Ø©. Ù…Ø«Ø§Ù„: "Ù…Ø§ Ø§Ø³Ù…ÙƒØŸ" Ø£Ùˆ "Ø§ÙƒØªØ¨ Ø¯Ø¹Ø§Ø¡ Ù‚ØµÙŠØ±"'
   },
   textarea: { 
-    label: 'نص طويل', 
-    icon: '¶', 
-    description: 'إجابة نصية متعددة الأسطر',
-    explanation: 'سؤال يتطلب إجابة مفصلة أو فقرة كاملة. مثال: "اكتب عن تجربتك في الحج" أو "صف شعورك أثناء الصلاة"'
+    label: 'Ù†Øµ Ø·ÙˆÙŠÙ„', 
+    icon: 'Â¶', 
+    description: 'Ø¥Ø¬Ø§Ø¨Ø© Ù†ØµÙŠØ© Ù…ØªØ¹Ø¯Ø¯Ø© Ø§Ù„Ø£Ø³Ø·Ø±',
+    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØªØ·Ù„Ø¨ Ø¥Ø¬Ø§Ø¨Ø© Ù…ÙØµÙ„Ø© Ø£Ùˆ ÙÙ‚Ø±Ø© ÙƒØ§Ù…Ù„Ø©. Ù…Ø«Ø§Ù„: "Ø§ÙƒØªØ¨ Ø¹Ù† ØªØ¬Ø±Ø¨ØªÙƒ ÙÙŠ Ø§Ù„Ø­Ø¬" Ø£Ùˆ "ØµÙ Ø´Ø¹ÙˆØ±Ùƒ Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„ØµÙ„Ø§Ø©"'
   },
   single_choice: { 
-    label: 'اختيار واحد', 
-    icon: '○', 
-    description: 'اختيار إجابة واحدة',
-    explanation: 'سؤال يحتوي على عدة خيارات ويمكن اختيار واحد فقط. مثال: "في أي وقت تصلي الفجر؟" مع خيارات: قبل الأذان، مع الأذان، بعد الأذان'
+    label: 'Ø§Ø®ØªÙŠØ§Ø± ÙˆØ§Ø­Ø¯', 
+    icon: 'â—‹', 
+    description: 'Ø§Ø®ØªÙŠØ§Ø± Ø¥Ø¬Ø§Ø¨Ø© ÙˆØ§Ø­Ø¯Ø©',
+    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØ­ØªÙˆÙŠ Ø¹Ù„Ù‰ Ø¹Ø¯Ø© Ø®ÙŠØ§Ø±Ø§Øª ÙˆÙŠÙ…ÙƒÙ† Ø§Ø®ØªÙŠØ§Ø± ÙˆØ§Ø­Ø¯ ÙÙ‚Ø·. Ù…Ø«Ø§Ù„: "ÙÙŠ Ø£ÙŠ ÙˆÙ‚Øª ØªØµÙ„ÙŠ Ø§Ù„ÙØ¬Ø±ØŸ" Ù…Ø¹ Ø®ÙŠØ§Ø±Ø§Øª: Ù‚Ø¨Ù„ Ø§Ù„Ø£Ø°Ø§Ù†ØŒ Ù…Ø¹ Ø§Ù„Ø£Ø°Ø§Ù†ØŒ Ø¨Ø¹Ø¯ Ø§Ù„Ø£Ø°Ø§Ù†'
   },
   multiple_choice: { 
-    label: 'اختيار متعدد', 
-    icon: '☑', 
-    description: 'اختيار عدة إجابات',
-    explanation: 'سؤال يحتوي على عدة خيارات ويمكن اختيار أكثر من واحد. مثال: "ما الأعمال الصالحة التي تقوم بها؟" مع خيارات: الصلاة، الصيام، الصدقة، قراءة القرآن'
+    label: 'Ø§Ø®ØªÙŠØ§Ø± Ù…ØªØ¹Ø¯Ø¯', 
+    icon: 'â˜‘', 
+    description: 'Ø§Ø®ØªÙŠØ§Ø± Ø¹Ø¯Ø© Ø¥Ø¬Ø§Ø¨Ø§Øª',
+    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØ­ØªÙˆÙŠ Ø¹Ù„Ù‰ Ø¹Ø¯Ø© Ø®ÙŠØ§Ø±Ø§Øª ÙˆÙŠÙ…ÙƒÙ† Ø§Ø®ØªÙŠØ§Ø± Ø£ÙƒØ«Ø± Ù…Ù† ÙˆØ§Ø­Ø¯. Ù…Ø«Ø§Ù„: "Ù…Ø§ Ø§Ù„Ø£Ø¹Ù…Ø§Ù„ Ø§Ù„ØµØ§Ù„Ø­Ø© Ø§Ù„ØªÙŠ ØªÙ‚ÙˆÙ… Ø¨Ù‡Ø§ØŸ" Ù…Ø¹ Ø®ÙŠØ§Ø±Ø§Øª: Ø§Ù„ØµÙ„Ø§Ø©ØŒ Ø§Ù„ØµÙŠØ§Ù…ØŒ Ø§Ù„ØµØ¯Ù‚Ø©ØŒ Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù‚Ø±Ø¢Ù†'
   },
   scale: { 
-    label: 'تقييم', 
-    icon: '★', 
-    description: 'تقييم من 1 إلى 5',
-    explanation: 'سؤال تقييم بمقياس من 1 إلى 5 نجوم أو نقاط. مثال: "قيم مستوى انتظامك في الصلاة" من 1 (ضعيف) إلى 5 (ممتاز)'
+    label: 'ØªÙ‚ÙŠÙŠÙ…', 
+    icon: 'â˜…', 
+    description: 'ØªÙ‚ÙŠÙŠÙ… Ù…Ù† 1 Ø¥Ù„Ù‰ 5',
+    explanation: 'Ø³Ø¤Ø§Ù„ ØªÙ‚ÙŠÙŠÙ… Ø¨Ù…Ù‚ÙŠØ§Ø³ Ù…Ù† 1 Ø¥Ù„Ù‰ 5 Ù†Ø¬ÙˆÙ… Ø£Ùˆ Ù†Ù‚Ø§Ø·. Ù…Ø«Ø§Ù„: "Ù‚ÙŠÙ… Ù…Ø³ØªÙˆÙ‰ Ø§Ù†ØªØ¸Ø§Ù…Ùƒ ÙÙŠ Ø§Ù„ØµÙ„Ø§Ø©" Ù…Ù† 1 (Ø¶Ø¹ÙŠÙ) Ø¥Ù„Ù‰ 5 (Ù…Ù…ØªØ§Ø²)'
   },
   ranking: { 
-    label: 'ترتيب', 
+    label: 'ØªØ±ØªÙŠØ¨', 
     icon: '#', 
-    description: 'ترتيب العناصر',
-    explanation: 'سؤال يطلب ترتيب عدة عناصر حسب الأولوية أو الأهمية. مثال: "رتب العبادات التالية حسب أولويتك: الصلاة، الصيام، الحج، الزكاة، الشهادة"'
+    description: 'ØªØ±ØªÙŠØ¨ Ø§Ù„Ø¹Ù†Ø§ØµØ±',
+    explanation: 'Ø³Ø¤Ø§Ù„ ÙŠØ·Ù„Ø¨ ØªØ±ØªÙŠØ¨ Ø¹Ø¯Ø© Ø¹Ù†Ø§ØµØ± Ø­Ø³Ø¨ Ø§Ù„Ø£ÙˆÙ„ÙˆÙŠØ© Ø£Ùˆ Ø§Ù„Ø£Ù‡Ù…ÙŠØ©. Ù…Ø«Ø§Ù„: "Ø±ØªØ¨ Ø§Ù„Ø¹Ø¨Ø§Ø¯Ø§Øª Ø§Ù„ØªØ§Ù„ÙŠØ© Ø­Ø³Ø¨ Ø£ÙˆÙ„ÙˆÙŠØªÙƒ: Ø§Ù„ØµÙ„Ø§Ø©ØŒ Ø§Ù„ØµÙŠØ§Ù…ØŒ Ø§Ù„Ø­Ø¬ØŒ Ø§Ù„Ø²ÙƒØ§Ø©ØŒ Ø§Ù„Ø´Ù‡Ø§Ø¯Ø©"'
   },
   matrix: { 
-    label: 'مصفوفة', 
-    icon: '▦', 
-    description: 'أسئلة متعددة مع خيارات مشتركة',
-    explanation: 'عدة أسئلة فرعية تشترك في نفس خيارات الإجابة. مثال: تقييم الصلوات الخمس (الفجر، الظهر، العصر، المغرب، العشاء) من حيث: الانتظام، الخشوع، الوقت'
+    label: 'Ù…ØµÙÙˆÙØ©', 
+    icon: 'â–¦', 
+    description: 'Ø£Ø³Ø¦Ù„Ø© Ù…ØªØ¹Ø¯Ø¯Ø© Ù…Ø¹ Ø®ÙŠØ§Ø±Ø§Øª Ù…Ø´ØªØ±ÙƒØ©',
+    explanation: 'Ø¹Ø¯Ø© Ø£Ø³Ø¦Ù„Ø© ÙØ±Ø¹ÙŠØ© ØªØ´ØªØ±Ùƒ ÙÙŠ Ù†ÙØ³ Ø®ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©. Ù…Ø«Ø§Ù„: ØªÙ‚ÙŠÙŠÙ… Ø§Ù„ØµÙ„ÙˆØ§Øª Ø§Ù„Ø®Ù…Ø³ (Ø§Ù„ÙØ¬Ø±ØŒ Ø§Ù„Ø¸Ù‡Ø±ØŒ Ø§Ù„Ø¹ØµØ±ØŒ Ø§Ù„Ù…ØºØ±Ø¨ØŒ Ø§Ù„Ø¹Ø´Ø§Ø¡) Ù…Ù† Ø­ÙŠØ«: Ø§Ù„Ø§Ù†ØªØ¸Ø§Ù…ØŒ Ø§Ù„Ø®Ø´ÙˆØ¹ØŒ Ø§Ù„ÙˆÙ‚Øª'
   }
 } as const
 
@@ -301,12 +301,12 @@ function CreateFormContent() {
 
   const saveForm = async () => {
     if (!formData.name.trim()) {
-      alert('يرجى إدخال اسم الفورم')
+      alert('ÙŠØ±Ø¬Ù‰ Ø¥Ø¯Ø®Ø§Ù„ Ø§Ø³Ù… Ø§Ù„ÙÙˆØ±Ù…')
       return
     }
 
     if (formData.questions.length === 0) {
-      alert('يرجى إضافة سؤال واحد على الأقل')
+      alert('ÙŠØ±Ø¬Ù‰ Ø¥Ø¶Ø§ÙØ© Ø³Ø¤Ø§Ù„ ÙˆØ§Ø­Ø¯ Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„')
       return
     }
 
@@ -353,7 +353,7 @@ function CreateFormContent() {
       router.push(`/projects/${projectId}`)
     } catch (error) {
       console.error('Error saving form:', error)
-      alert('حدث خطأ أثناء حفظ الفورم')
+      alert('Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø­ÙØ¸ Ø§Ù„ÙÙˆØ±Ù…')
     } finally {
       setSaving(false)
     }
@@ -373,7 +373,7 @@ function CreateFormContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
       </div>
     )
   }
@@ -385,30 +385,30 @@ function CreateFormContent() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href={`/projects/${projectId}`}
-            className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رجوع
+            Ø±Ø¬ÙˆØ¹
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">إنشاء فورم جديد</h1>
+          <h1 className="text-lg font-bold text-blue-700">Ø¥Ù†Ø´Ø§Ø¡ ÙÙˆØ±Ù… Ø¬Ø¯ÙŠØ¯</h1>
           <button
             onClick={saveForm}
             disabled={saving}
-            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {saving ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                جاري الحفظ...
+                Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø­ÙØ¸...
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                حفظ
+                Ø­ÙØ¸
               </>
             )}
           </button>
@@ -418,7 +418,7 @@ function CreateFormContent() {
       <main className="max-w-4xl mx-auto px-4 py-6">
         {/* Form Basic Info */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">معلومات الفورم</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„ÙÙˆØ±Ù…</h2>
           
           <div className="space-y-4">
             {/* Image Upload */}
@@ -428,34 +428,34 @@ function CreateFormContent() {
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">اسم الفورم *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Ø§Ø³Ù… Ø§Ù„ÙÙˆØ±Ù… *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                placeholder="مثال: تقييم أداء الصلاة"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Ù…Ø«Ø§Ù„: ØªÙ‚ÙŠÙŠÙ… Ø£Ø¯Ø§Ø¡ Ø§Ù„ØµÙ„Ø§Ø©"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Ø§Ù„ÙˆØµÙ</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={2}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                placeholder="وصف مختصر للفورم..."
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="ÙˆØµÙ Ù…Ø®ØªØµØ± Ù„Ù„ÙÙˆØ±Ù…..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">الفئة المستهدفة</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Ø§Ù„ÙØ¦Ø© Ø§Ù„Ù…Ø³ØªÙ‡Ø¯ÙØ©</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: 'both', label: 'الكل', color: 'purple' },
-                  { value: 'male', label: 'ذكور فقط', color: 'blue' },
-                  { value: 'female', label: 'إناث فقط', color: 'pink' }
+                  { value: 'both', label: 'Ø§Ù„ÙƒÙ„', color: 'purple' },
+                  { value: 'male', label: 'Ø°ÙƒÙˆØ± ÙÙ‚Ø·', color: 'blue' },
+                  { value: 'female', label: 'Ø¥Ù†Ø§Ø« ÙÙ‚Ø·', color: 'pink' }
                 ].map(option => (
                   <button
                     key={option.value}
@@ -481,18 +481,18 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                   type="checkbox"
                   checked={formData.allow_multiple}
                   onChange={(e) => setFormData(prev => ({ ...prev, allow_multiple: e.target.checked }))}
-                  className="w-5 h-5 mt-1 text-teal-600 rounded focus:ring-teal-500"
+                  className="w-5 h-5 mt-1 text-blue-600 rounded focus:ring-blue-500"
                 />
                 <div>
-                  <span className="font-medium text-gray-800 block">السماح بالتسجيل المتعدد</span>
-                  <span className="text-sm text-gray-600">تفعيل هذا الخيار يسمح للمستخدم بإعادة ملء الفورم عدة مرات يوميًا</span>
+                  <span className="font-medium text-gray-800 block">Ø§Ù„Ø³Ù…Ø§Ø­ Ø¨Ø§Ù„ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ù…ØªØ¹Ø¯Ø¯</span>
+                  <span className="text-sm text-gray-600">ØªÙØ¹ÙŠÙ„ Ù‡Ø°Ø§ Ø§Ù„Ø®ÙŠØ§Ø± ÙŠØ³Ù…Ø­ Ù„Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¨Ø¥Ø¹Ø§Ø¯Ø© Ù…Ù„Ø¡ Ø§Ù„ÙÙˆØ±Ù… Ø¹Ø¯Ø© Ù…Ø±Ø§Øª ÙŠÙˆÙ…ÙŠÙ‹Ø§</span>
                 </div>
               </label>
             </div>
 
-            <div className="bg-teal-50 rounded-xl p-4">
-              <p className="text-teal-800 font-medium mb-2">المشروع: {projectName}</p>
-              <p className="text-teal-600 text-sm">جميع الأسئلة ستُضاف لهذا المشروع</p>
+            <div className="bg-blue-50 rounded-xl p-4">
+              <p className="text-blue-800 font-medium mb-2">Ø§Ù„Ù…Ø´Ø±ÙˆØ¹: {projectName}</p>
+              <p className="text-blue-600 text-sm">Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø£Ø³Ø¦Ù„Ø© Ø³ØªÙØ¶Ø§Ù Ù„Ù‡Ø°Ø§ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹</p>
             </div>
           </div>
         </div>
@@ -501,7 +501,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">
-              الأسئلة ({formData.questions.length})
+              Ø§Ù„Ø£Ø³Ø¦Ù„Ø© ({formData.questions.length})
             </h2>
             <div className="flex gap-2">
               <button
@@ -511,7 +511,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                استرداد سؤال
+                Ø§Ø³ØªØ±Ø¯Ø§Ø¯ Ø³Ø¤Ø§Ù„
               </button>
             </div>
           </div>
@@ -522,13 +522,13 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
               <div key={type} className="relative group">
                 <button
                   onClick={() => addQuestion(type)}
-                  className="w-full p-4 bg-gray-50 hover:bg-teal-50 border border-gray-200 hover:border-teal-300 rounded-xl transition-all group text-right"
+                  className="w-full p-4 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl transition-all group text-right"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="w-8 h-8 bg-teal-600 text-white rounded-lg flex items-center justify-center font-bold">
+                    <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold">
                       {info.icon}
                     </span>
-                    <span className="font-medium text-gray-800 group-hover:text-teal-700">{info.label}</span>
+                    <span className="font-medium text-gray-800 group-hover:text-blue-700">{info.label}</span>
                   </div>
                   <p className="text-xs text-gray-500">{info.description}</p>
                 </button>
@@ -549,7 +549,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
             {formData.questions.map((question, qIndex) => (
               <div key={question.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                 <div className="flex items-start gap-3 mb-4">
-                  <span className="w-8 h-8 bg-teal-100 text-teal-700 rounded-lg flex items-center justify-center font-bold text-sm">
+                  <span className="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold text-sm">
                     {qIndex + 1}
                   </span>
                   <div className="flex-1">
@@ -557,8 +557,8 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       type="text"
                       value={question.text}
                       onChange={(e) => updateQuestion(qIndex, { text: e.target.value })}
-                      placeholder="اكتب السؤال هنا..."
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      placeholder="Ø§ÙƒØªØ¨ Ø§Ù„Ø³Ø¤Ø§Ù„ Ù‡Ù†Ø§..."
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   <div className="flex items-center gap-1">
@@ -598,13 +598,13 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       type="checkbox"
                       checked={question.required}
                       onChange={(e) => updateQuestion(qIndex, { required: e.target.checked })}
-                      className="w-4 h-4 text-teal-600 rounded"
+                      className="w-4 h-4 text-blue-600 rounded"
                     />
-                    <span className="text-sm text-gray-700">مطلوب</span>
+                    <span className="text-sm text-gray-700">Ù…Ø·Ù„ÙˆØ¨</span>
                   </label>
                   
                   <div className="flex items-center gap-2">
-                    <label className="text-sm text-gray-700">النقاط:</label>
+                    <label className="text-sm text-gray-700">Ø§Ù„Ù†Ù‚Ø§Ø·:</label>
                     <input
                       type="number"
                       min="0"
@@ -614,7 +614,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     />
                   </div>
 
-                  <span className="px-3 py-1 bg-teal-100 text-teal-700 text-sm rounded-full">
+                  <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
                     {QUESTION_TYPES[question.type]?.label}
                   </span>
                 </div>
@@ -622,26 +622,26 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 {/* Options for choice questions */}
                 {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
                   <div className="mr-11 space-y-3">
-                    <p className="text-sm font-medium text-gray-700">الخيارات:</p>
+                    <p className="text-sm font-medium text-gray-700">Ø§Ù„Ø®ÙŠØ§Ø±Ø§Øª:</p>
                     {question.options.map((option, oIndex) => (
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
                         <div className="flex items-center gap-3">
-                          <span className="text-gray-400">{question.type === 'single_choice' ? '○' : '☐'}</span>
+                          <span className="text-gray-400">{question.type === 'single_choice' ? 'â—‹' : 'â˜'}</span>
                           <input
                             type="text"
                             value={option.text}
                             onChange={(e) => updateOption(qIndex, oIndex, { text: e.target.value })}
-                            placeholder="نص الخيار..."
-                            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-teal-500"
+                            placeholder="Ù†Øµ Ø§Ù„Ø®ÙŠØ§Ø±..."
+                            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500"
                           />
                           <input
                             type="number"
                             min="0"
                             value={option.points}
                             onChange={(e) => updateOption(qIndex, oIndex, { points: Number(e.target.value) })}
-                            placeholder="النقاط"
+                            placeholder="Ø§Ù„Ù†Ù‚Ø§Ø·"
                             className="w-20 px-2 py-2 border border-gray-200 rounded-lg text-center"
-                            title="النقاط"
+                            title="Ø§Ù„Ù†Ù‚Ø§Ø·"
                           />
                           <button
                             onClick={() => removeOption(qIndex, oIndex)}
@@ -657,25 +657,25 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                         <div className="mt-3 mr-6 space-y-2">
                           <button
                             onClick={() => addSubOption(qIndex, oIndex)}
-                            className="text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1"
+                            className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            إضافة خيارات فرعية
+                            Ø¥Ø¶Ø§ÙØ© Ø®ÙŠØ§Ø±Ø§Øª ÙØ±Ø¹ÙŠØ©
                           </button>
                           
                           {option.sub_options && option.sub_options.length > 0 && (
                             <div className="bg-amber-50 rounded-lg p-2 space-y-2 border border-amber-200">
-                              <p className="text-xs text-amber-700 font-medium">خيارات فرعية:</p>
+                              <p className="text-xs text-amber-700 font-medium">Ø®ÙŠØ§Ø±Ø§Øª ÙØ±Ø¹ÙŠØ©:</p>
                               {option.sub_options.map((subOpt, sIndex) => (
                                 <div key={subOpt.id} className="flex items-center gap-2 bg-white rounded-lg p-2">
-                                  <span className="text-gray-400 text-sm">→</span>
+                                  <span className="text-gray-400 text-sm">â†’</span>
                                   <input
                                     type="text"
                                     value={subOpt.text}
                                     onChange={(e) => updateSubOption(qIndex, oIndex, sIndex, { text: e.target.value })}
-                                    placeholder="خيار فرعي..."
+                                    placeholder="Ø®ÙŠØ§Ø± ÙØ±Ø¹ÙŠ..."
                                     className="flex-1 px-2 py-1 border border-gray-200 rounded text-sm"
                                   />
                                   <input
@@ -684,7 +684,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                                     value={subOpt.points}
                                     onChange={(e) => updateSubOption(qIndex, oIndex, sIndex, { points: Number(e.target.value) })}
                                     className="w-16 px-1 py-1 border border-gray-200 rounded text-sm text-center"
-                                    title="النقاط"
+                                    title="Ø§Ù„Ù†Ù‚Ø§Ø·"
                                   />
                                   <button
                                     onClick={() => removeSubOption(qIndex, oIndex, sIndex)}
@@ -704,12 +704,12 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     
                     <button
                       onClick={() => addOption(qIndex)}
-                      className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-teal-400 hover:text-teal-600 transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                       </svg>
-                      إضافة خيار
+                      Ø¥Ø¶Ø§ÙØ© Ø®ÙŠØ§Ø±
                     </button>
                   </div>
                 )}
@@ -717,7 +717,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 {/* Scale Options */}
                 {question.type === 'scale' && (
                   <div className="mr-11 bg-blue-50 rounded-lg p-4">
-                    <p className="text-sm font-medium text-blue-700 mb-3">مقياس التقييم (1-5)</p>
+                    <p className="text-sm font-medium text-blue-700 mb-3">Ù…Ù‚ÙŠØ§Ø³ Ø§Ù„ØªÙ‚ÙŠÙŠÙ… (1-5)</p>
                     <div className="flex justify-between items-center">
                       {question.options.map((opt) => (
                         <div key={opt.id} className="text-center">
@@ -748,8 +748,8 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-gray-500 mb-4">لم تضف أي أسئلة بعد</p>
-                <p className="text-gray-400 text-sm">اختر نوع السؤال من الأعلى للبدء</p>
+                <p className="text-gray-500 mb-4">Ù„Ù… ØªØ¶Ù Ø£ÙŠ Ø£Ø³Ø¦Ù„Ø© Ø¨Ø¹Ø¯</p>
+                <p className="text-gray-400 text-sm">Ø§Ø®ØªØ± Ù†ÙˆØ¹ Ø§Ù„Ø³Ø¤Ø§Ù„ Ù…Ù† Ø§Ù„Ø£Ø¹Ù„Ù‰ Ù„Ù„Ø¨Ø¯Ø¡</p>
               </div>
             )}
           </div>
@@ -757,95 +757,95 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
 
         {/* Examples Section */}
         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
-          <h3 className="text-lg font-bold text-amber-800 mb-4">💡 أمثلة عملية لأنواع الأسئلة</h3>
+          <h3 className="text-lg font-bold text-amber-800 mb-4">ðŸ’¡ Ø£Ù…Ø«Ù„Ø© Ø¹Ù…Ù„ÙŠØ© Ù„Ø£Ù†ÙˆØ§Ø¹ Ø§Ù„Ø£Ø³Ø¦Ù„Ø©</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Text Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">T</span>
-                <span className="font-medium text-gray-800">نص قصير</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">T</span>
+                <span className="font-medium text-gray-800">Ù†Øµ Ù‚ØµÙŠØ±</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">ما اسم المسجد الذي تصلي فيه؟</p>
+              <p className="text-sm text-gray-600 mb-2">Ù…Ø§ Ø§Ø³Ù… Ø§Ù„Ù…Ø³Ø¬Ø¯ Ø§Ù„Ø°ÙŠ ØªØµÙ„ÙŠ ÙÙŠÙ‡ØŸ</p>
               <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
-                إجابة: مسجد النور
+                Ø¥Ø¬Ø§Ø¨Ø©: Ù…Ø³Ø¬Ø¯ Ø§Ù„Ù†ÙˆØ±
               </div>
             </div>
 
             {/* Textarea Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">¶</span>
-                <span className="font-medium text-gray-800">نص طويل</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">Â¶</span>
+                <span className="font-medium text-gray-800">Ù†Øµ Ø·ÙˆÙŠÙ„</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">اكتب عن شعورك أثناء قراءة القرآن</p>
+              <p className="text-sm text-gray-600 mb-2">Ø§ÙƒØªØ¨ Ø¹Ù† Ø´Ø¹ÙˆØ±Ùƒ Ø£Ø«Ù†Ø§Ø¡ Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù‚Ø±Ø¢Ù†</p>
               <div className="bg-gray-50 rounded p-2 text-xs text-gray-500">
-                إجابة: أشعر بالسكينة والطمأنينة...
+                Ø¥Ø¬Ø§Ø¨Ø©: Ø£Ø´Ø¹Ø± Ø¨Ø§Ù„Ø³ÙƒÙŠÙ†Ø© ÙˆØ§Ù„Ø·Ù…Ø£Ù†ÙŠÙ†Ø©...
               </div>
             </div>
 
             {/* Single Choice Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">○</span>
-                <span className="font-medium text-gray-800">اختيار واحد</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">â—‹</span>
+                <span className="font-medium text-gray-800">Ø§Ø®ØªÙŠØ§Ø± ÙˆØ§Ø­Ø¯</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">في أي وقت تصلي الفجر؟</p>
+              <p className="text-sm text-gray-600 mb-2">ÙÙŠ Ø£ÙŠ ÙˆÙ‚Øª ØªØµÙ„ÙŠ Ø§Ù„ÙØ¬Ø±ØŸ</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>○ قبل الأذان (5 نقاط)</div>
-                <div>● مع الأذان (4 نقاط)</div>
-                <div>○ بعد الأذان بـ15 دقيقة (3 نقاط)</div>
+                <div>â—‹ Ù‚Ø¨Ù„ Ø§Ù„Ø£Ø°Ø§Ù† (5 Ù†Ù‚Ø§Ø·)</div>
+                <div>â— Ù…Ø¹ Ø§Ù„Ø£Ø°Ø§Ù† (4 Ù†Ù‚Ø§Ø·)</div>
+                <div>â—‹ Ø¨Ø¹Ø¯ Ø§Ù„Ø£Ø°Ø§Ù† Ø¨Ù€15 Ø¯Ù‚ÙŠÙ‚Ø© (3 Ù†Ù‚Ø§Ø·)</div>
               </div>
             </div>
 
             {/* Multiple Choice Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">☑</span>
-                <span className="font-medium text-gray-800">اختيار متعدد</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">â˜‘</span>
+                <span className="font-medium text-gray-800">Ø§Ø®ØªÙŠØ§Ø± Ù…ØªØ¹Ø¯Ø¯</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">ما الأعمال الصالحة التي تقوم بها؟</p>
+              <p className="text-sm text-gray-600 mb-2">Ù…Ø§ Ø§Ù„Ø£Ø¹Ù…Ø§Ù„ Ø§Ù„ØµØ§Ù„Ø­Ø© Ø§Ù„ØªÙŠ ØªÙ‚ÙˆÙ… Ø¨Ù‡Ø§ØŸ</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>☑ الصلاة في وقتها (2 نقاط)</div>
-                <div>☑ قراءة القرآن (2 نقاط)</div>
-                <div>☐ الصدقة (2 نقاط)</div>
-                <div>☑ الذكر (1 نقطة)</div>
+                <div>â˜‘ Ø§Ù„ØµÙ„Ø§Ø© ÙÙŠ ÙˆÙ‚ØªÙ‡Ø§ (2 Ù†Ù‚Ø§Ø·)</div>
+                <div>â˜‘ Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù‚Ø±Ø¢Ù† (2 Ù†Ù‚Ø§Ø·)</div>
+                <div>â˜ Ø§Ù„ØµØ¯Ù‚Ø© (2 Ù†Ù‚Ø§Ø·)</div>
+                <div>â˜‘ Ø§Ù„Ø°ÙƒØ± (1 Ù†Ù‚Ø·Ø©)</div>
               </div>
             </div>
 
             {/* Scale Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">★</span>
-                <span className="font-medium text-gray-800">تقييم</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">â˜…</span>
+                <span className="font-medium text-gray-800">ØªÙ‚ÙŠÙŠÙ…</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">قيم مستوى خشوعك في الصلاة</p>
+              <p className="text-sm text-gray-600 mb-2">Ù‚ÙŠÙ… Ù…Ø³ØªÙˆÙ‰ Ø®Ø´ÙˆØ¹Ùƒ ÙÙŠ Ø§Ù„ØµÙ„Ø§Ø©</p>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>★☆☆☆☆ ضعيف</span>
-                <span>★★★★★ ممتاز</span>
+                <span>â˜…â˜†â˜†â˜†â˜† Ø¶Ø¹ÙŠÙ</span>
+                <span>â˜…â˜…â˜…â˜…â˜… Ù…Ù…ØªØ§Ø²</span>
               </div>
             </div>
 
             {/* Ranking Example */}
             <div className="bg-white rounded-xl p-4 border border-amber-200">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-6 h-6 bg-teal-600 text-white rounded flex items-center justify-center text-sm font-bold">#</span>
-                <span className="font-medium text-gray-800">ترتيب</span>
+                <span className="w-6 h-6 bg-blue-600 text-white rounded flex items-center justify-center text-sm font-bold">#</span>
+                <span className="font-medium text-gray-800">ØªØ±ØªÙŠØ¨</span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">رتب العبادات حسب أولويتك</p>
+              <p className="text-sm text-gray-600 mb-2">Ø±ØªØ¨ Ø§Ù„Ø¹Ø¨Ø§Ø¯Ø§Øª Ø­Ø³Ø¨ Ø£ÙˆÙ„ÙˆÙŠØªÙƒ</p>
               <div className="space-y-1 text-xs text-gray-500">
-                <div>1. الصلاة (5 نقاط)</div>
-                <div>2. قراءة القرآن (4 نقاط)</div>
-                <div>3. الذكر (3 نقاط)</div>
-                <div>4. الصدقة (2 نقاط)</div>
+                <div>1. Ø§Ù„ØµÙ„Ø§Ø© (5 Ù†Ù‚Ø§Ø·)</div>
+                <div>2. Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù‚Ø±Ø¢Ù† (4 Ù†Ù‚Ø§Ø·)</div>
+                <div>3. Ø§Ù„Ø°ÙƒØ± (3 Ù†Ù‚Ø§Ø·)</div>
+                <div>4. Ø§Ù„ØµØ¯Ù‚Ø© (2 Ù†Ù‚Ø§Ø·)</div>
               </div>
             </div>
           </div>
 
           <div className="mt-4 p-3 bg-amber-100 rounded-lg">
             <p className="text-sm text-amber-800">
-              <strong>نصيحة:</strong> استخدم أنواع الأسئلة المختلفة لجعل النموذج أكثر تفاعلاً وشمولية. 
-              يمكنك دمج عدة أنواع في نموذج واحد لتغطية جوانب مختلفة من الموضوع.
+              <strong>Ù†ØµÙŠØ­Ø©:</strong> Ø§Ø³ØªØ®Ø¯Ù… Ø£Ù†ÙˆØ§Ø¹ Ø§Ù„Ø£Ø³Ø¦Ù„Ø© Ø§Ù„Ù…Ø®ØªÙ„ÙØ© Ù„Ø¬Ø¹Ù„ Ø§Ù„Ù†Ù…ÙˆØ°Ø¬ Ø£ÙƒØ«Ø± ØªÙØ§Ø¹Ù„Ø§Ù‹ ÙˆØ´Ù…ÙˆÙ„ÙŠØ©. 
+              ÙŠÙ…ÙƒÙ†Ùƒ Ø¯Ù…Ø¬ Ø¹Ø¯Ø© Ø£Ù†ÙˆØ§Ø¹ ÙÙŠ Ù†Ù…ÙˆØ°Ø¬ ÙˆØ§Ø­Ø¯ Ù„ØªØºØ·ÙŠØ© Ø¬ÙˆØ§Ù†Ø¨ Ù…Ø®ØªÙ„ÙØ© Ù…Ù† Ø§Ù„Ù…ÙˆØ¶ÙˆØ¹.
             </p>
           </div>
         </div>
@@ -857,7 +857,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowQuestionPicker(false)} />
           <div className="relative bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-xl">
             <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900">استرداد سؤال من فورم سابقة</h3>
+              <h3 className="text-lg font-bold text-gray-900">Ø§Ø³ØªØ±Ø¯Ø§Ø¯ Ø³Ø¤Ø§Ù„ Ù…Ù† ÙÙˆØ±Ù… Ø³Ø§Ø¨Ù‚Ø©</h3>
               <button onClick={() => setShowQuestionPicker(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -868,7 +868,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
             <div className="p-4 overflow-y-auto max-h-[calc(80vh-60px)]">
               {existingForms.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">لا توجد فورمز سابقة في هذا المشروع</p>
+                  <p className="text-gray-500">Ù„Ø§ ØªÙˆØ¬Ø¯ ÙÙˆØ±Ù…Ø² Ø³Ø§Ø¨Ù‚Ø© ÙÙŠ Ù‡Ø°Ø§ Ø§Ù„Ù…Ø´Ø±ÙˆØ¹</p>
                 </div>
               ) : (
                 existingForms.map(form => (
@@ -879,7 +879,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                         <button
                           key={q.id}
                           onClick={() => importQuestion(q)}
-                          className="w-full text-right p-3 bg-gray-50 hover:bg-teal-50 border border-gray-200 rounded-lg transition-colors"
+                          className="w-full text-right p-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 rounded-lg transition-colors"
                         >
                           <p className="font-medium text-gray-800">{q.text}</p>
                           <p className="text-sm text-gray-500">{QUESTION_TYPES[q.type as QuestionType]?.label}</p>
@@ -899,7 +899,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
 
 export default function CreateFormPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div></div>}>
       <CreateFormContent />
     </Suspense>
   )

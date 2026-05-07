@@ -257,7 +257,7 @@ export default function ResultsPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600">جاري التحميل...</p>
+          <p className="mt-4 text-gray-600">Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p>
         </div>
       </div>
     )
@@ -269,17 +269,17 @@ export default function ResultsPage() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">نتائج المتابعة</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Ù†ØªØ§Ø¦Ø¬ Ø§Ù„Ù…ØªØ§Ø¨Ø¹Ø©</h1>
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard"
                 className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
               >
-                لوحة التحكم
+                Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ…
               </Link>
               <span className="text-gray-500">|</span>
               <span className="text-emerald-600 font-medium">
-                {user?.role === 'admin' ? 'مدير النظام' : 'مشرف'}
+                {user?.role === 'admin' ? 'Ù…Ø¯ÙŠØ± Ø§Ù„Ù†Ø¸Ø§Ù…' : 'Ù…Ø´Ø±Ù'}
               </span>
             </div>
           </div>
@@ -297,7 +297,7 @@ export default function ResultsPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm text-gray-500">إجمالي الردود</p>
+                <p className="text-sm text-gray-500">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø±Ø¯ÙˆØ¯</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
               </div>
             </div>
@@ -311,7 +311,7 @@ export default function ResultsPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm text-gray-500">متوسط الدرجات</p>
+                <p className="text-sm text-gray-500">Ù…ØªÙˆØ³Ø· Ø§Ù„Ø¯Ø±Ø¬Ø§Øª</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.avgScore.toFixed(1)}%</p>
               </div>
             </div>
@@ -325,7 +325,7 @@ export default function ResultsPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm text-gray-500">هذا الأسبوع</p>
+                <p className="text-sm text-gray-500">Ù‡Ø°Ø§ Ø§Ù„Ø£Ø³Ø¨ÙˆØ¹</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.thisWeek}</p>
               </div>
             </div>
@@ -337,25 +337,25 @@ export default function ResultsPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">بحث</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ø¨Ø­Ø«</label>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="اسم أو بريد المستخدم..."
+                placeholder="Ø§Ø³Ù… Ø£Ùˆ Ø¨Ø±ÙŠØ¯ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…..."
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               />
             </div>
 
             {/* Project Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">المشروع</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ø§Ù„Ù…Ø´Ø±ÙˆØ¹</label>
               <select
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               >
-                <option value="">جميع المشاريع</option>
+                <option value="">Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹</option>
                 {projects.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
@@ -364,14 +364,14 @@ export default function ResultsPage() {
 
             {/* Form Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">النموذج</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ø§Ù„Ù†Ù…ÙˆØ°Ø¬</label>
               <select
                 value={selectedForm}
                 onChange={(e) => setSelectedForm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 disabled={!selectedProject}
               >
-                <option value="">جميع النماذج</option>
+                <option value="">Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù†Ù…Ø§Ø°Ø¬</option>
                 {forms
                   .filter(f => !selectedProject || f.project_id === selectedProject)
                   .map(f => (
@@ -382,15 +382,15 @@ export default function ResultsPage() {
 
             {/* Gender Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">الجنس</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ø§Ù„Ø¬Ù†Ø³</label>
               <select
                 value={selectedGender}
                 onChange={(e) => setSelectedGender(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               >
-                <option value="">الكل</option>
-                <option value="male">ذكور</option>
-                <option value="female">إناث</option>
+                <option value="">Ø§Ù„ÙƒÙ„</option>
+                <option value="male">Ø°ÙƒÙˆØ±</option>
+                <option value="female">Ø¥Ù†Ø§Ø«</option>
               </select>
             </div>
           </div>
@@ -403,8 +403,8 @@ export default function ResultsPage() {
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">لا توجد نتائج</h3>
-              <p className="text-gray-500">لم يتم تقديم أي ردود بعد</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù†ØªØ§Ø¦Ø¬</h3>
+              <p className="text-gray-500">Ù„Ù… ÙŠØªÙ… ØªÙ‚Ø¯ÙŠÙ… Ø£ÙŠ Ø±Ø¯ÙˆØ¯ Ø¨Ø¹Ø¯</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -412,22 +412,22 @@ export default function ResultsPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      المستخدم
+                      Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      النموذج
+                      Ø§Ù„Ù†Ù…ÙˆØ°Ø¬
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      النتيجة
+                      Ø§Ù„Ù†ØªÙŠØ¬Ø©
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      النسبة
+                      Ø§Ù„Ù†Ø³Ø¨Ø©
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      التاريخ
+                      Ø§Ù„ØªØ§Ø±ÙŠØ®
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      إجراءات
+                      Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª
                     </th>
                   </tr>
                 </thead>
@@ -444,13 +444,13 @@ export default function ResultsPage() {
                               {response.profiles?.name?.charAt(0) || '?'}
                             </div>
                             <div>
-                              <div className="font-medium text-gray-900">{response.profiles?.name || 'غير معروف'}</div>
+                              <div className="font-medium text-gray-900">{response.profiles?.name || 'ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙ'}</div>
                               <div className="text-sm text-gray-500">{response.profiles?.email}</div>
                             </div>
                           </div>
                         </td>
 <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{response.forms?.name || 'غير معروف'}</div>
+                          <div className="text-sm text-gray-900">{response.forms?.name || 'ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙ'}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`font-bold ${getScoreColor(percentage)}`}>
@@ -474,7 +474,7 @@ export default function ResultsPage() {
                             onClick={() => viewResponseDetails(response)}
                             className="text-emerald-600 hover:text-emerald-900 font-medium"
                           >
-                            عرض التفاصيل
+                            Ø¹Ø±Ø¶ Ø§Ù„ØªÙØ§ØµÙŠÙ„
                           </button>
                         </td>
                       </tr>
@@ -494,7 +494,7 @@ export default function ResultsPage() {
             <div className="p-6 border-b">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">تفاصيل الإجابة</h2>
+                  <h2 className="text-xl font-bold text-gray-900">ØªÙØ§ØµÙŠÙ„ Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©</h2>
                   <p className="text-gray-500 mt-1">
                     {selectedResponse.profiles?.name} - {selectedResponse.forms?.name}
                   </p>
@@ -513,7 +513,7 @@ export default function ResultsPage() {
                   {getPercentageScore(Number(selectedResponse.score), Number(selectedResponse.max_score))}%
                 </span>
                 <span className="text-gray-600">
-                  {Number(selectedResponse.score).toFixed(1)} / {Number(selectedResponse.max_score).toFixed(1)} درجة
+                  {Number(selectedResponse.score).toFixed(1)} / {Number(selectedResponse.max_score).toFixed(1)} Ø¯Ø±Ø¬Ø©
                 </span>
               </div>
             </div>
@@ -540,35 +540,35 @@ export default function ResultsPage() {
                           </div>
                           {isCorrect ? (
                             <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs">
-                              صحيح
+                              ØµØ­ÙŠØ­
                             </span>
                           ) : (
                             <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs">
-                              خطأ
+                              Ø®Ø·Ø£
                             </span>
                           )}
                         </div>
                         
                         {q.type === 'text' || q.type === 'textarea' ? (
                           <div className="mt-3 bg-gray-50 rounded-lg p-3">
-                            <p className="text-gray-700">{answer?.value || 'لم يتم الإجابة'}</p>
+                            <p className="text-gray-700">{answer?.value || 'Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©'}</p>
                           </div>
                         ) : q.type === 'scale' ? (
                           <div className="mt-3 flex items-center gap-2">
-                            <span className="text-gray-600">الإجابة:</span>
+                            <span className="text-gray-600">Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©:</span>
                             <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
-                              {answer?.value || 'لم يتم الإجابة'}
+                              {answer?.value || 'Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©'}
                             </span>
                           </div>
                         ) : (
                           <div className="mt-3">
-                            <p className="text-sm text-gray-600">الإجابة:</p>
+                            <p className="text-sm text-gray-600">Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©:</p>
                             <p className="font-medium text-gray-900 mt-1">
-                              {Array.isArray(answer?.value) ? answer.value.join(', ') : answer?.value || 'لم يتم الإجابة'}
+                              {Array.isArray(answer?.value) ? answer.value.join(', ') : answer?.value || 'Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©'}
                             </p>
                             {q.options?.length > 0 && (
                               <div className="mt-2 text-sm text-gray-500">
-                                الخيارات: {q.options.map((o: any) => o.text).join(', ')}
+                                Ø§Ù„Ø®ÙŠØ§Ø±Ø§Øª: {q.options.map((o: any) => o.text).join(', ')}
                               </div>
                             )}
                           </div>
@@ -576,11 +576,11 @@ export default function ResultsPage() {
 
                         <div className="mt-3 flex items-center gap-4 text-sm">
                           <span className="text-gray-500">
-                            النقاط: {q.points || 0}
+                            Ø§Ù„Ù†Ù‚Ø§Ø·: {q.points || 0}
                           </span>
                           {answer?.points !== undefined && (
                             <span className={answer.points > 0 ? 'text-emerald-600' : 'text-red-600'}>
-                              полученные: {answer.points}
+                              Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð½Ñ‹Ðµ: {answer.points}
                             </span>
                           )}
                         </div>
@@ -590,7 +590,7 @@ export default function ResultsPage() {
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  <p>لا توجد تفاصيل إضافية</p>
+                  <p>Ù„Ø§ ØªÙˆØ¬Ø¯ ØªÙØ§ØµÙŠÙ„ Ø¥Ø¶Ø§ÙÙŠØ©</p>
                 </div>
               )}
             </div>
@@ -600,7 +600,7 @@ export default function ResultsPage() {
                 onClick={() => setShowModal(false)}
                 className="w-full px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition font-medium"
               >
-                إغلاق
+                Ø¥ØºÙ„Ø§Ù‚
               </button>
             </div>
           </div>

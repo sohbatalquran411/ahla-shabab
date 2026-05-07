@@ -40,7 +40,7 @@ export default function AdminFormsPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent" />
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent" />
     </div>
   )
 
@@ -48,13 +48,13 @@ export default function AdminFormsPage() {
     <div dir="rtl" className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors">
+          <Link href="/admin" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رجوع
+            Ø±Ø¬ÙˆØ¹
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">إدارة الفورمز</h1>
+          <h1 className="text-lg font-bold text-blue-700">Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ÙÙˆØ±Ù…Ø²</h1>
           <div className="w-16" />
         </div>
       </header>
@@ -64,15 +64,15 @@ export default function AdminFormsPage() {
           <table className="w-full text-right">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">اسم الفورم</th>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">المشروع</th>
-                <th className="px-6 py-4 text-sm font-medium text-gray-700">تاريخ الإنشاء</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">Ø§Ø³Ù… Ø§Ù„ÙÙˆØ±Ù…</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">Ø§Ù„Ù…Ø´Ø±ÙˆØ¹</th>
+                <th className="px-6 py-4 text-sm font-medium text-gray-700">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {forms.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-gray-500">لا توجد فورمز بعد</td>
+                  <td colSpan={3} className="px-6 py-12 text-center text-gray-500">Ù„Ø§ ØªÙˆØ¬Ø¯ ÙÙˆØ±Ù…Ø² Ø¨Ø¹Ø¯</td>
                 </tr>
               ) : forms.map(form => (
                 <tr key={form.id} className="hover:bg-gray-50 transition-colors">

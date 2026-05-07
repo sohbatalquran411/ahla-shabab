@@ -40,52 +40,34 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         return
       }
 
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authUser.id)
-        .single()
+      // Run all independent queries in parallel
+      const [profileResult, projectResult, formsResult, responsesResult] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', authUser.id).single(),
+        supabase.from('projects').select('*').eq('id', projectId).single(),
+        supabase.from('forms').select('*').eq('project_id', projectId).eq('is_active', true),
+        supabase.from('form_responses').select('*').eq('user_id', authUser.id)
+      ])
 
-      if (!profileData) {
+      const profileData = profileResult.data
+      const projectData = projectResult.data
+      const formsData = formsResult.data
+      const responsesData = responsesResult.data
+
+      if (!profileData || profileData.status !== 'approved') {
         router.push('/login')
         return
       }
-
-      if (profileData.status !== 'approved') {
-        router.push('/login')
-        return
-      }
-
-      setUser(authUser)
-      setProfile(profileData)
-
-      const { data: projectData } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', projectId)
-        .single()
 
       if (!projectData) {
         router.push('/dashboard')
         return
       }
 
+      setUser(authUser)
+      setProfile(profileData)
       setProject(projectData)
-
-      const { data: formsData } = await supabase
-        .from('forms')
-        .select('*')
-        .eq('project_id', projectId)
-        .eq('is_active', true)
-
       setForms(formsData || [])
-
-      const { data: responses } = await supabase
-        .from('form_responses')
-        .select('*')
-        .eq('user_id', authUser.id)
-
-      setCompletedFormIds(responses?.map((r: any) => r.form_id) || [])
+      setCompletedFormIds(responsesData?.map((r: any) => r.form_id) || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -138,7 +120,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   if (loading || !project) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
       </div>
     )
   }
@@ -150,14 +132,14 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/projects"
-            className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             رجوع
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">{project.name}</h1>
+          <h1 className="text-lg font-bold text-blue-700">{project.name}</h1>
           
           {/* Delete Button (Admin only) */}
           {profile?.role === 'admin' && (
@@ -191,31 +173,28 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Project Info */}
-        <div className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 mb-8 min-h-[300px]">
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 mb-8">
           {project.image_url ? (
-            <>
+            <div className="w-full h-56 overflow-hidden">
               <img 
                 src={project.image_url} 
                 alt={project.name} 
-                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+                className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30" />
-            </>
+            </div>
           ) : (
             <div
-              className="absolute inset-0 w-full h-full"
-              style={{ backgroundColor: `${project.color}20` }}
-            />
+              className="w-full h-56 flex items-center justify-center text-6xl"
+              style={{ backgroundColor: `${project.color}15`, color: project.color }}
+            >
+              {getIcon(project.icon)}
+            </div>
           )}
-          <div className="relative h-full min-h-[300px] flex flex-col justify-end p-8">
-            {!project.image_url && (
-              <div className="text-6xl mb-4" style={{ color: project.color }}>
-                {getIcon(project.icon)}
-              </div>
-            )}
-            <h2 className={`text-3xl font-bold mb-3 ${project.image_url ? 'text-white' : 'text-gray-900'}`}>{project.name}</h2>
-            <p className={`text-lg mb-4 ${project.image_url ? 'text-white/80' : 'text-gray-600'}`}>{project.description}</p>
-            <div className="flex items-center gap-2">
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{project.name}</h2>
+            <p className="text-gray-600">{project.description}</p>
+            <div className="mt-3 flex items-center gap-2">
               <span className={`px-3 py-1 text-sm rounded-full ${
                 project.target_gender === 'male' 
                   ? 'bg-blue-100 text-blue-700' 
@@ -235,7 +214,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           {(profile?.role === 'supervisor' || profile?.role === 'admin') && (
             <Link
               href={`/forms/create?project_id=${projectId}`}
-              className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -252,12 +231,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
             return (
               <div
                 key={form.id}
-                className={`bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-lg hover:border-teal-200 ${
+                className={`bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-lg hover:border-blue-200 ${
                   isCompleted ? 'border-green-200' : 'border-gray-100'
                 }`}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center text-teal-600">
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -282,12 +261,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                   </div>
                 </div>
                 <Link href={`/forms/${form.id}`}>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2 hover:text-teal-600 transition-colors">{form.name}</h4>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors">{form.name}</h4>
                   <p className="text-gray-600 text-sm line-clamp-2">
                     {form.description || 'لا يوجد وصف'}
                   </p>
                   <div className="mt-4">
-                    <span className="text-teal-600 font-medium text-sm flex items-center gap-1">
+                    <span className="text-blue-600 font-medium text-sm flex items-center gap-1">
                       {isCompleted ? 'عرض النتيجة' : 'ابدأ الآن'}
                       <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

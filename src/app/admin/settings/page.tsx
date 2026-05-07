@@ -9,8 +9,8 @@ import ImageUpload from '@/components/ImageUpload'
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
     app_logo: '',
-    app_name: 'أوراد أحلى شباب',
-    app_description: 'منصة إدارة المشاريع الدعوية'
+    app_name: 'Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨',
+    app_description: 'Ù…Ù†ØµØ© Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹ Ø§Ù„Ø¯Ø¹ÙˆÙŠØ©'
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -104,12 +104,12 @@ export default function AdminSettingsPage() {
         updateSetting('app_description', settings.app_description)
       ])
 
-      setSuccess('تم حفظ الإعدادات بنجاح!')
+      setSuccess('ØªÙ… Ø­ÙØ¸ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø¨Ù†Ø¬Ø§Ø­!')
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000)
     } catch (error: any) {
-      setError(error.message || 'حدث خطأ أثناء حفظ الإعدادات')
+      setError(error.message || 'Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø­ÙØ¸ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª')
     } finally {
       setSaving(false)
     }
@@ -118,7 +118,7 @@ export default function AdminSettingsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
       </div>
     )
   }
@@ -130,14 +130,14 @@ export default function AdminSettingsPage() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 text-gray-600 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            رجوع للداشبورد
+            Ø±Ø¬ÙˆØ¹ Ù„Ù„Ø¯Ø§Ø´Ø¨ÙˆØ±Ø¯
           </Link>
-          <h1 className="text-lg font-bold text-teal-700">إعدادات التطبيق</h1>
+          <h1 className="text-lg font-bold text-blue-700">Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -150,8 +150,8 @@ export default function AdminSettingsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
             <div>
-              <h3 className="font-medium text-amber-800">صلاحيات المدير</h3>
-              <p className="text-sm text-amber-700">هذه الصفحة متاحة للمديرين فقط. التغييرات ستؤثر على التطبيق بالكامل.</p>
+              <h3 className="font-medium text-amber-800">ØµÙ„Ø§Ø­ÙŠØ§Øª Ø§Ù„Ù…Ø¯ÙŠØ±</h3>
+              <p className="text-sm text-amber-700">Ù‡Ø°Ù‡ Ø§Ù„ØµÙØ­Ø© Ù…ØªØ§Ø­Ø© Ù„Ù„Ù…Ø¯ÙŠØ±ÙŠÙ† ÙÙ‚Ø·. Ø§Ù„ØªØºÙŠÙŠØ±Ø§Øª Ø³ØªØ¤Ø«Ø± Ø¹Ù„Ù‰ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø¨Ø§Ù„ÙƒØ§Ù…Ù„.</p>
             </div>
           </div>
         </div>
@@ -171,54 +171,54 @@ export default function AdminSettingsPage() {
 
         {/* Settings Form */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">الإعدادات العامة</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø¹Ø§Ù…Ø©</h2>
           
           <div className="space-y-6">
             {/* App Logo */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">شعار التطبيق</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Ø´Ø¹Ø§Ø± Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</label>
               <ImageUpload
                 onImageUploaded={(url) => setSettings(prev => ({ ...prev, app_logo: url }))}
                 currentImage={settings.app_logo}
               />
               <p className="text-xs text-gray-500 mt-2">
-                سيظهر هذا الشعار في جميع صفحات التطبيق. الحجم المُوصى به: 200x200 بكسل
+                Ø³ÙŠØ¸Ù‡Ø± Ù‡Ø°Ø§ Ø§Ù„Ø´Ø¹Ø§Ø± ÙÙŠ Ø¬Ù…ÙŠØ¹ ØµÙØ­Ø§Øª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚. Ø§Ù„Ø­Ø¬Ù… Ø§Ù„Ù…ÙÙˆØµÙ‰ Ø¨Ù‡: 200x200 Ø¨ÙƒØ³Ù„
               </p>
             </div>
 
             {/* App Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">اسم التطبيق</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Ø§Ø³Ù… Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</label>
               <input
                 type="text"
                 value={settings.app_name}
                 onChange={(e) => setSettings(prev => ({ ...prev, app_name: e.target.value }))}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                placeholder="اسم التطبيق"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Ø§Ø³Ù… Ø§Ù„ØªØ·Ø¨ÙŠÙ‚"
               />
             </div>
 
             {/* App Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">وصف التطبيق</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">ÙˆØµÙ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</label>
               <textarea
                 value={settings.app_description}
                 onChange={(e) => setSettings(prev => ({ ...prev, app_description: e.target.value }))}
                 rows={3}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                placeholder="وصف مختصر للتطبيق"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="ÙˆØµÙ Ù…Ø®ØªØµØ± Ù„Ù„ØªØ·Ø¨ÙŠÙ‚"
               />
             </div>
 
             {/* Preview */}
             <div className="bg-gray-50 rounded-xl p-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-4">معاينة</h3>
-              <div className="bg-gradient-to-l from-teal-500 to-teal-600 rounded-xl p-6 text-center">
+              <h3 className="text-sm font-medium text-gray-700 mb-4">Ù…Ø¹Ø§ÙŠÙ†Ø©</h3>
+              <div className="bg-gradient-to-l from-blue-500 to-blue-600 rounded-xl p-6 text-center">
                 {settings.app_logo ? (
                   <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30">
                     <img 
                       src={settings.app_logo} 
-                      alt="شعار التطبيق" 
+                      alt="Ø´Ø¹Ø§Ø± Ø§Ù„ØªØ·Ø¨ÙŠÙ‚" 
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -230,7 +230,7 @@ export default function AdminSettingsPage() {
                   </div>
                 )}
                 <h1 className="text-white font-bold text-xl mb-1">{settings.app_name}</h1>
-                <p className="text-teal-100 text-sm">{settings.app_description}</p>
+                <p className="text-blue-100 text-sm">{settings.app_description}</p>
               </div>
             </div>
 
@@ -239,7 +239,7 @@ export default function AdminSettingsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 py-4 bg-gradient-to-l from-teal-600 to-teal-700 text-white font-semibold rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all disabled:opacity-50 shadow-lg shadow-teal-500/30 flex items-center justify-center gap-2"
+                className="flex-1 py-4 bg-gradient-to-l from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
               >
                 {saving ? (
                   <>
@@ -247,14 +247,14 @@ export default function AdminSettingsPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    جاري الحفظ...
+                    Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø­ÙØ¸...
                   </>
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    حفظ الإعدادات
+                    Ø­ÙØ¸ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª
                   </>
                 )}
               </button>
@@ -264,7 +264,7 @@ export default function AdminSettingsPage() {
 
         {/* Additional Settings */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mt-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">إعدادات إضافية</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø¥Ø¶Ø§ÙÙŠØ©</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link
               href="/admin/users"
@@ -277,8 +277,8 @@ export default function AdminSettingsPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-medium text-blue-800 group-hover:text-blue-900">إدارة المستخدمين</h3>
-                  <p className="text-sm text-blue-600">تعديل صلاحيات وحالة المستخدمين</p>
+                  <h3 className="font-medium text-blue-800 group-hover:text-blue-900">Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</h3>
+                  <p className="text-sm text-blue-600">ØªØ¹Ø¯ÙŠÙ„ ØµÙ„Ø§Ø­ÙŠØ§Øª ÙˆØ­Ø§Ù„Ø© Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</p>
                 </div>
               </div>
             </Link>
@@ -294,8 +294,8 @@ export default function AdminSettingsPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-medium text-green-800 group-hover:text-green-900">عرض النتائج</h3>
-                  <p className="text-sm text-green-600">مراجعة نتائج الفورمز والتقارير</p>
+                  <h3 className="font-medium text-green-800 group-hover:text-green-900">Ø¹Ø±Ø¶ Ø§Ù„Ù†ØªØ§Ø¦Ø¬</h3>
+                  <p className="text-sm text-green-600">Ù…Ø±Ø§Ø¬Ø¹Ø© Ù†ØªØ§Ø¦Ø¬ Ø§Ù„ÙÙˆØ±Ù…Ø² ÙˆØ§Ù„ØªÙ‚Ø§Ø±ÙŠØ±</p>
                 </div>
               </div>
             </Link>

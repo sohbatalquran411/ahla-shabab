@@ -9,15 +9,15 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "أوراد أحلى شباب",
-  description: "منصة أوراد أحلى شباب للتقييم والمتابعة - المدرسة الإيمانية",
-  keywords: ["أوراد", "أذكار", "تقييم", "متابعة", "مدرسة إيمانية"],
-  authors: [{ name: "أوراد أحلى شباب" }],
+  title: "Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨",
+  description: "Ù…Ù†ØµØ© Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨ Ù„Ù„ØªÙ‚ÙŠÙŠÙ… ÙˆØ§Ù„Ù…ØªØ§Ø¨Ø¹Ø© - Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø§Ù„Ø¥ÙŠÙ…Ø§Ù†ÙŠØ©",
+  keywords: ["Ø£Ø°ÙƒØ§Ø±", "ØªÙ‚ÙŠÙŠÙ…", "Ù…ØªØ§Ø¨Ø¹Ø©", "Ù…Ø¯Ø±Ø³Ø© Ø¥ÙŠÙ…Ø§Ù†ÙŠØ©"],
+  authors: [{ name: "Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨" }],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "أوراد",
+    title: "Ø£Ø­Ù„Ù‰ Ø´Ø¨Ø§Ø¨",
   },
   icons: {
     icon: "/icon.svg",

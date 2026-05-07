@@ -12,7 +12,7 @@ interface AppSettings {
 export function useAppSettings() {
   const [settings, setSettings] = useState<AppSettings>({
     app_logo: '',
-    app_name: 'أوراد أحلى شباب',
+    app_name: 'أحلى شباب',
     app_description: 'منصة إدارة المشاريع الدعوية'
   })
   const [loading, setLoading] = useState(true)
@@ -35,7 +35,7 @@ export function useAppSettings() {
 
       const settingsObj: any = {
         app_logo: '',
-        app_name: 'أوراد أحلى شباب',
+        app_name: 'أحلى شباب',
         app_description: 'منصة إدارة المشاريع الدعوية'
       }
 
