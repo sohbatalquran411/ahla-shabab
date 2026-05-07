@@ -383,15 +383,15 @@ function CreateFormContent() {
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href={`/projects/${projectId}`}
+          <button
+            onClick={() => router.back()}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             رجوع
-          </Link>
+          </button>
           <h1 className="text-lg font-bold text-blue-700">إنشاء فورم جديد</h1>
           <button
             onClick={saveForm}

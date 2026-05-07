@@ -194,12 +194,9 @@ export default function AdminProjectsPage() {
 
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 
-          <Link
-
-            href="/admin"
-
+          <button
+            onClick={() => router.back()}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-
           >
 
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -210,7 +207,7 @@ export default function AdminProjectsPage() {
 
             رجوع للإدارة
 
-          </Link>
+          </button>
 
           <h1 className="text-xl font-bold text-blue-700">إدارة المشاريع</h1>
 

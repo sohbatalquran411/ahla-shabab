@@ -130,15 +130,15 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/projects"
+          <button
+            onClick={() => router.back()}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             رجوع
-          </Link>
+          </button>
           <h1 className="text-lg font-bold text-blue-700">{project.name}</h1>
           
           {/* Management buttons removed as requested - management should be in admin panel only */}

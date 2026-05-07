@@ -692,7 +692,10 @@ function EditFormContent() {
 
           <p className="text-gray-500">لم يتم العثور على النموذج</p>
 
-          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 mt-2 inline-block">
+          <button
+            onClick={() => router.back()}
+            className="text-blue-600 hover:text-blue-700 mt-2 inline-block"
+          >
 
             العودة للوحة التحكم
 
@@ -734,7 +737,7 @@ function EditFormContent() {
 
             رجوع
 
-          </Link>
+          </button>
 
           <h1 className="text-lg font-bold text-blue-700">تعديل النموذج</h1>
 

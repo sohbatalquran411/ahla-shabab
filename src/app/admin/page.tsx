@@ -1,9 +1,5 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import DashboardContent from '../dashboard/DashboardContent'
 
 export default async function AdminPage() {
   const supabase = await createClient()

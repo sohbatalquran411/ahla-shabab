@@ -159,15 +159,15 @@ function EditProjectContent() {
     <div dir="rtl" className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href={`/projects/${projectId}`}
+          <button
+            onClick={() => router.back()}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
             رجوع
-          </Link>
+          </button>
           <h1 className="text-lg font-bold text-blue-700">تعديل المشروع</h1>
           <div className="w-10" />
         </div>

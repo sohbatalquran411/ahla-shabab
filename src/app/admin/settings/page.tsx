@@ -258,12 +258,9 @@ export default function AdminSettingsPage() {
 
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
 
-          <Link
-
-            href="/dashboard"
-
+          <button
+            onClick={() => router.back()}
             className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-
           >
 
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -274,7 +271,7 @@ export default function AdminSettingsPage() {
 
             رجوع للداشبورد
 
-          </Link>
+          </button>
 
           <h1 className="text-lg font-bold text-blue-700">إعدادات التطبيق</h1>
 
