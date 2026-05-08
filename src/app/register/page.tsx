@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
@@ -102,10 +102,12 @@ export default function RegisterPage() {
       if (signUpError) throw signUpError
 
       if (data.user) {
-        // Update profile with full data (trigger handles basic profile creation)
+        // Update profile with full data (using upsert since we removed the trigger)
         const { error: profileError } = await supabase
           .from('profiles')
-          .update({
+          .upsert({
+            id: data.user.id,
+            email: formData.email,
             name: formData.name,
             phone: formData.phone,
             gender: formData.gender,

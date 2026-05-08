@@ -136,6 +136,7 @@ export default function ResultsPage() {
 
   // Active form view
   const [activeForm, setActiveForm] = useState<Form | null>(null)
+  const [showResults, setShowResults] = useState(false)
   const [formQuestions, setFormQuestions] = useState<Question[]>([])
   const [formResponses, setFormResponses] = useState<FormResponse[]>([])
   const [loadingForm, setLoadingForm] = useState(false)
