@@ -40,6 +40,7 @@ export type QuestionType =
   | 'text'
   | 'textarea'
   | 'single_choice'
+  | 'single_choice_with_counter'
   | 'multiple_choice'
   | 'scale'
   | 'ranking'
@@ -54,6 +55,7 @@ export interface QuestionOption {
   text: string
   points: number
   sub_options?: QuestionOption[]
+  max_count?: number
 }
 
 export interface Question {

@@ -49,6 +49,18 @@ export function getDisplayAnswer(q: Question, answerVal: any) {
     return String(answerVal)
   }
 
+  if (q.type === 'single_choice_with_counter') {
+    let selectedId = ''
+    let countVal = 0
+    if (typeof answerVal === 'object' && answerVal !== null) {
+      selectedId = answerVal.selected || ''
+      countVal = answerVal.count || 0
+    }
+    let opts = Array.isArray(options) ? options : (options?.options || [])
+    const selectedText = opts.find((o: any) => o.id === selectedId)?.text || selectedId
+    return countVal > 0 ? `${selectedText} (${countVal})` : selectedText
+  }
+
   if (q.type === 'single_choice' || q.type === 'multiple_choice' || q.type === 'dropdown' || q.type === 'ranking') {
     let opts = Array.isArray(options) ? options : (options?.options || [])
     

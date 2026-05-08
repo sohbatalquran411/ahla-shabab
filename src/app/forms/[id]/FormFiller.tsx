@@ -168,6 +168,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
       case 'textarea':
         return q.points || 0
       case 'single_choice':
+      case 'single_choice_with_counter':
         return Math.max(0, ...(Array.isArray(opts) ? opts : []).map((o: any) => o.points || 0))
       case 'multiple_choice':
         return (Array.isArray(opts) ? opts : []).reduce((sum: number, o: any) => sum + (o.points || 0), 0)
@@ -261,6 +262,12 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
               score += mainOption.points || 0
             }
           }
+        } else if (q.type === 'single_choice_with_counter' && options.length > 0) {
+          const selectedId = answer?.selected || ''
+          const mainOption = options.find((opt: any) => opt.id === selectedId)
+          if (mainOption) {
+            score += mainOption.points || 0
+          }
         } else if (q.type === 'multiple_choice' && options.length > 0 && Array.isArray(answer)) {
           answer.forEach((selectedId: string) => {
             // Handle sub-options
@@ -327,6 +334,13 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
               }
             }
           }
+        }
+      } else if (q.type === 'single_choice_with_counter' && q.required) {
+        const answer = answers[q.id]
+        if (!answer || !answer.selected) {
+          setError(`يرجى الإجابة على السؤال: ${q.text}`)
+          setSubmitting(false)
+          return
         }
       } else if (q.required) {
         const answer = answers[q.id]
@@ -495,6 +509,89 @@ checked={isSelected}
             })}
           </div>
         )
+
+      case 'single_choice_with_counter': {
+        const selectedOption = currentAnswer?.selected || ''
+        const countVal = currentAnswer?.count || 0
+        const activeOpt = (Array.isArray(options) ? options : []).find((o: any) => o.id === selectedOption)
+        const maxCount = activeOpt?.max_count || 0
+
+        return (
+          <div className="space-y-3">
+            {(Array.isArray(options) ? options : []).map((option: any, idx: number) => {
+              const optionId = option.id || `opt_${idx}`
+              const isSelected = selectedOption === optionId
+              return (
+                <div key={optionId}>
+                  <label
+                    className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
+                      isSelected
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name={question.id}
+                      value={optionId}
+                      checked={isSelected}
+                      onChange={() => {
+                        setAnswers({
+                          ...answers,
+                          [question.id]: { selected: optionId, count: 0 }
+                        })
+                        setCurrentQuestionIndex(index)
+                      }}
+                      className="w-5 h-5 text-blue-600"
+                    />
+                    <span className="flex-1 font-medium">{option.text}</span>
+                  </label>
+
+                  {isSelected && option.max_count > 0 && (
+                    <div className="mr-14 mt-3 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                      <span className="text-sm text-amber-700 font-medium">العدد:</span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = Math.min(countVal + 1, option.max_count)
+                            setAnswers({
+                              ...answers,
+                              [question.id]: { selected: optionId, count: next }
+                            })
+                          }}
+                          disabled={countVal >= option.max_count}
+                          className="w-9 h-9 rounded-lg bg-amber-600 text-white font-bold text-lg flex items-center justify-center hover:bg-amber-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          +
+                        </button>
+                        <span className="w-12 text-center text-lg font-bold text-amber-900 tabular-nums">
+                          {countVal}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = Math.max(countVal - 1, 0)
+                            setAnswers({
+                              ...answers,
+                              [question.id]: { selected: optionId, count: next }
+                            })
+                          }}
+                          disabled={countVal <= 0}
+                          className="w-9 h-9 rounded-lg bg-amber-600 text-white font-bold text-lg flex items-center justify-center hover:bg-amber-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          –
+                        </button>
+                      </div>
+                      <span className="text-xs text-amber-500">/ {option.max_count}</span>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )
+      }
 
       case 'multiple_choice':
         return (

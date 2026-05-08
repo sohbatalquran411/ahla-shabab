@@ -13,6 +13,7 @@ const QUESTION_TYPES = {
   text: { label: 'نص', icon: 'T', description: 'إجابة نصية قصيرة', explanation: 'مثال: "ما اسمك؟"' },
   textarea: { label: 'نص طويل', icon: '¶', description: 'إجابة مفصلة', explanation: 'مثال: "صف تجربتك"' },
   single_choice: { label: 'اختيار واحد', icon: '○', description: 'اختيار إجابة واحدة', explanation: 'مثال: "نعم أو لا"' },
+  single_choice_with_counter: { label: 'اختيار مع عداد', icon: '⊕', description: 'اختيار مع إدخال عدد', explanation: 'مثال: "ذكر - كم مرة؟"' },
   multiple_choice: { label: 'اختيار متعدد', icon: '☑', description: 'اختيار عدة إجابات', explanation: 'مثال: "الهوايات"' },
   dropdown: { label: 'قائمة منسدلة', icon: '▼', description: 'اختيار من قائمة', explanation: 'قائمة مضغوطة لتوفير المساحة' },
   scale: { label: 'تقييم', icon: '⭐', description: 'تقييم من 1 إلى 5', explanation: 'مثال: تقييم الأداء' },
@@ -184,7 +185,7 @@ const searchParams = useSearchParams()
     }
 
     // Add default options based on type
-    if (type === 'single_choice' || type === 'multiple_choice') {
+    if (type === 'single_choice' || type === 'single_choice_with_counter' || type === 'multiple_choice') {
       newQuestion.options = [
         { id: `opt_${Date.now()}_1`, text: '', points: 0 },
         { id: `opt_${Date.now()}_2`, text: '', points: 0 }
@@ -551,7 +552,7 @@ const searchParams = useSearchParams()
             let totalPoints = 0
             questions.forEach((q: any) => {
               if (q.type === 'file_upload') return
-              if (q.type === 'single_choice') {
+              if (q.type === 'single_choice' || q.type === 'single_choice_with_counter') {
                 totalPoints += Math.max(0, ...parseOptions(q.options).map((o:any) => o.points || 0))
               } else if (q.type === 'multiple_choice') {
                 totalPoints += parseOptions(q.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
@@ -836,7 +837,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     <span className="text-sm text-gray-700">مطلوب</span>
                   </label>
                   
-                  {!['single_choice', 'multiple_choice', 'dropdown', 'ranking', 'matrix'].includes(question.type) && (
+                  {!['single_choice', 'single_choice_with_counter', 'multiple_choice', 'dropdown', 'ranking', 'matrix'].includes(question.type) && (
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-700">النقاط:</label>
                     <input
@@ -855,7 +856,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                   {(() => {
                     if (question.type === 'file_upload') return null
                     let total = 0
-                    if (question.type === 'single_choice') {
+                    if (question.type === 'single_choice' || question.type === 'single_choice_with_counter') {
                       total = Math.max(0, ...parseOptions(question.options).map((o:any) => o.points || 0))
                     } else if (question.type === 'multiple_choice') {
                       total = parseOptions(question.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
@@ -1090,14 +1091,14 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 )}
 
                 {/* Options for other choice questions */}
-                {(question.type === 'single_choice' || question.type === 'multiple_choice' || question.type === 'ranking') && (
+                {(question.type === 'single_choice' || question.type === 'single_choice_with_counter' || question.type === 'multiple_choice' || question.type === 'ranking') && (
                   <div className="ms-2 sm:ms-11 space-y-3">
                     <p className="text-sm font-medium text-gray-700">الخيارات:</p>
                     {parseOptions(question.options).map((option: any, oIndex: number) => (
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
                         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
                           <span className="text-gray-400">
-                            {question.type === 'single_choice' ? '○' : question.type === 'ranking' ? '#' : '☑'}
+                            {question.type === 'single_choice' ? '○' : question.type === 'single_choice_with_counter' ? '⊕' : question.type === 'ranking' ? '#' : '☑'}
                           </span>
                           <input
                             type="text"
@@ -1106,6 +1107,17 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             placeholder="نص الخيار..."
                             className="w-full sm:flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500"
                           />
+                          {question.type === 'single_choice_with_counter' && (
+                            <input
+                              type="number"
+                              min="1"
+                              value={option.max_count || ''}
+                              onChange={(e) => updateOption(qIndex, oIndex, { max_count: e.target.value ? Number(e.target.value) : undefined })}
+                              placeholder="أقصى عدد"
+                              className="w-24 px-2 py-2 border border-amber-200 rounded-lg text-center text-sm bg-amber-50"
+                              title="أقصى عدد يمكن إدخاله"
+                            />
+                          )}
                           <input
                             type="number"
                             min="0"
@@ -1124,6 +1136,12 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             </svg>
                           </button>
                         </div>
+                        {question.type === 'single_choice_with_counter' && option.max_count && (
+                          <div className="mt-2 mr-9 text-xs text-amber-600 bg-amber-50 rounded-md px-3 py-1.5 inline-flex items-center gap-1.5">
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                            العداد: 0 – {option.max_count}
+                          </div>
+                        )}
                         {/* Sub-options for nested choices */}
                         {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
                           <div className="mt-3 ms-2 sm:ms-6 space-y-2 overflow-x-hidden">
