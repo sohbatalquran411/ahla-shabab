@@ -48,7 +48,7 @@ export default function Header({ user, settings, onMenuClick, showMenuButton = t
             {showMenuButton && (
               <button
                 onClick={handleMenuClick}
-                className="lg:hidden p-2 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
+                className="lg:hidden p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
               >
                 {Icons.menu}
               </button>
@@ -63,7 +63,7 @@ export default function Header({ user, settings, onMenuClick, showMenuButton = t
                   <img src="/icon.svg" alt="شعار" className="w-full h-full object-cover" />
                 )}
               </div>
-              <h1 className="text-lg font-bold text-gray-900 block">{settings?.app_name || 'أحلى شباب'}</h1>
+              <h1 className="text-lg font-bold text-blue-700 block">{settings?.app_name || 'أحلى شباب'}</h1>
             </Link>
           </div>
 

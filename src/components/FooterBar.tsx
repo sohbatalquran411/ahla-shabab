@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 const NAV_ITEMS = [
   {
-    href: '/',
+    href: '/dashboard',
     label: 'الرئيسية',
     icon: (active: boolean) => (
       <svg className="w-6 h-6" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.5}>
@@ -34,15 +34,15 @@ export default function FooterBar() {
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-gray-200/60 safe-area-bottom">
       <div className="max-w-lg mx-auto flex items-center justify-around h-16 px-4">
         {NAV_ITEMS.map(item => {
-          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+          const isActive = pathname === item.href || pathname.startsWith(item.href)
           return (
             <Link
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-0.5 px-6 py-1 rounded-2xl transition-all duration-200 ${
-                isActive
-                  ? 'text-teal-600 scale-110'
-                  : 'text-gray-400 hover:text-gray-600'
+                 isActive
+                  ? 'text-blue-700 scale-110'
+                  : 'text-gray-400 hover:text-blue-600'
               }`}
             >
               {item.icon(isActive)}

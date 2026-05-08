@@ -48,11 +48,10 @@ export default function ResultsPage() {
   const [selectedGender, setSelectedGender] = useState<string>('')
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Modal state
-  const [showModal, setShowModal] = useState(false)
-  const [selectedResponse, setSelectedResponse] = useState<FormResponse | null>(null)
-  const [responseDetails, setResponseDetails] = useState<any>(null)
-  const [loadingDetails, setLoadingDetails] = useState(false)
+  // Expand state
+  const [expandedRow, setExpandedRow] = useState<string | null>(null)
+  const [detailsMap, setDetailsMap] = useState<Record<string, any>>({})
+  const [loadingDetails, setLoadingDetails] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     checkUserAndFetchData()
@@ -180,27 +179,33 @@ export default function ResultsPage() {
     }
   }
 
-  async function viewResponseDetails(response: FormResponse) {
-    setSelectedResponse(response)
-    setShowModal(true)
-    setLoadingDetails(true)
+  async function toggleResponseDetails(response: FormResponse) {
+    if (expandedRow === response.id) {
+      setExpandedRow(null)
+      return
+    }
+
+    setExpandedRow(response.id)
+
+    if (detailsMap[response.id]) return
+
+    setLoadingDetails(prev => ({ ...prev, [response.id]: true }))
 
     try {
-      // Fetch questions and answers
       const { data: questions } = await supabase
-.from('questions')
+        .from('questions')
         .select('id, text, type, points, options')
         .eq('form_id', response.form_id)
         .order('order_index')
 
-      const answers = responseDetails?.answers || {}
+      const answers = (response as any).answers || {}
 
-      setResponseDetails({ questions, answers })
+      setDetailsMap(prev => ({ ...prev, [response.id]: { questions, answers } }))
     } catch (error) {
       console.error('Error fetching details:', error)
     }
 
-    setLoadingDetails(false)
+    setLoadingDetails(prev => ({ ...prev, [response.id]: false }))
   }
 
   function getPercentageScore(score: number, maxScore: number) {
@@ -440,50 +445,118 @@ export default function ResultsPage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredResponses.map((response) => {
                     const percentage = getPercentageScore(Number(response.score), Number(response.max_score))
+                    const isExpanded = expandedRow === response.id
                     return (
-                      <tr key={response.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                              response.profiles?.gender === 'male' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'
-                            }`}>
-                              {response.profiles?.name?.charAt(0) || '?'}
+                      <Fragment key={response.id}>
+                        <tr
+                          className={`hover:bg-gray-50 cursor-pointer transition-colors ${isExpanded ? 'bg-emerald-50/50' : ''}`}
+                          onClick={() => toggleResponseDetails(response)}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                response.profiles?.gender === 'male' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'
+                              }`}>
+                                {response.profiles?.name?.charAt(0) || '?'}
+                              </div>
+                              <div>
+                                <div className="font-medium text-gray-900">{response.profiles?.name || 'غير معروف'}</div>
+                                <div className="text-sm text-gray-500">{response.profiles?.email}</div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="font-medium text-gray-900">{response.profiles?.name || 'غير معروف'}</div>
-                              <div className="text-sm text-gray-500">{response.profiles?.email}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{response.forms?.name || 'غير معروف'}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`font-bold ${getScoreColor(percentage)}`}>
+                              {Number(response.score).toFixed(1)}
+                            </span>
+                            <span className="text-gray-400"> / </span>
+                            <span className="text-gray-500">
+                              {Number(response.max_score).toFixed(1)}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getScoreBgColor(percentage)}`}>
+                              {percentage}%
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(response.submitted_at)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <div className={`flex items-center gap-1 transition-colors ${isExpanded ? 'text-emerald-600' : 'text-gray-400'}`}>
+                              <svg className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                              <span className="text-xs">تفاصيل</span>
                             </div>
-                          </div>
-                        </td>
-<td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{response.forms?.name || 'غير معروف'}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`font-bold ${getScoreColor(percentage)}`}>
-                            {Number(response.score).toFixed(1)}
-                          </span>
-                          <span className="text-gray-400"> / </span>
-                          <span className="text-gray-500">
-                            {Number(response.max_score).toFixed(1)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${getScoreBgColor(percentage)}`}>
-                            {percentage}%
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(response.submitted_at)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button
-                            onClick={() => viewResponseDetails(response)}
-                            className="text-emerald-600 hover:text-emerald-900 font-medium"
-                          >
-                            عرض التفاصيل
-                          </button>
-                        </td>
-                      </tr>
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <tr>
+                            <td colSpan={6} className="px-6 py-0">
+                              {loadingDetails[response.id] ? (
+                                <div className="flex items-center justify-center py-8">
+                                  <div className="animate-spin rounded-full h-6 w-6 border-2 border-emerald-500 border-t-transparent"></div>
+                                  <span className="mr-3 text-gray-500 text-sm">جاري تحميل التفاصيل...</span>
+                                </div>
+                              ) : detailsMap[response.id]?.questions?.length > 0 ? (
+                                <div className="py-4 space-y-3">
+                                  {detailsMap[response.id].questions.map((q: any, index: number) => {
+                                    const answer = detailsMap[response.id].answers?.[q.id]
+                                    return (
+                                      <div key={q.id} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                        <div className="flex items-start gap-3">
+                                          <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-medium shrink-0 mt-0.5">
+                                            {index + 1}
+                                          </span>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-gray-900 text-sm">{q.text}</p>
+                                            <div className="mt-2 text-sm">
+                                              {q.type === 'text' || q.type === 'textarea' ? (
+                                                <div className="bg-white rounded-lg p-3 border border-gray-200">
+                                                  <p className="text-gray-700">{answer?.value || 'لم يتم الإجابة'}</p>
+                                                </div>
+                                              ) : q.type === 'scale' ? (
+                                                <div className="flex items-center gap-2">
+                                                  <span className="text-gray-500">الإجابة:</span>
+                                                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                                                    {answer?.value || 'لم يتم الإجابة'}
+                                                  </span>
+                                                </div>
+                                              ) : (
+                                                <div>
+                                                  <p className="text-gray-500">الإجابة: <span className="text-gray-900 font-medium">
+                                                    {Array.isArray(answer?.value) ? answer.value.join(', ') : answer?.value || 'لم يتم الإجابة'}
+                                                  </span></p>
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                                              <span>النقاط: {q.points || 0}</span>
+                                              {answer?.points !== undefined && (
+                                                <span className={answer.points > 0 ? 'text-emerald-600 font-medium' : 'text-red-600 font-medium'}>
+                                                  الدرجة: {answer.points}
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              ) : (
+                                <div className="text-center py-6 text-gray-400 text-sm">
+                                  لا توجد تفاصيل إضافية
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
                     )
                   })}
                 </tbody>
