@@ -903,7 +903,50 @@ const params = useParams()
 
           <h2 className="text-xl font-bold text-gray-900 mb-6">معلومات النموذج</h2>
 
-          
+          {(() => {
+            const questions = formData.questions || []
+            let totalPoints = 0
+            questions.forEach((q: any) => {
+              if (q.type === 'file_upload') return
+              if (q.type === 'single_choice') {
+                totalPoints += Math.max(0, ...parseOptions(q.options).map((o:any) => o.points || 0))
+              } else if (q.type === 'multiple_choice') {
+                totalPoints += parseOptions(q.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
+              } else if (q.type === 'dropdown') {
+                const opts = parseOptions(q.options)
+                if (q.dropdown_type === 'multiple') {
+                  totalPoints += (q.correct_option_ids || []).reduce((s:number, id:string) => {
+                    const opt = opts.find((o:any) => o.id === id)
+                    return s + (opt?.points || 0)
+                  }, 0)
+                } else {
+                  const opt = opts.find((o:any) => o.id === q.correct_option_id)
+                  totalPoints += opt?.points || 0
+                }
+              } else if (q.type === 'ranking') {
+                totalPoints += parseOptions(q.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
+              } else if (q.type === 'matrix') {
+                const colSum = (q.matrix_columns || []).reduce((s:number, c:any) => s + (c.points || 0), 0)
+                totalPoints += colSum * (q.matrix_rows || []).length
+              } else if (q.type === 'scale') {
+                totalPoints += Math.max(5, ...parseOptions(q.options).map((o:any) => o.points || 0))
+              } else {
+                totalPoints += q.points || 0
+              }
+            })
+            return (
+              <div className="flex items-center gap-4 mb-6 p-3 bg-gradient-to-l from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+                <div className="flex-1 flex items-center gap-2">
+                  <span className="text-sm text-gray-600">عدد الأسئلة:</span>
+                  <span className="font-bold text-gray-900">{questions.length}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">إجمالي النقاط:</span>
+                  <span className="font-bold text-blue-700">{totalPoints}</span>
+                </div>
+              </div>
+            )
+          })()}
 
           <div className="space-y-4">
 
@@ -1502,6 +1545,24 @@ const params = useParams()
                 {/* Bulk text import for dropdown */}
                 {question.type === 'dropdown' && (
                   <div className="ms-2 sm:ms-11 space-y-3">
+                    {/* Single / Multi toggle */}
+                    <div className="flex gap-3 bg-gray-50 rounded-lg p-2 border border-gray-200">
+                      <button
+                        type="button"
+                        onClick={() => updateQuestion(qIndex, { dropdown_type: 'single', correct_option_ids: [], correct_option_id: undefined })}
+                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${question.dropdown_type === 'single' ? 'bg-white text-blue-700 shadow-sm border border-blue-200' : 'text-gray-600 hover:text-gray-800'}`}
+                      >
+                        اختيار واحد
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateQuestion(qIndex, { dropdown_type: 'multiple', correct_option_id: undefined })}
+                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${question.dropdown_type === 'multiple' ? 'bg-white text-blue-700 shadow-sm border border-blue-200' : 'text-gray-600 hover:text-gray-800'}`}
+                      >
+                        اختيار متعدد
+                      </button>
+                    </div>
+
                     <p className="text-sm font-medium text-gray-700">الخيارات:</p>
                     {/* Bulk import */}
                     <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
@@ -1523,7 +1584,11 @@ const params = useParams()
                         إضافة الخيارات
                       </button>
                     </div>
-                    {parseOptions(question.options).map((option: any, oIndex: number) => (
+                    {parseOptions(question.options).map((option: any, oIndex: number) => {
+                      const isMulti = question.dropdown_type === 'multiple'
+                      const correctIds = question.correct_option_ids || []
+                      const isCorrect = isMulti ? correctIds.includes(option.id) : question.correct_option_id === option.id
+                      return (
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
                         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
                           <span className="text-gray-400">▼</span>
@@ -1537,10 +1602,19 @@ const params = useParams()
                           <div className="flex items-center gap-2">
                             <label className="flex items-center gap-1 text-sm whitespace-nowrap">
                               <input
-                                type="radio"
+                                type={isMulti ? 'checkbox' : 'radio'}
                                 name={`correct_${question.id}`}
-                                checked={question.correct_option_id === option.id}
-                                onChange={() => updateQuestion(qIndex, { correct_option_id: option.id })}
+                                checked={isCorrect}
+                                onChange={() => {
+                                  if (isMulti) {
+                                    const newIds = isCorrect
+                                      ? correctIds.filter((id: string) => id !== option.id)
+                                      : [...correctIds, option.id]
+                                    updateQuestion(qIndex, { correct_option_ids: newIds })
+                                  } else {
+                                    updateQuestion(qIndex, { correct_option_id: question.correct_option_id === option.id ? undefined : option.id })
+                                  }
+                                }}
                                 className="w-4 h-4 text-green-600"
                               />
                               <span className="text-green-700 text-xs">صحيح</span>
@@ -1562,7 +1636,7 @@ const params = useParams()
                           </button>
                         </div>
                       </div>
-                    ))}
+                    )})}
                     <button
                       onClick={() => addOption(qIndex)}
                       className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"

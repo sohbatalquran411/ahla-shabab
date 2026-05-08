@@ -1,44 +1,9 @@
-const CACHE_NAME = 'ahla-shabab-v1';
-const urlsToCache = [
-  '/',
-  '/login',
-  '/dashboard',
-  '/manifest.json'
-];
+const CACHE_NAME = 'ahla-shabab-v2';
 
-// Install event
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-  );
+  self.skipWaiting();
 });
 
-// Fetch event
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request)
-          .then((response) => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-            return response;
-          });
-      })
-  );
-});
-
-// Activate event
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -50,5 +15,53 @@ self.addEventListener('activate', (event) => {
         })
       );
     })
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET requests and browser extensions
+  if (request.method !== 'GET') return;
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
+  // Cache-first for static assets (JS, CSS, images, fonts)
+  if (
+    url.pathname.startsWith('/_next/static/') ||
+    url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot)$/)
+  ) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // Network-first for navigation and API requests
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(request).then((cached) => {
+          if (cached) return cached;
+          return caches.match('/');
+        });
+      })
   );
 });

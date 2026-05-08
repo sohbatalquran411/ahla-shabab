@@ -289,6 +289,13 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
               score += opt.points || 0
             }
           })
+        } else if (q.type === 'ranking' && Array.isArray(answer) && Array.isArray(options)) {
+          answer.forEach((optId: string, pos: number) => {
+            const correctOptAtPos = options[pos]
+            if (correctOptAtPos && optId === correctOptAtPos.id) {
+              score += correctOptAtPos.points || 0
+            }
+          })
         } else if (q.type === 'scale') {
           score += parseFloat(String(answer)) || 0
         } else if (q.type === 'text' || q.type === 'textarea') {

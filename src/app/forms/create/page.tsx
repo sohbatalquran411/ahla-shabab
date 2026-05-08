@@ -545,6 +545,51 @@ const searchParams = useSearchParams()
         {/* Form Basic Info */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-6">معلومات الفورم</h2>
+
+          {(() => {
+            const questions = formData.questions || []
+            let totalPoints = 0
+            questions.forEach((q: any) => {
+              if (q.type === 'file_upload') return
+              if (q.type === 'single_choice') {
+                totalPoints += Math.max(0, ...parseOptions(q.options).map((o:any) => o.points || 0))
+              } else if (q.type === 'multiple_choice') {
+                totalPoints += parseOptions(q.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
+              } else if (q.type === 'dropdown') {
+                const opts = parseOptions(q.options)
+                if (q.dropdown_type === 'multiple') {
+                  totalPoints += (q.correct_option_ids || []).reduce((s:number, id:string) => {
+                    const opt = opts.find((o:any) => o.id === id)
+                    return s + (opt?.points || 0)
+                  }, 0)
+                } else {
+                  const opt = opts.find((o:any) => o.id === q.correct_option_id)
+                  totalPoints += opt?.points || 0
+                }
+              } else if (q.type === 'ranking') {
+                totalPoints += parseOptions(q.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
+              } else if (q.type === 'matrix') {
+                const colSum = (q.matrix_columns || []).reduce((s:number, c:any) => s + (c.points || 0), 0)
+                totalPoints += colSum * (q.matrix_rows || []).length
+              } else if (q.type === 'scale') {
+                totalPoints += Math.max(5, ...parseOptions(q.options).map((o:any) => o.points || 0))
+              } else {
+                totalPoints += q.points || 0
+              }
+            })
+            return (
+              <div className="flex items-center gap-4 mb-6 p-3 bg-gradient-to-l from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+                <div className="flex-1 flex items-center gap-2">
+                  <span className="text-sm text-gray-600">عدد الأسئلة:</span>
+                  <span className="font-bold text-gray-900">{questions.length}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">إجمالي النقاط:</span>
+                  <span className="font-bold text-blue-700">{totalPoints}</span>
+                </div>
+              </div>
+            )
+          })()}
           
           <div className="space-y-4">
             {/* Image Upload */}
