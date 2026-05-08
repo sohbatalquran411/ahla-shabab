@@ -224,7 +224,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
 
     return (
       <div className="mr-8 mt-3 space-y-2">
-        {mainOption.sub_options.map((subOpt: any, sIdx: number) => {
+        {(Array.isArray(mainOption.sub_options) ? mainOption.sub_options : []).map((subOpt: any, sIdx: number) => {
           const subOptionId = `${mainOption.id}_sub_${subOpt.id}`
           const subSelected = answers[question.id] === subOptionId || 
             (Array.isArray(answers[question.id]) && answers[question.id].includes(subOptionId))
@@ -304,7 +304,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
       case 'single_choice':
         return (
           <div className="space-y-3">
-            {options.map((option: any, idx: number) => {
+            {(Array.isArray(options) ? options : []).map((option: any, idx: number) => {
               const optionId = option.id || `opt_${idx}`
               const isSelected = currentAnswer === optionId
               
@@ -345,7 +345,7 @@ checked={isSelected}
       case 'multiple_choice':
         return (
           <div className="space-y-3">
-            {options.map((option: any, idx: number) => {
+            {(Array.isArray(options) ? options : []).map((option: any, idx: number) => {
               const optionId = option.id || `opt_${idx}`
               const selected = Array.isArray(currentAnswer) ? currentAnswer : []
               const isSelected = selected.includes(optionId)
@@ -429,7 +429,7 @@ checked={isSelected}
           <div className="space-y-2 text-sm text-gray-500">
             <p>ترتيب العناصر (ستتمكن من السحب لإعادة الترتيب)</p>
             <div className="bg-gray-50 rounded-xl p-4">
-              {options.map((option: any, idx: number) => (
+              {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
                 <div key={option.id || idx} className="flex items-center gap-3 p-2 bg-white rounded-lg mb-2">
                   <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs">
                     {idx + 1}
@@ -446,7 +446,7 @@ checked={isSelected}
           <div className="space-y-3">
             <p className="text-sm text-gray-500">أسئلة متعددة:</p>
             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-              {options.map((option: any, idx: number) => (
+              {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
                 <div key={option.id || idx} className="flex items-center gap-3">
                   <span className="flex-1 text-sm">{option.text}</span>
                   <div className="flex gap-1">

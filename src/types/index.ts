@@ -39,6 +39,10 @@ export type QuestionType =
   | 'scale'
   | 'ranking'
   | 'matrix'
+  | 'dropdown'
+  | 'date'
+  | 'time'
+  | 'file_upload'
 
 export interface QuestionOption {
   id: string

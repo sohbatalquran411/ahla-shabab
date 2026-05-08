@@ -574,7 +574,7 @@ export default function ResultsPage() {
                             </p>
                             {q.options?.length > 0 && (
                               <div className="mt-2 text-sm text-gray-500">
-                                الخيارات: {q.options.map((o: any) => o.text).join(', ')}
+                                الخيارات: {(Array.isArray(q.options) ? q.options : []).map((o: any) => o.text).join(', ')}
                               </div>
                             )}
                           </div>

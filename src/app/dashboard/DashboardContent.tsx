@@ -115,9 +115,7 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               {settings.app_logo ? (
                 <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-3xl font-bold text-blue-700">
-                  {user.name.charAt(0)}
-                </span>
+                <img src="/icon.svg" alt="شعار" className="w-full h-full object-cover" />
               )}
             </div>
             <h1 className="text-gray-900 font-bold text-xl mb-1">{settings.app_name}</h1>

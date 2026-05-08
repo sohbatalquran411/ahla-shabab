@@ -60,9 +60,7 @@ export default function Header({ user, settings, onMenuClick, showMenuButton = t
                 {settings?.app_logo ? (
                   <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-sm font-bold text-blue-700">
-                    {user?.name?.charAt(0) || 'م'}
-                  </span>
+                  <img src="/icon.svg" alt="شعار" className="w-full h-full object-cover" />
                 )}
               </div>
               <h1 className="text-lg font-bold text-gray-900 block">{settings?.app_name || 'أحلى شباب'}</h1>
