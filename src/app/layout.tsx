@@ -16,6 +16,7 @@ const reemKufi = Reem_Kufi({
 
 import { createClient } from '@/utils/supabase/server';
 import ServiceWorker from '@/components/ServiceWorker';
+import FooterBar from '@/components/FooterBar';
 
 export async function generateMetadata(): Promise<Metadata> {
   let appName = "أحلى شباب";
@@ -77,9 +78,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="min-h-full flex flex-col font-sans antialiased">
+      <body className="min-h-full flex flex-col font-sans antialiased pb-16">
         <ServiceWorker />
         {children}
+        <FooterBar />
       </body>
     </html>
   );
