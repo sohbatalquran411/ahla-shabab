@@ -37,6 +37,72 @@ interface Question {
   options: any
 }
 
+export function getDisplayAnswer(q: Question, answerVal: any) {
+  if (answerVal === undefined || answerVal === null || answerVal === '') return ''
+
+  let options = q.options
+  if (typeof options === 'string') {
+    try { options = JSON.parse(options) } catch (e) { options = [] }
+  }
+
+  if (q.type === 'text' || q.type === 'textarea' || q.type === 'scale') {
+    return String(answerVal)
+  }
+
+  if (q.type === 'single_choice' || q.type === 'multiple_choice' || q.type === 'dropdown' || q.type === 'ranking') {
+    let opts = Array.isArray(options) ? options : (options?.options || [])
+    
+    const findText = (id: string) => {
+      const opt = opts.find((o: any) => o.id === id)
+      if (opt) return opt.text
+
+      if (id.includes('_sub_')) {
+        const parts = id.split('_sub_')
+        const mainOpt = opts.find((o: any) => o.id === parts[0])
+        if (mainOpt && Array.isArray(mainOpt.sub_options)) {
+          const subOpt = mainOpt.sub_options.find((s: any) => s.id === parts[1])
+          if (subOpt) return `${mainOpt.text} - ${subOpt.text}`
+        }
+      }
+      return id
+    }
+
+    if (Array.isArray(answerVal)) {
+      return answerVal.map(findText).join('، ')
+    } else {
+      return findText(String(answerVal))
+    }
+  }
+
+  if (q.type === 'matrix') {
+    let rows = options?.matrix_rows || []
+    let cols = options?.matrix_columns || []
+    if (rows.length === 0 && Array.isArray(options) && options[0]?.sub_options) {
+      rows = options
+      cols = options[0].sub_options
+    }
+    
+    let res: string[] = []
+    if (typeof answerVal === 'object' && answerVal !== null) {
+      Object.keys(answerVal).forEach(rowId => {
+        const rowText = rows.find((r: any) => r.id === rowId)?.text || rowId
+        let colVals = answerVal[rowId]
+        if (!Array.isArray(colVals)) colVals = [colVals]
+        
+        const colTexts = colVals.map((colId: string) => {
+          return cols.find((c: any) => c.id === colId)?.text || colId
+        })
+        
+        res.push(`${rowText}: ${colTexts.join('، ')}`)
+      })
+      return res.join('\n')
+    }
+    return JSON.stringify(answerVal)
+  }
+
+  return String(answerVal)
+}
+
 export default function ResultsPage() {
   const router = useRouter()
   const supabase = createClient()
@@ -491,16 +557,8 @@ export default function ResultsPage() {
                             {formatDate(response.submitted_at)}
                           </td>
                           {formQuestions.map(q => {
-                            const answer = response.answers?.[q.id]
-                            let displayValue = ''
-                            
-                            if (answer) {
-                              if (Array.isArray(answer.value)) {
-                                displayValue = answer.value.join('، ')
-                              } else {
-                                displayValue = String(answer.value || '')
-                              }
-                            }
+                            const answerVal = response.answers?.[q.id]
+                            const displayValue = getDisplayAnswer(q, answerVal)
                             
                             return (
                               <td 
