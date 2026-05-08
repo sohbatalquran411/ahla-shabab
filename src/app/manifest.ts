@@ -33,7 +33,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
       {
         src: appLogo,
         sizes: '192x192',
-        purpose: 'any maskable',
+        purpose: 'maskable',
       },
     ],
   }
