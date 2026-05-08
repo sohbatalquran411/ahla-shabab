@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useAppSettings } from '@/hooks/useAppSettings'
+import Header from '@/components/Header'
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const [projectId, setProjectId] = useState<string | null>(null)
@@ -11,13 +13,21 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   const [profile, setProfile] = useState<any>(null)
   const [project, setProject] = useState<any>(null)
   const [forms, setForms] = useState<any[]>([])
-  const [completedFormIds, setCompletedFormIds] = useState<string[]>([])
+  const [userResponses, setUserResponses] = useState<any[]>([])
+  const [showResultsModal, setShowResultsModal] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [deleteModal, setDeleteModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   
   const router = useRouter()
   const supabase = createClient()
+  const { settings } = useAppSettings()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
 
   useEffect(() => {
     params.then(({ id }) => setProjectId(id))
@@ -67,13 +77,26 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
       setProfile(profileData)
       setProject(projectData)
       setForms(formsData || [])
-      setCompletedFormIds(responsesData?.map((r: any) => r.form_id) || [])
+      setUserResponses(responsesData || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
     }
   }
+
+
+  const handleDeleteResponse = async (responseId: string) => {
+    if (!confirm('هل أنت متأكد من حذف هذه الاستجابة؟')) return;
+    try {
+      const { error } = await supabase.from('form_responses').delete().eq('id', responseId);
+      if (error) throw error;
+      setUserResponses(prev => prev.filter(r => r.id !== responseId));
+    } catch (err) {
+      console.error(err);
+      alert('حدث خطأ أثناء الحذف');
+    }
+  };
 
   const handleDeleteProject = async () => {
     if (!projectId || profile?.role !== 'admin') return
@@ -127,24 +150,80 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            رجوع
-          </button>
-          <h1 className="text-lg font-bold text-blue-700">{project.name}</h1>
-          
-          {/* Management buttons removed as requested - management should be in admin panel only */}
-          <div className="w-8" />
+      <Header user={user} settings={settings} onMenuClick={() => setSidebarOpen(true)} />
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <aside className={`
+        fixed inset-y-0 right-0 z-50 w-2/3 max-w-sm bg-white shadow-2xl transform transition-transform duration-300 lg:hidden
+        ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}
+      `}>
+        <div className="h-full flex flex-col bg-white">
+          <div className="px-6 pt-8 pb-6 border-b border-gray-100 text-center relative">
+            <button 
+              onClick={() => setSidebarOpen(false)}
+              className="absolute top-4 left-4 p-2 text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-100 shadow-sm overflow-hidden">
+              {settings.app_logo ? (
+                <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
+              ) : (
+                <img src="/icon.svg" alt="شعار" className="w-full h-full object-cover" />
+              )}
+            </div>
+            <h1 className="text-gray-900 font-bold text-xl mb-1">{settings.app_name}</h1>
+            <p className="text-gray-500 text-sm">{settings.app_description}</p>
+          </div>
+
+          <nav className="flex-1 px-4 py-6 overflow-y-auto space-y-2">
+            <Link href="/dashboard" onClick={() => setSidebarOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95">
+              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+              </div>
+              <span className="font-medium">الرئيسية</span>
+            </Link>
+
+            <Link href="/profile" onClick={() => setSidebarOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95">
+              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 01 8 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              </div>
+              <span className="font-medium">الملف الشخصي</span>
+            </Link>
+
+            {user?.role === 'admin' && (
+              <>
+                <div className="h-px bg-gray-200 my-4"></div>
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3 px-3">الإدارة</p>
+                <Link href="/admin" onClick={() => setSidebarOpen(false)} className="flex items-center gap-4 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-2xl transition-all duration-200 active:scale-95">
+                  <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                  </div>
+                  <span className="font-medium">لوحة تحكم المدير</span>
+                </Link>
+              </>
+            )}
+          </nav>
+
+          <div className="p-4 border-t border-gray-100">
+            <button onClick={handleLogout} className="flex items-center justify-center gap-3 w-full px-4 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl transition-all duration-200 active:scale-95">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              <span className="font-medium">تسجيل الخروج</span>
+            </button>
+          </div>
         </div>
-      </header>
+      </aside>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Project Info */}
@@ -201,7 +280,9 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {forms.map((form) => {
-            const isCompleted = completedFormIds.includes(form.id)
+            
+            const formResponses = userResponses.filter(r => r.form_id === form.id)
+            const isCompleted = formResponses.length > 0
             
             return (
               <div
@@ -217,11 +298,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                     </svg>
                   </div>
                   <div className="flex items-center gap-2">
-                    {isCompleted && (
-                      <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">
-                        مكتمل ✓
-                      </span>
-                    )}
                     {profile?.role === 'admin' && (
                       <div className="flex gap-1 relative z-10" onClick={e => e.stopPropagation()}>
                         <Link
@@ -250,20 +326,31 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                     )}
                   </div>
                 </div>
-                <Link href={`/forms/${form.id}`}>
+                
+                <Link href={`/forms/${form.id}`} className="block">
                   <h4 className="text-lg font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors">{form.name}</h4>
                   <p className="text-gray-600 text-sm line-clamp-2">
                     {form.description || 'لا يوجد وصف'}
                   </p>
-                  <div className="mt-4">
-                    <span className="text-blue-600 font-medium text-sm flex items-center gap-1">
-                      {isCompleted ? 'عرض النتيجة' : 'ابدأ الآن'}
-                      <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    </span>
-                  </div>
                 </Link>
+
+                <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+                  <Link href={`/forms/${form.id}`} className="text-blue-600 font-medium text-sm flex items-center gap-1 hover:text-blue-700">
+                    {isCompleted && !form.allow_multiple ? 'لقد قمت بالتسجيل مسبقاً' : 'تسجيل جديد'}
+                    <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </Link>
+
+                  {isCompleted && (
+                    <button
+                      onClick={() => setShowResultsModal(form.id)}
+                      className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1.5 rounded-lg hover:bg-purple-100 transition-colors"
+                    >
+                      عرض النتائج
+                    </button>
+                  )}
+                </div>
               </div>
             )
           })}
@@ -280,6 +367,57 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           )}
         </div>
       </main>
+
+      
+      {/* Results Modal */}
+      {showResultsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowResultsModal(null)} />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-2xl shadow-xl max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-gray-900">نتائج تسجيلاتك</h3>
+              <button onClick={() => setShowResultsModal(null)} className="text-gray-400 hover:text-gray-600">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-right text-sm">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="p-3 rounded-r-lg">التاريخ والوقت</th>
+                    <th className="p-3">النتيجة</th>
+                    <th className="p-3 rounded-l-lg">إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {userResponses.filter(r => r.form_id === showResultsModal).map(r => {
+                    const form = forms.find(f => f.id === r.form_id);
+                    return (
+                    <tr key={r.id} className="hover:bg-gray-50/50">
+                      <td className="p-3 text-gray-900" dir="ltr">{new Date(r.submitted_at).toLocaleString('ar-EG')}</td>
+                      <td className="p-3 text-blue-600 font-medium">{r.score} / {r.max_score}</td>
+                      <td className="p-3">
+                        {form?.allow_delete_responses && (
+                          <button
+                            onClick={() => handleDeleteResponse(r.id)}
+                            className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg flex items-center gap-1 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            حذف
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  )})}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {deleteModal && (

@@ -14,6 +14,11 @@ export interface User {
   avatar_url?: string
   created_at: string
   updated_at: string
+  time_limit?: number | null
+  expires_at?: string | null
+  allow_delete_responses?: boolean
+  randomize_questions?: boolean
+  allow_multiple?: boolean
 }
 
 // Project types
@@ -71,6 +76,11 @@ export interface Form {
   created_by: string
   created_at: string
   updated_at: string
+  time_limit?: number | null
+  expires_at?: string | null
+  allow_delete_responses?: boolean
+  randomize_questions?: boolean
+  allow_multiple?: boolean
   questions?: Question[]
 }
 

@@ -28,6 +28,9 @@ interface Form {
   description: string
   project_id: string
   allow_multiple: boolean
+  time_limit?: number | null
+  expires_at?: string | null
+  randomize_questions?: boolean
 }
 
 interface Project {
@@ -55,6 +58,55 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
   const [deletingResponse, setDeletingResponse] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [displayQuestions, setDisplayQuestions] = useState<Question[]>([]);
+  const [isExpired, setIsExpired] = useState(false);
+
+  useEffect(() => {
+    // Check expiration
+    if (form.expires_at) {
+      if (new Date() > new Date(form.expires_at)) {
+        setIsExpired(true);
+        return;
+      }
+    }
+
+    // Set Timer
+    if (form.time_limit && !submitted && !existingResponse) {
+      setTimeLeft(form.time_limit * 60);
+    }
+
+    // Set Questions (randomized or normal)
+    if (form.randomize_questions) {
+      const shuffled = [...questions].sort(() => 0.5 - Math.random());
+      setDisplayQuestions(shuffled);
+    } else {
+      setDisplayQuestions(questions);
+    }
+  }, [form, questions]);
+
+  useEffect(() => {
+    if (timeLeft === null || submitted || isExpired) return;
+    
+    if (timeLeft <= 0) {
+      handleSubmit();
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => (prev !== null ? prev - 1 : null));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, submitted, isExpired]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
 
   // Parse options if they're stringified JSON
   const parseOptions = (options: any) => {
@@ -109,7 +161,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
     let score = 0
     let maxScore = 0
 
-    questions.forEach((q) => {
+    displayQuestions.forEach((q) => {
       maxScore += q.points || 0
       const answer = answers[q.id]
       const options = parseOptions(q.options)
@@ -151,6 +203,24 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
               }
             }
           })
+        
+        } else if (q.type === 'matrix') {
+          // answer is an object { [rowId]: colId | colId[] }
+          const options = parseOptions(q.options)
+          if (options.length > 0 && options[0].sub_options) {
+            Object.values(answer).forEach(val => {
+              if (Array.isArray(val)) {
+                val.forEach(colId => {
+                  const col = options[0].sub_options.find((c: any) => c.id === colId)
+                  if (col) score += col.points || 0
+                })
+              } else {
+                const col = options[0].sub_options.find((c: any) => c.id === val)
+                if (col) score += col.points || 0
+              }
+            })
+          }
+
         } else if (q.type === 'scale') {
           score += parseFloat(String(answer)) || 0
         } else if (q.type === 'text' || q.type === 'textarea') {
@@ -167,7 +237,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
     setError('')
 
     // Validate required questions
-    for (const q of questions) {
+    for (const q of displayQuestions) {
       if (q.required) {
         const answer = answers[q.id]
         if (answer === undefined || answer === null || answer === '' || 
@@ -329,9 +399,7 @@ checked={isSelected}
                       className="w-5 h-5 text-blue-600"
                     />
                     <span className="flex-1 font-medium">{option.text}</span>
-                    {option.points > 0 && (
-                      <span className="text-sm text-blue-600">({option.points} نقطة)</span>
-                    )}
+                    
                   </label>
                   
                   {/* Sub-options */}
@@ -376,9 +444,7 @@ checked={isSelected}
                       className="w-5 h-5 text-blue-600 rounded"
                     />
                     <span className="flex-1 font-medium">{option.text}</span>
-                    {option.points > 0 && (
-                      <span className="text-sm text-blue-600">({option.points} نقطة)</span>
-                    )}
+                    
                   </label>
                   
                   {/* Sub-options */}
@@ -497,7 +563,7 @@ checked={isSelected}
                       {options[0].sub_options.map((col: any) => (
                         <th key={col.id} className="p-2 border-b border-gray-200 text-sm font-medium text-gray-600 text-center">
                           {col.text}
-                          {col.points > 0 && <span className="block text-xs text-blue-500">({col.points})</span>}
+                          
                         </th>
                       ))}
                     </tr>
@@ -509,15 +575,25 @@ checked={isSelected}
                         {options[0].sub_options.map((col: any) => (
                           <td key={col.id} className="p-3 text-center">
                             <input
-                              type="radio"
+                              type="checkbox"
                               name={`${question.id}_${row.id}`}
-                              checked={currentAnswer?.[row.id] === col.id}
-                              onChange={() => {
+                              checked={Array.isArray(currentAnswer?.[row.id]) ? currentAnswer[row.id].includes(col.id) : currentAnswer?.[row.id] === col.id}
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                let rowAns = currentAnswer?.[row.id] || [];
+                                if (!Array.isArray(rowAns)) rowAns = [rowAns];
+                                
+                                if (isChecked) {
+                                  rowAns = [...rowAns, col.id];
+                                } else {
+                                  rowAns = rowAns.filter((id: any) => id !== col.id);
+                                }
+                                
                                 setAnswers({
                                   ...answers,
                                   [question.id]: {
                                     ...currentAnswer,
-                                    [row.id]: col.id
+                                    [row.id]: rowAns
                                   }
                                 })
                               }}
@@ -576,7 +652,7 @@ checked={isSelected}
             <option value="" disabled>اختر إجابة...</option>
             {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
               <option key={option.id || idx} value={option.id || `opt_${idx}`}>
-                {option.text} {option.points > 0 ? `(${option.points} نقطة)` : ''}
+                {option.text} ''
               </option>
             ))}
           </select>
@@ -798,7 +874,7 @@ checked={isSelected}
 
         {/* Questions */}
         <div className="space-y-6">
-          {questions.map((question, index) => (
+          {displayQuestions.map((question, index) => (
             <div 
               key={question.id} 
               className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"

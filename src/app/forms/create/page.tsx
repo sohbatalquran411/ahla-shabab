@@ -40,6 +40,10 @@ interface FormData {
   allow_multiple: boolean
   image_url: string
   questions: Question[]
+  time_limit?: number | null
+  expires_at?: string | null
+  allow_delete_responses?: boolean
+  randomize_questions?: boolean
 }
 
 interface ExistingForm {
@@ -64,6 +68,10 @@ function CreateFormContent() {
     description: '',
     target_gender: 'both',
     allow_multiple: false,
+    time_limit: null,
+    expires_at: '',
+    allow_delete_responses: false,
+    randomize_questions: false,
     image_url: '',
     questions: []
   })
@@ -292,6 +300,10 @@ function CreateFormContent() {
           description: formData.description,
           target_gender: formData.target_gender,
           allow_multiple: formData.allow_multiple,
+          time_limit: formData.time_limit,
+          expires_at: formData.expires_at || null,
+          allow_delete_responses: formData.allow_delete_responses,
+          randomize_questions: formData.randomize_questions,
           image_url: formData.image_url,
           created_by: profile.id,
           is_active: true
