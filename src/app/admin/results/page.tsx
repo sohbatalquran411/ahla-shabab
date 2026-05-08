@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Fragment } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -566,125 +566,6 @@ export default function ResultsPage() {
         </div>
       </main>
 
-      {/* Details Modal */}
-      {showModal && selectedResponse && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">تفاصيل الإجابة</h2>
-                  <p className="text-gray-500 mt-1">
-                    {selectedResponse.profiles?.name} - {selectedResponse.forms?.name}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="mt-4 flex items-center gap-4">
-                <span className={`px-4 py-2 rounded-full text-lg font-bold ${getScoreBgColor(getPercentageScore(Number(selectedResponse.score), Number(selectedResponse.max_score)))}`}>
-                  {getPercentageScore(Number(selectedResponse.score), Number(selectedResponse.max_score))}%
-                </span>
-                <span className="text-gray-600">
-                  {Number(selectedResponse.score).toFixed(1)} / {Number(selectedResponse.max_score).toFixed(1)} درجة
-                </span>
-              </div>
-            </div>
-
-            <div className="p-6">
-              {loadingDetails ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent mx-auto"></div>
-                </div>
-              ) : responseDetails?.questions?.length > 0 ? (
-                <div className="space-y-6">
-                  {responseDetails.questions.map((q: any, index: number) => {
-                    const answer = responseDetails.answers?.[q.id]
-                    const isCorrect = answer?.is_correct
-                    
-                    return (
-                      <div key={q.id} className="border rounded-xl p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-medium">
-                              {index + 1}
-                            </span>
-                            <span className="font-medium text-gray-900">{q.text}</span>
-                          </div>
-                          {isCorrect ? (
-                            <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs">
-                              صحيح
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs">
-                              خطأ
-                            </span>
-                          )}
-                        </div>
-                        
-                        {q.type === 'text' || q.type === 'textarea' ? (
-                          <div className="mt-3 bg-gray-50 rounded-lg p-3">
-                            <p className="text-gray-700">{answer?.value || 'لم يتم الإجابة'}</p>
-                          </div>
-                        ) : q.type === 'scale' ? (
-                          <div className="mt-3 flex items-center gap-2">
-                            <span className="text-gray-600">الإجابة:</span>
-                            <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
-                              {answer?.value || 'لم يتم الإجابة'}
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="mt-3">
-                            <p className="text-sm text-gray-600">الإجابة:</p>
-                            <p className="font-medium text-gray-900 mt-1">
-                              {Array.isArray(answer?.value) ? answer.value.join(', ') : answer?.value || 'لم يتم الإجابة'}
-                            </p>
-                            {q.options?.length > 0 && (
-                              <div className="mt-2 text-sm text-gray-500">
-                                الخيارات: {(Array.isArray(q.options) ? q.options : []).map((o: any) => o.text).join(', ')}
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        <div className="mt-3 flex items-center gap-4 text-sm">
-                          <span className="text-gray-500">
-                            النقاط: {q.points || 0}
-                          </span>
-                          {answer?.points !== undefined && (
-                            <span className={answer.points > 0 ? 'text-emerald-600' : 'text-red-600'}>
-                              الدرجة: {answer.points}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <p>لا توجد تفاصيل إضافية</p>
-                </div>
-              )}
-            </div>
-
-            <div className="p-6 border-t bg-gray-50">
-              <button
-                onClick={() => setShowModal(false)}
-                className="w-full px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition font-medium"
-              >
-                إغلاق
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
