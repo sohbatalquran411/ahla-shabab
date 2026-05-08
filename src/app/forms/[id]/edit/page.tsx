@@ -65,6 +65,14 @@ interface FormData {
 
   allow_multiple: boolean
 
+  time_limit?: number | null
+
+  expires_at?: string | null
+
+  allow_delete_responses?: boolean
+
+  randomize_questions?: boolean
+
   questions: Question[]
 
   project_id: string
@@ -249,6 +257,14 @@ const params = useParams()
         target_gender: form.target_gender || 'both',
 
         allow_multiple: form.allow_multiple || false,
+
+        time_limit: form.time_limit || null,
+
+        expires_at: form.expires_at || '',
+
+        allow_delete_responses: form.allow_delete_responses || false,
+
+        randomize_questions: form.randomize_questions || false,
 
         questions: formattedQuestions,
 
@@ -492,7 +508,15 @@ const params = useParams()
 
           allow_multiple: formData.allow_multiple,
 
-          is_active: formData.is_active
+          is_active: formData.is_active,
+
+          time_limit: formData.time_limit || null,
+
+          expires_at: formData.expires_at || null,
+
+          allow_delete_responses: formData.allow_delete_responses || false,
+
+          randomize_questions: formData.randomize_questions || false
 
         })
 
@@ -874,7 +898,169 @@ const params = useParams()
 
             </div>
 
+            {/* Timer Limit */}
 
+            <div className="bg-green-50 rounded-xl p-4">
+
+              <label className="flex items-start gap-3 cursor-pointer">
+
+                <input
+
+                  type="checkbox"
+
+                  checked={formData.time_limit !== null && formData.time_limit !== undefined}
+
+                  onChange={(e) => setFormData(prev => prev ? ({ ...prev, time_limit: e.target.checked ? 10 : null }) : null)}
+
+                  className="w-5 h-5 mt-1 text-green-600 rounded focus:ring-green-500"
+
+                />
+
+                <div className="flex-1">
+
+                  <span className="font-medium text-gray-800 block">تحديد وقت للإجابة</span>
+
+                  <span className="text-sm text-gray-600">تفعيل عداد تنازلي للمستخدمين لإكمال النموذج خلال مدة محددة</span>
+
+                  {formData.time_limit !== null && formData.time_limit !== undefined && (
+
+                    <div className="mt-2">
+
+                      <label className="text-sm text-gray-600 ml-2">الوقت (بالدقائق):</label>
+
+                      <input
+
+                        type="number"
+
+                        min="1"
+
+                        value={formData.time_limit}
+
+                        onChange={(e) => setFormData(prev => prev ? ({ ...prev, time_limit: parseInt(e.target.value) || 1 }) : null)}
+
+                        className="w-24 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-center"
+
+                      />
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              </label>
+
+            </div>
+
+            {/* Expiration Date */}
+
+            <div className="bg-red-50 rounded-xl p-4">
+
+              <label className="flex items-start gap-3 cursor-pointer">
+
+                <input
+
+                  type="checkbox"
+
+                  checked={!!formData.expires_at}
+
+                  onChange={(e) => setFormData(prev => prev ? ({ ...prev, expires_at: e.target.checked ? new Date(Date.now() + 86400000).toISOString().slice(0, 16) : '' }) : null)}
+
+                  className="w-5 h-5 mt-1 text-red-600 rounded focus:ring-red-500"
+
+                />
+
+                <div className="flex-1">
+
+                  <span className="font-medium text-gray-800 block">تاريخ ووقت الإغلاق</span>
+
+                  <span className="text-sm text-gray-600">إغلاق النموذج تلقائياً في تاريخ ووقت محدد</span>
+
+                  {formData.expires_at && (
+
+                    <div className="mt-2">
+
+                      <input
+
+                        type="datetime-local"
+
+                        value={formData.expires_at}
+
+                        onChange={(e) => setFormData(prev => prev ? ({ ...prev, expires_at: e.target.value }) : null)}
+
+                        className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg"
+
+                      />
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              </label>
+
+            </div>
+
+            {/* Allow Delete Responses */}
+
+            <div className="bg-orange-50 rounded-xl p-4">
+
+              <label className="flex items-start gap-3 cursor-pointer">
+
+                <input
+
+                  type="checkbox"
+
+                  checked={formData.allow_delete_responses || false}
+
+                  onChange={(e) => setFormData(prev => prev ? ({ ...prev, allow_delete_responses: e.target.checked }) : null)}
+
+                  className="w-5 h-5 mt-1 text-orange-600 rounded focus:ring-orange-500"
+
+                />
+
+                <div>
+
+                  <span className="font-medium text-gray-800 block">السماح بحذف الردود</span>
+
+                  <span className="text-sm text-gray-600">إظهار زر حذف بجانب كل تسجيل ليتمكن المستخدم من حذف ردوده بنفسه</span>
+
+                </div>
+
+              </label>
+
+            </div>
+
+            {/* Randomize Questions */}
+
+            <div className="bg-purple-50 rounded-xl p-4">
+
+              <label className="flex items-start gap-3 cursor-pointer">
+
+                <input
+
+                  type="checkbox"
+
+                  checked={formData.randomize_questions || false}
+
+                  onChange={(e) => setFormData(prev => prev ? ({ ...prev, randomize_questions: e.target.checked }) : null)}
+
+                  className="w-5 h-5 mt-1 text-purple-600 rounded focus:ring-purple-500"
+
+                />
+
+                <div>
+
+                  <span className="font-medium text-gray-800 block">ترتيب عشوائي للأسئلة</span>
+
+                  <span className="text-sm text-gray-600">عرض الأسئلة بترتيب مختلف لكل مستخدم لمنع الغش</span>
+
+                </div>
+
+              </label>
+
+            </div>
 
             <div className="bg-blue-50 rounded-xl p-4">
 
@@ -1023,6 +1209,7 @@ const params = useParams()
 
                   
 
+                  {!['single_choice', 'multiple_choice', 'dropdown', 'ranking', 'matrix'].includes(question.type) && (
                   <div className="flex items-center gap-2">
 
                     <label className="text-sm text-gray-700">النقاط:</label>
@@ -1042,6 +1229,7 @@ const params = useParams()
                     />
 
                   </div>
+                  )}
 
 
 

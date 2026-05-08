@@ -487,6 +487,95 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
               </label>
             </div>
 
+            {/* Timer Limit */}
+            <div className="bg-green-50 rounded-xl p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.time_limit !== null && formData.time_limit !== undefined}
+                  onChange={(e) => setFormData(prev => ({ ...prev, time_limit: e.target.checked ? 10 : null }))}
+                  className="w-5 h-5 mt-1 text-green-600 rounded focus:ring-green-500"
+                />
+                <div className="flex-1">
+                  <span className="font-medium text-gray-800 block">تحديد وقت للإجابة</span>
+                  <span className="text-sm text-gray-600">تفعيل عداد تنازلي للمستخدمين لإكمال النموذج خلال مدة محددة</span>
+                  {formData.time_limit !== null && formData.time_limit !== undefined && (
+                    <div className="mt-2">
+                      <label className="text-sm text-gray-600 ml-2">الوقت (بالدقائق):</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={formData.time_limit}
+                        onChange={(e) => setFormData(prev => ({ ...prev, time_limit: parseInt(e.target.value) || 1 }))}
+                        className="w-24 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-center"
+                      />
+                    </div>
+                  )}
+                </div>
+              </label>
+            </div>
+
+            {/* Expiration Date */}
+            <div className="bg-red-50 rounded-xl p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!formData.expires_at}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    expires_at: e.target.checked ? new Date(Date.now() + 86400000).toISOString().slice(0, 16) : ''
+                  }))}
+                  className="w-5 h-5 mt-1 text-red-600 rounded focus:ring-red-500"
+                />
+                <div className="flex-1">
+                  <span className="font-medium text-gray-800 block">تاريخ ووقت الإغلاق</span>
+                  <span className="text-sm text-gray-600">إغلاق النموذج تلقائياً في تاريخ ووقت محدد</span>
+                  {formData.expires_at && (
+                    <div className="mt-2">
+                      <input
+                        type="datetime-local"
+                        value={formData.expires_at}
+                        onChange={(e) => setFormData(prev => ({ ...prev, expires_at: e.target.value }))}
+                        className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+              </label>
+            </div>
+
+            {/* Allow Delete Responses */}
+            <div className="bg-orange-50 rounded-xl p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.allow_delete_responses || false}
+                  onChange={(e) => setFormData(prev => ({ ...prev, allow_delete_responses: e.target.checked }))}
+                  className="w-5 h-5 mt-1 text-orange-600 rounded focus:ring-orange-500"
+                />
+                <div>
+                  <span className="font-medium text-gray-800 block">السماح بحذف الردود</span>
+                  <span className="text-sm text-gray-600">إظهار زر حذف بجانب كل تسجيل ليتمكن المستخدم من حذف ردوده بنفسه</span>
+                </div>
+              </label>
+            </div>
+
+            {/* Randomize Questions */}
+            <div className="bg-purple-50 rounded-xl p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.randomize_questions || false}
+                  onChange={(e) => setFormData(prev => ({ ...prev, randomize_questions: e.target.checked }))}
+                  className="w-5 h-5 mt-1 text-purple-600 rounded focus:ring-purple-500"
+                />
+                <div>
+                  <span className="font-medium text-gray-800 block">ترتيب عشوائي للأسئلة</span>
+                  <span className="text-sm text-gray-600">عرض الأسئلة بترتيب مختلف لكل مستخدم لمنع الغش</span>
+                </div>
+              </label>
+            </div>
+
             <div className="bg-blue-50 rounded-xl p-4">
               <p className="text-blue-800 font-medium mb-2">المشروع: {projectName}</p>
               <p className="text-blue-600 text-sm">جميع الأسئلة ستضاف لهذا المشروع</p>
@@ -573,6 +662,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     <span className="text-sm text-gray-700">مطلوب</span>
                   </label>
                   
+                  {!['single_choice', 'multiple_choice', 'dropdown', 'ranking', 'matrix'].includes(question.type) && (
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-700">النقاط:</label>
                     <input
@@ -583,6 +673,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       className="w-20 px-2 py-1 bg-white border border-gray-200 rounded-lg text-center"
                     />
                   </div>
+                  )}
 
                   <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
                     {QUESTION_TYPES[question.type as QuestionType]?.label}

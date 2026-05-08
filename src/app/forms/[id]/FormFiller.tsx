@@ -30,6 +30,7 @@ interface Form {
   allow_multiple: boolean
   time_limit?: number | null
   expires_at?: string | null
+  allow_delete_responses?: boolean
   randomize_questions?: boolean
 }
 
@@ -331,9 +332,6 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
                   className={`w-4 h-4 ${question.type === 'multiple_choice' ? 'text-blue-600' : 'text-blue-600'}`}
                 />
                 <span className="flex-1 text-sm">{subOpt.text}</span>
-                {subOpt.points > 0 && (
-                  <span className="text-xs text-blue-600">({subOpt.points} نقطة)</span>
-                )}
               </label>
             </div>
           )
@@ -345,7 +343,6 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
   const renderQuestion = (question: Question, index: number) => {
     const currentAnswer = answers[question.id]
     const options = parseOptions(question.options)
-    const isCurrent = index === currentQuestionIndex
 
     switch (question.type) {
       case 'text':
@@ -652,7 +649,7 @@ checked={isSelected}
             <option value="" disabled>اختر إجابة...</option>
             {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
               <option key={option.id || idx} value={option.id || `opt_${idx}`}>
-                {option.text} ''
+                {option.text}
               </option>
             ))}
           </select>
@@ -888,11 +885,7 @@ checked={isSelected}
                     {question.text}
                     {question.required && <span className="text-red-500 mr-1">*</span>}
                   </h3>
-                  {question.points > 0 && (
-                    <p className="text-blue-600 text-sm mt-1">
-                      {question.points} نقطة
-                    </p>
-                  )}
+
                 </div>
               </div>
               {renderQuestion(question, index)}
