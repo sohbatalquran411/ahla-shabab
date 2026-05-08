@@ -77,7 +77,21 @@ function CreateFormContent() {
   })
 
   const router = useRouter()
-  const searchParams = useSearchParams()
+  
+
+  const parseOptions = (options: any): any[] => {
+    if (!options) return []
+    if (typeof options === 'string') {
+      try {
+        return JSON.parse(options)
+      } catch {
+        return []
+      }
+    }
+    return Array.isArray(options) ? options : []
+  }
+
+const searchParams = useSearchParams()
   const supabase = createClient()
 
   useEffect(() => {
@@ -174,7 +188,7 @@ function CreateFormContent() {
   const updateQuestion = (index: number, updates: Partial<Question>) => {
     setFormData(prev => ({
       ...prev,
-      questions: prev.questions.map((q, i) => 
+      questions: prev.questions.map((q: any, i: number) => 
         i === index ? { ...q, ...updates } : q
       )
     }))
@@ -183,7 +197,7 @@ function CreateFormContent() {
   const removeQuestion = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      questions: prev.questions.filter((_, i) => i !== index)
+      questions: prev.questions.filter((_: any, i: number) => i !== index)
     }))
   }
 
@@ -201,13 +215,13 @@ function CreateFormContent() {
 
   const removeOption = (questionIndex: number, optionIndex: number) => {
     updateQuestion(questionIndex, {
-      options: (formData.questions[questionIndex].options || []).filter((_, i) => i !== optionIndex)
+      options: parseOptions(formData.questions[questionIndex].options).filter((_: any, i: number) => i !== optionIndex)
     })
   }
 
   const updateOption = (questionIndex: number, optionIndex: number, updates: Partial<QuestionOption>) => {
     updateQuestion(questionIndex, {
-      options: (formData.questions[questionIndex].options || []).map((opt, i) =>
+      options: parseOptions(formData.questions[questionIndex].options).map((opt: any, i: number) =>
         i === optionIndex ? { ...opt, ...updates } : opt
       )
     })
@@ -239,7 +253,7 @@ function CreateFormContent() {
     const updatedOptions = [...question.options]
     updatedOptions[optionIndex] = {
       ...option,
-      sub_options: (option.sub_options || []).filter((_, i) => i !== subOptionIndex)
+      sub_options: parseOptions(option.sub_options).filter((_: any, i: number) => i !== subOptionIndex)
     }
 
     updateQuestion(questionIndex, { options: updatedOptions })
@@ -252,7 +266,7 @@ function CreateFormContent() {
     const updatedOptions = [...question.options]
     updatedOptions[optionIndex] = {
       ...option,
-      sub_options: (option.sub_options || []).map((sub, i) =>
+      sub_options: parseOptions(option.sub_options).map((sub: any, i: number) =>
         i === subOptionIndex ? { ...sub, ...updates } : sub
       )
     }
@@ -267,8 +281,8 @@ function CreateFormContent() {
       type: question.type,
       required: question.required || false,
       points: question.points || 0,
-      options: question.options || [],
-      sub_options: question.sub_options || []
+      options: parseOptions(question.options),
+      sub_options: parseOptions(question.sub_options)
     }
 
     setFormData(prev => ({
@@ -314,16 +328,16 @@ function CreateFormContent() {
       if (formError) throw formError
 
       // Create questions
-      const questionsToInsert = (formData.questions || []).map((q, index) => ({
+      const questionsToInsert = (formData.questions || []).map((q: any, index: number) => ({
         form_id: form.id,
         text: q.text,
         type: q.type,
         required: q.required,
         points: q.points,
         order_index: index,
-        options: JSON.stringify(q.options.map(opt => ({
+        options: JSON.stringify(parseOptions(q.options).map((opt: any) => ({
           ...opt,
-          sub_options: opt.sub_options?.map(sub => sub)
+          sub_options: parseOptions(opt.sub_options).map((sub: any) => sub)
         })))
       }))
 
@@ -502,7 +516,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
 
           {/* Questions List */}
           <div className="space-y-4">
-            {(formData.questions || []).map((question, qIndex) => (
+            {(formData.questions || []).map((question: any, qIndex: number) => (
               <div key={question.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                 <div className="flex items-start gap-3 mb-4">
                   <span className="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold text-sm">
@@ -571,7 +585,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                   </div>
 
                   <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
-                    {QUESTION_TYPES[question.type]?.label}
+                    {QUESTION_TYPES[question.type as QuestionType]?.label}
                   </span>
                 </div>
 
@@ -581,7 +595,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     <p className="text-sm font-medium text-gray-700">
                       {question.type === 'matrix' ? 'الأسئلة الفرعية (الصفوف):' : 'الخيارات:'}
                     </p>
-                    {(question.options || []).map((option, oIndex) => (
+                    {parseOptions(question.options).map((option: any, oIndex: number) => (
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
                         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
                           <span className="text-gray-400">
@@ -628,7 +642,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             {option.sub_options && (option.sub_options || []).length > 0 && (
                               <div className="bg-amber-50 rounded-lg p-2 space-y-2 border border-amber-200 overflow-x-auto">
                                 <p className="text-xs text-amber-700 font-medium">{question.type === 'matrix' ? 'الأعمدة:' : 'خيارات فرعية:'}</p>
-                                {(option.sub_options || []).map((subOpt, sIndex) => (
+                                {parseOptions(option.sub_options).map((subOpt: any, sIndex: number) => (
                                   <div key={subOpt.id} className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-white rounded-lg p-2 min-w-min">
                                     <span className="text-gray-400 text-sm">↳</span>
                                     <input
@@ -680,7 +694,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                   <div className="ms-2 sm:ms-11 bg-blue-50 rounded-lg p-4 overflow-x-auto">
                     <p className="text-sm font-medium text-blue-700 mb-3">مقياس التقييم (1-5)</p>
                     <div className="flex justify-between items-center min-w-[200px]">
-                      {(question.options || []).map((opt) => (
+                      {parseOptions(question.options).map((opt: any) => (
                         <div key={opt.id} className="text-center">
                           <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold mb-1">
                             {opt.text}
@@ -689,7 +703,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             type="number"
                             value={opt.points}
                             onChange={(e) => {
-                              const idx = (question.options || []).findIndex(o => o.id === opt.id)
+                              const idx = (question.options || []).findIndex((o: any) => o.id === opt.id)
                               updateOption(qIndex, idx, { points: Number(e.target.value) })
                             }}
                             className="w-12 px-1 py-1 border border-blue-200 rounded text-center text-sm"

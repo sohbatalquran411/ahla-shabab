@@ -92,7 +92,21 @@ function EditFormContent() {
 
   const router = useRouter()
 
-  const params = useParams()
+  
+
+  const parseOptions = (options: any): any[] => {
+    if (!options) return []
+    if (typeof options === 'string') {
+      try {
+        return JSON.parse(options)
+      } catch {
+        return []
+      }
+    }
+    return Array.isArray(options) ? options : []
+  }
+
+const params = useParams()
 
   const formId = params.id as string
 
@@ -342,7 +356,7 @@ function EditFormContent() {
 
       ...prev,
 
-      questions: prev.questions.map((q, i) => 
+      questions: prev.questions.map((q: any, i: number) => 
 
         i === index ? { ...q, ...updates } : q
 
@@ -364,7 +378,7 @@ function EditFormContent() {
 
       ...prev,
 
-      questions: prev.questions.filter((_, i) => i !== index)
+      questions: prev.questions.filter((_: any, i: number) => i !== index)
 
     }) : null)
 
@@ -408,7 +422,7 @@ function EditFormContent() {
 
     updateQuestion(questionIndex, {
 
-      options: (formData.questions[questionIndex].options || []).filter((_, i) => i !== optionIndex)
+      options: parseOptions(formData.questions[questionIndex].options).filter((_: any, i: number) => i !== optionIndex)
 
     })
 
@@ -424,7 +438,7 @@ function EditFormContent() {
 
     updateQuestion(questionIndex, {
 
-      options: (formData.questions[questionIndex].options || []).map((opt, i) =>
+      options: parseOptions(formData.questions[questionIndex].options).map((opt: any, i: number) =>
 
         i === optionIndex ? { ...opt, ...updates } : opt
 
@@ -508,7 +522,7 @@ function EditFormContent() {
 
       // Insert updated questions
 
-      const questionsToInsert = (formData.questions || []).map((q, index) => ({
+      const questionsToInsert = (formData.questions || []).map((q: any, index: number) => ({
 
         form_id: formData.id,
 
@@ -522,11 +536,11 @@ function EditFormContent() {
 
         order_index: index,
 
-        options: JSON.stringify(q.options.map(opt => ({
+        options: JSON.stringify(parseOptions(q.options).map((opt: any) => ({
 
           ...opt,
 
-          sub_options: opt.sub_options?.map(sub => sub)
+          sub_options: parseOptions(opt.sub_options).map((sub: any) => sub)
 
         })))
 
@@ -896,7 +910,7 @@ function EditFormContent() {
 
           <div className="space-y-4">
 
-            {(formData.questions || []).map((question, qIndex) => (
+            {(formData.questions || []).map((question: any, qIndex: number) => (
 
               <div key={question.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
 
@@ -1033,7 +1047,7 @@ function EditFormContent() {
 
                   <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">
 
-                    {QUESTION_TYPES[question.type]?.label}
+                    {QUESTION_TYPES[question.type as QuestionType]?.label}
 
                   </span>
 
@@ -1049,7 +1063,7 @@ function EditFormContent() {
 
                     <p className="text-sm font-medium text-gray-700">{question.type === 'matrix' ? 'الأسئلة الفرعية (الصفوف):' : 'الخيارات:'}</p>
 
-                    {(question.options || []).map((option, oIndex) => (
+                    {parseOptions(question.options).map((option: any, oIndex: number) => (
 
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
 
@@ -1143,7 +1157,7 @@ function EditFormContent() {
                     <p className="text-sm font-medium text-blue-700 mb-3">مقياس التقييم (1-5)</p>
                     <div className="flex justify-between items-center min-w-[200px]">
 
-                      {(question.options || []).map((opt) => (
+                      {parseOptions(question.options).map((opt: any) => (
 
                         <div key={opt.id} className="text-center">
 
@@ -1161,7 +1175,7 @@ function EditFormContent() {
 
                             onChange={(e) => {
 
-                              const idx = (question.options || []).findIndex(o => o.id === opt.id)
+                              const idx = (question.options || []).findIndex((o: any) => o.id === opt.id)
 
                               updateOption(qIndex, idx, { points: Number(e.target.value) })
 
