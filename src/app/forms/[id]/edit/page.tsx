@@ -31,6 +31,18 @@ const QUESTION_TYPES = {
 
 
 
+interface MatrixRow {
+  id: string
+  text: string
+  required: boolean
+}
+
+interface MatrixColumn {
+  id: string
+  text: string
+  points: number
+}
+
 interface Question {
 
   id: string
@@ -48,6 +60,13 @@ interface Question {
   sub_options?: QuestionOption[]
 
   order_index?: number
+
+  matrix_rows?: MatrixRow[]
+  matrix_columns?: MatrixColumn[]
+  bulk_text?: string
+  correct_option_id?: string
+  dropdown_type?: 'single' | 'multiple'
+  correct_option_ids?: string[]
 
 }
 
@@ -226,23 +245,38 @@ const params = useParams()
 
 
 
-      const formattedQuestions: Question[] = (questions || []).map(q => ({
+      const formattedQuestions: Question[] = (questions || []).map(q => {
+        const parsedOpts = q.options ? JSON.parse(q.options) : []
+        let matrix_rows: MatrixRow[] | undefined
+        let matrix_columns: MatrixColumn[] | undefined
+        let dropdown_type: 'single' | 'multiple' | undefined
+        let correct_option_ids: string[] | undefined
 
-        id: q.id,
+        if (q.type === 'matrix' && parsedOpts.matrix_rows) {
+          matrix_rows = parsedOpts.matrix_rows
+          matrix_columns = parsedOpts.matrix_columns || []
+        }
 
-        text: q.text,
+        if (q.type === 'dropdown' && parsedOpts.dropdown_type) {
+          dropdown_type = parsedOpts.dropdown_type
+          correct_option_ids = parsedOpts.correct_option_ids || []
+        }
 
-        type: q.type,
-
-        required: q.required || false,
-
-        points: q.points || 0,
-
-        options: q.options ? JSON.parse(q.options) : [],
-
-        order_index: q.order_index
-
-      }))
+        return {
+          id: q.id,
+          text: q.text,
+          type: q.type,
+          required: q.required || false,
+          points: q.points || 0,
+          options: parsedOpts.matrix_rows ? [] : (parsedOpts.options || parsedOpts),
+          order_index: q.order_index,
+          matrix_rows,
+          matrix_columns,
+          dropdown_type,
+          correct_option_ids,
+          correct_option_id: correct_option_ids?.[0]
+        }
+      })
 
 
 
@@ -346,6 +380,9 @@ const params = useParams()
 
       ]
 
+    } else if (type === 'dropdown') {
+      newQuestion.dropdown_type = 'single'
+      newQuestion.correct_option_ids = []
     }
 
 
@@ -401,6 +438,78 @@ const params = useParams()
   }
 
 
+
+  const addMatrixRow = (questionIndex: number) => {
+    if (!formData) return
+    const question = formData.questions[questionIndex]
+    const newRow = { id: `row_${Date.now()}`, text: '', required: false }
+    updateQuestion(questionIndex, {
+      matrix_rows: [...(question.matrix_rows || []), newRow]
+    })
+  }
+
+  const removeMatrixRow = (questionIndex: number, rowIndex: number) => {
+    if (!formData) return
+    const question = formData.questions[questionIndex]
+    updateQuestion(questionIndex, {
+      matrix_rows: (question.matrix_rows || []).filter((_: any, i: number) => i !== rowIndex)
+    })
+  }
+
+  const updateMatrixRow = (questionIndex: number, rowIndex: number, updates: Partial<MatrixRow>) => {
+    if (!formData) return
+    const question = formData.questions[questionIndex]
+    updateQuestion(questionIndex, {
+      matrix_rows: (question.matrix_rows || []).map((row: any, i: number) =>
+        i === rowIndex ? { ...row, ...updates } : row
+      )
+    })
+  }
+
+  const addMatrixColumn = (questionIndex: number) => {
+    if (!formData) return
+    const question = formData.questions[questionIndex]
+    const newCol = { id: `col_${Date.now()}`, text: '', points: 0 }
+    updateQuestion(questionIndex, {
+      matrix_columns: [...(question.matrix_columns || []), newCol]
+    })
+  }
+
+  const removeMatrixColumn = (questionIndex: number, colIndex: number) => {
+    if (!formData) return
+    const question = formData.questions[questionIndex]
+    updateQuestion(questionIndex, {
+      matrix_columns: (question.matrix_columns || []).filter((_: any, i: number) => i !== colIndex)
+    })
+  }
+
+  const updateMatrixColumn = (questionIndex: number, colIndex: number, updates: Partial<MatrixColumn>) => {
+    if (!formData) return
+    const question = formData.questions[questionIndex]
+    updateQuestion(questionIndex, {
+      matrix_columns: (question.matrix_columns || []).map((col: any, i: number) =>
+        i === colIndex ? { ...col, ...updates } : col
+      )
+    })
+  }
+
+  const parseBulkText = (questionIndex: number) => {
+    if (!formData) return
+    const question = formData.questions[questionIndex]
+    if (!question.bulk_text) return
+
+    const lines = question.bulk_text.split('\n').filter((l: string) => l.trim())
+    const newOptions = lines.map((line: string) => ({
+      id: `opt_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      text: line.trim(),
+      points: 0
+    }))
+
+    updateQuestion(questionIndex, {
+      options: newOptions,
+      bulk_text: ''
+    })
+  }
 
   const addOption = (questionIndex: number) => {
 
@@ -546,29 +655,50 @@ const params = useParams()
 
       // Insert updated questions
 
-      const questionsToInsert = (formData.questions || []).map((q: any, index: number) => ({
+      const questionsToInsert = (formData.questions || []).map((q: any, index: number) => {
+        let optionsData: any
 
-        form_id: formData.id,
+        if (q.type === 'matrix') {
+          optionsData = {
+            matrix_rows: (q.matrix_rows || []).map((row: any) => ({
+              id: row.id,
+              text: row.text,
+              required: row.required
+            })),
+            matrix_columns: (q.matrix_columns || []).map((col: any) => ({
+              id: col.id,
+              text: col.text,
+              points: col.points || 0
+            }))
+          }
+        } else if (q.type === 'dropdown') {
+          const items = parseOptions(q.options).map((opt: any) => ({
+            id: opt.id,
+            text: opt.text,
+            points: opt.points || 0
+          }))
+          optionsData = {
+            dropdown_type: q.dropdown_type || 'single',
+            correct_option_ids: q.dropdown_type === 'multiple' ? (q.correct_option_ids || []) : (q.correct_option_id ? [q.correct_option_id] : []),
+            options: items
+          }
+        } else {
+          optionsData = parseOptions(q.options).map((opt: any) => ({
+            ...opt,
+            sub_options: parseOptions(opt.sub_options).map((sub: any) => sub)
+          }))
+        }
 
-        text: q.text,
-
-        type: q.type,
-
-        required: q.required,
-
-        points: q.points,
-
-        order_index: index,
-
-        options: JSON.stringify(parseOptions(q.options).map((opt: any) => ({
-
-          ...opt,
-
-          sub_options: parseOptions(opt.sub_options).map((sub: any) => sub)
-
-        })))
-
-      }))
+        return {
+          form_id: formData.id,
+          text: q.text,
+          type: q.type,
+          required: q.required,
+          points: q.points,
+          order_index: index,
+          options: JSON.stringify(optionsData)
+        }
+      })
 
 
 
@@ -1243,13 +1373,173 @@ const params = useParams()
 
 
 
-                {/* Options for choice questions */}
+                {/* Matrix specific UI */}
+                {question.type === 'matrix' && (
+                  <div className="ms-2 sm:ms-11 space-y-6">
+                    {/* Rows */}
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-3">الصفوف:</p>
+                      <div className="space-y-2">
+                        {(question.matrix_rows || []).map((row: any, rIndex: number) => (
+                          <div key={row.id} className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-white rounded-lg p-3 border border-gray-200">
+                            <span className="text-gray-400">⊞</span>
+                            <input
+                              type="text"
+                              value={row.text}
+                              onChange={(e) => updateMatrixRow(qIndex, rIndex, { text: e.target.value })}
+                              placeholder="نص السؤال..."
+                              className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500"
+                            />
+                            <label className="flex items-center gap-1 text-sm whitespace-nowrap">
+                              <input
+                                type="checkbox"
+                                checked={row.required}
+                                onChange={(e) => updateMatrixRow(qIndex, rIndex, { required: e.target.checked })}
+                                className="w-4 h-4 text-blue-600 rounded"
+                              />
+                              إجباري
+                            </label>
+                            <button
+                              onClick={() => removeMatrixRow(qIndex, rIndex)}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          onClick={() => addMatrixRow(qIndex)}
+                          className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                          إضافة صف
+                        </button>
+                      </div>
+                    </div>
+                    {/* Columns */}
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 mb-3">رؤوس الأعمدة:</p>
+                      <div className="space-y-2">
+                        {(question.matrix_columns || []).map((col: any, cIndex: number) => (
+                          <div key={col.id} className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-amber-50 rounded-lg p-3 border border-amber-200">
+                            <span className="text-gray-400">☐</span>
+                            <input
+                              type="text"
+                              value={col.text}
+                              onChange={(e) => updateMatrixColumn(qIndex, cIndex, { text: e.target.value })}
+                              placeholder="عنوان العمود..."
+                              className="flex-1 px-3 py-2 border border-amber-200 rounded-lg focus:ring-1 focus:ring-blue-500 bg-white"
+                            />
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-gray-500">الدرجة:</span>
+                              <input
+                                type="number"
+                                min="0"
+                                value={col.points}
+                                onChange={(e) => updateMatrixColumn(qIndex, cIndex, { points: Number(e.target.value) })}
+                                className="w-16 px-2 py-2 border border-amber-200 rounded-lg text-center bg-white"
+                              />
+                            </div>
+                            <button
+                              onClick={() => removeMatrixColumn(qIndex, cIndex)}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          onClick={() => addMatrixColumn(qIndex)}
+                          className="w-full py-2 border-2 border-dashed border-amber-300 text-amber-600 rounded-lg hover:border-amber-400 hover:text-amber-700 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                          إضافة عمود
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-                {(question.type === 'single_choice' || question.type === 'multiple_choice' || question.type === 'dropdown' || question.type === 'ranking' || question.type === 'matrix') && (
+                {/* Bulk text import for dropdown */}
+                {question.type === 'dropdown' && (
+                  <div className="ms-2 sm:ms-11 space-y-3">
+                    <p className="text-sm font-medium text-gray-700">الخيارات:</p>
+                    {/* Bulk import */}
+                    <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                      <p className="text-xs text-blue-700 mb-2">إضافة خيارات دفعة واحدة (كل سطر خيار):</p>
+                      <textarea
+                        value={question.bulk_text || ''}
+                        onChange={(e) => updateQuestion(qIndex, { bulk_text: e.target.value })}
+                        placeholder="الخيار الأول
+الخيار الثاني
+الخيار الثالث"
+                        rows={3}
+                        className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg text-sm focus:ring-1 focus:ring-blue-500"
+                      />
+                      <button
+                        onClick={() => parseBulkText(qIndex)}
+                        disabled={!question.bulk_text?.trim()}
+                        className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        إضافة الخيارات
+                      </button>
+                    </div>
+                    {parseOptions(question.options).map((option: any, oIndex: number) => (
+                      <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
+                        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
+                          <span className="text-gray-400">▼</span>
+                          <input
+                            type="text"
+                            value={option.text}
+                            onChange={(e) => updateOption(qIndex, oIndex, { text: e.target.value })}
+                            placeholder="نص الخيار..."
+                            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500"
+                          />
+                          <div className="flex items-center gap-2">
+                            <label className="flex items-center gap-1 text-sm whitespace-nowrap">
+                              <input
+                                type="radio"
+                                name={`correct_${question.id}`}
+                                checked={question.correct_option_id === option.id}
+                                onChange={() => updateQuestion(qIndex, { correct_option_id: option.id })}
+                                className="w-4 h-4 text-green-600"
+                              />
+                              <span className="text-green-700 text-xs">صحيح</span>
+                            </label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={option.points}
+                              onChange={(e) => updateOption(qIndex, oIndex, { points: Number(e.target.value) })}
+                              placeholder="الدرجة"
+                              className="w-16 px-2 py-2 border border-gray-200 rounded-lg text-center"
+                            />
+                          </div>
+                          <button
+                            onClick={() => removeOption(qIndex, oIndex)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => addOption(qIndex)}
+                      className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                      إضافة خيار
+                    </button>
+                  </div>
+                )}
+
+                {/* Options for other choice questions */}
+                {(question.type === 'single_choice' || question.type === 'multiple_choice' || question.type === 'ranking') && (
 
                   <div className="ms-2 sm:ms-11 space-y-3">
 
-                    <p className="text-sm font-medium text-gray-700">{question.type === 'matrix' ? 'الأسئلة الفرعية (الصفوف):' : 'الخيارات:'}</p>
+                    <p className="text-sm font-medium text-gray-700">الخيارات:</p>
 
                     {parseOptions(question.options).map((option: any, oIndex: number) => (
 
@@ -1257,7 +1547,7 @@ const params = useParams()
 
                         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
 
-                          <span className="text-gray-400">{question.type === 'single_choice' || question.type === 'matrix' ? '○' : question.type === 'ranking' ? '#' : '☑'}</span>
+                          <span className="text-gray-400">{question.type === 'single_choice' ? '○' : question.type === 'ranking' ? '#' : '☑'}</span>
 
                           <input
 

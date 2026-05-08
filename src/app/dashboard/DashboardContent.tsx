@@ -172,12 +172,12 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
                 className="block bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all group active:scale-95"
               >
                 {project.image_url ? (
-                  <div className="w-full h-36 lg:h-44 overflow-hidden bg-gray-50 flex items-center justify-center p-2">
+                  <div className="w-full h-36 lg:h-44 overflow-hidden">
                     <img 
                       src={project.image_url} 
                       alt={project.name} 
                       loading="lazy"
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 ) : (

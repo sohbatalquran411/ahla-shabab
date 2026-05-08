@@ -57,6 +57,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [showRetryConfirm, setShowRetryConfirm] = useState(false)
   const [deletingResponse, setDeletingResponse] = useState(false)
+  const [dropdownSearch, setDropdownSearch] = useState<Record<string, string>>({})
   const router = useRouter()
   const supabase = createClient()
 
@@ -158,17 +159,91 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
     setShowRetryConfirm(false)
   }
 
+  const getQuestionMaxScore = (q: Question): number => {
+    const opts = parseOptions(q.options)
+
+    switch (q.type) {
+      case 'text':
+      case 'textarea':
+        return q.points || 0
+      case 'single_choice':
+        return Math.max(0, ...(Array.isArray(opts) ? opts : []).map((o: any) => o.points || 0))
+      case 'multiple_choice':
+        return (Array.isArray(opts) ? opts : []).reduce((sum: number, o: any) => sum + (o.points || 0), 0)
+      case 'dropdown':
+        if (opts.dropdown_type === 'multiple') {
+          return ((opts.correct_option_ids || []) as string[]).reduce((sum: number, id: string) => {
+            const opt = (opts.options || []).find((o: any) => o.id === id)
+            return sum + (opt?.points || 0)
+          }, 0)
+        }
+        if (opts.correct_option_ids?.length) {
+          const opt = (opts.options || []).find((o: any) => o.id === opts.correct_option_ids[0])
+          return opt?.points || 0
+        }
+        return Math.max(0, ...(Array.isArray(opts) ? opts : []).map((o: any) => o.points || 0))
+      case 'scale':
+        return Math.max(5, ...(Array.isArray(opts) ? opts : []).map((o: any) => o.points || 0))
+      case 'ranking':
+        return (Array.isArray(opts) ? opts : []).reduce((sum: number, o: any) => sum + (o.points || 0), 0)
+      case 'matrix': {
+        const md = parseMatrixData(q)
+        if (md) {
+          const colSum = (md.matrix_columns || []).reduce((s: number, c: any) => s + (c.points || 0), 0)
+          return colSum * (md.matrix_rows || []).length
+        }
+        return 0
+      }
+      default:
+        return 0
+    }
+  }
+
+  const parseMatrixData = (q: any) => {
+    const options = parseOptions(q.options)
+    if (options.matrix_rows && options.matrix_columns) return options
+    if (options.length > 0 && options[0].sub_options) {
+      return {
+        matrix_rows: options.map((r: any) => ({ id: r.id, text: r.text, required: false })),
+        matrix_columns: options[0].sub_options
+      }
+    }
+    return null
+  }
+
   const calculateScore = () => {
     let score = 0
     let maxScore = 0
 
     displayQuestions.forEach((q) => {
-      maxScore += q.points || 0
       const answer = answers[q.id]
       const options = parseOptions(q.options)
 
-      if (answer !== undefined && answer !== null && answer !== '') {
-        if (q.type === 'single_choice' && options.length > 0) {
+      if (q.type === 'matrix') {
+        const matrixData = parseMatrixData(q)
+        if (matrixData) {
+          maxScore += (matrixData.matrix_columns || []).reduce((sum: number, col: any) => sum + (col.points || 0), 0) * (matrixData.matrix_rows || []).length
+          const rowAnswers = answer || {}
+          Object.values(rowAnswers).forEach((val: any) => {
+            if (Array.isArray(val)) {
+              val.forEach((colId: string) => {
+                const col = (matrixData.matrix_columns || []).find((c: any) => c.id === colId)
+                if (col) score += col.points || 0
+              })
+            } else if (val) {
+              const col = (matrixData.matrix_columns || []).find((c: any) => c.id === val)
+              if (col) score += col.points || 0
+            }
+          })
+        }
+        return
+      }
+
+      maxScore += q.points || 0
+
+      if (answer === undefined || answer === null || answer === '') return
+
+      if (q.type === 'single_choice' && options.length > 0) {
           // Check if answer is for a sub-option
           const answerParts = (typeof answer === 'string' ? answer : '').split('_sub_')
           const mainOptionId = answerParts[0]
@@ -205,30 +280,20 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
             }
           })
         
-        } else if (q.type === 'matrix') {
-          // answer is an object { [rowId]: colId | colId[] }
-          const options = parseOptions(q.options)
-          if (options.length > 0 && options[0].sub_options) {
-            Object.values(answer).forEach(val => {
-              if (Array.isArray(val)) {
-                val.forEach(colId => {
-                  const col = options[0].sub_options.find((c: any) => c.id === colId)
-                  if (col) score += col.points || 0
-                })
-              } else {
-                const col = options[0].sub_options.find((c: any) => c.id === val)
-                if (col) score += col.points || 0
-              }
-            })
-          }
-
+        } else if (q.type === 'dropdown' && options.dropdown_type === 'multiple' && Array.isArray(answer)) {
+          const dropOpts = options.options || []
+          answer.forEach((id: string) => {
+            const opt = dropOpts.find((o: any) => o.id === id)
+            if (opt && (options.correct_option_ids || []).includes(id)) {
+              score += opt.points || 0
+            }
+          })
         } else if (q.type === 'scale') {
           score += parseFloat(String(answer)) || 0
         } else if (q.type === 'text' || q.type === 'textarea') {
           score += String(answer).trim() ? (q.points || 0) : 0
         }
-      }
-    })
+      })
 
     return { score, maxScore }
   }
@@ -239,7 +304,23 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
 
     // Validate required questions
     for (const q of displayQuestions) {
-      if (q.required) {
+      if (q.type === 'matrix') {
+        const matrixData = parseMatrixData(q)
+        if (matrixData) {
+          const rows = matrixData.matrix_rows || []
+          const rowAnswers = answers[q.id] || {}
+          for (const row of rows) {
+            if (row.required) {
+              const rowVal = rowAnswers[row.id]
+              if (!rowVal || (Array.isArray(rowVal) && rowVal.length === 0)) {
+                setError(`يرجى الإجابة على الصف "${row.text}" في السؤال: ${q.text}`)
+                setSubmitting(false)
+                return
+              }
+            }
+          }
+        }
+      } else if (q.required) {
         const answer = answers[q.id]
         if (answer === undefined || answer === null || answer === '' || 
             (Array.isArray(answer) && answer.length === 0)) {
@@ -547,113 +628,145 @@ checked={isSelected}
         )
 
       case 'matrix':
-        const hasCols = options.length > 0 && Array.isArray(options[0].sub_options) && options[0].sub_options.length > 0
+        const matrixData = parseMatrixData(question)
+        const matrixRows = matrixData?.matrix_rows || []
+        const matrixCols = matrixData?.matrix_columns || []
         
+        if (matrixCols.length === 0) {
+          return <p className="text-gray-500 text-sm">لم يتم تحديد الأعمدة بعد</p>
+        }
+
         return (
           <div className="space-y-3 overflow-x-auto">
             <div className="bg-gray-50 rounded-xl p-4 min-w-[500px]">
-              {hasCols ? (
-                <table className="w-full text-right border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="p-2 border-b border-gray-200"></th>
-                      {options[0].sub_options.map((col: any) => (
-                        <th key={col.id} className="p-2 border-b border-gray-200 text-sm font-medium text-gray-600 text-center">
-                          {col.text}
-                          
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(Array.isArray(options) ? options : []).map((row: any, rIdx: number) => (
-                      <tr key={row.id || rIdx} className="border-b border-gray-100 last:border-0 hover:bg-gray-100/50">
-                        <td className="p-3 text-sm font-medium">{row.text}</td>
-                        {options[0].sub_options.map((col: any) => (
-                          <td key={col.id} className="p-3 text-center">
-                            <input
-                              type="checkbox"
-                              name={`${question.id}_${row.id}`}
-                              checked={Array.isArray(currentAnswer?.[row.id]) ? currentAnswer[row.id].includes(col.id) : currentAnswer?.[row.id] === col.id}
-                              onChange={(e) => {
-                                const isChecked = e.target.checked;
-                                let rowAns = currentAnswer?.[row.id] || [];
-                                if (!Array.isArray(rowAns)) rowAns = [rowAns];
-                                
-                                if (isChecked) {
-                                  rowAns = [...rowAns, col.id];
-                                } else {
-                                  rowAns = rowAns.filter((id: any) => id !== col.id);
-                                }
-                                
-                                setAnswers({
-                                  ...answers,
-                                  [question.id]: {
-                                    ...currentAnswer,
-                                    [row.id]: rowAns
-                                  }
-                                })
-                              }}
-                              className="w-4 h-4 text-blue-600"
-                            />
-                          </td>
-                        ))}
-                      </tr>
+              <table className="w-full text-right border-collapse">
+                <thead>
+                  <tr>
+                    <th className="p-2 border-b border-gray-200"></th>
+                    {matrixCols.map((col: any) => (
+                      <th key={col.id} className="p-2 border-b border-gray-200 text-sm font-medium text-gray-600 text-center">
+                        {col.text}
+                      </th>
                     ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="space-y-3">
-                  {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
-                    <div key={option.id || idx} className="flex items-center gap-3">
-                      <span className="flex-1 text-sm font-medium">{option.text}</span>
-                      <div className="flex gap-1">
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <button
-                            key={num}
-                            type="button"
-                            className={`w-8 h-8 rounded text-sm transition-colors ${
-                              currentAnswer?.[option.id] === num
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white text-gray-600 border hover:bg-gray-50'
-                            }`}
-                            onClick={() => {
+                  </tr>
+                </thead>
+                <tbody>
+                  {matrixRows.map((row: any, rIdx: number) => (
+                    <tr key={row.id || rIdx} className="border-b border-gray-100 last:border-0 hover:bg-gray-100/50">
+                      <td className="p-3 text-sm font-medium">{row.text}</td>
+                      {matrixCols.map((col: any) => (
+                        <td key={col.id} className="p-3 text-center">
+                          <input
+                            type="checkbox"
+                            name={`${question.id}_${row.id}`}
+                            checked={Array.isArray(currentAnswer?.[row.id]) ? currentAnswer[row.id].includes(col.id) : currentAnswer?.[row.id] === col.id}
+                            onChange={(e) => {
+                              const isChecked = e.target.checked;
+                              let rowAns = currentAnswer?.[row.id] || [];
+                              if (!Array.isArray(rowAns)) rowAns = [rowAns];
+                              
+                              if (isChecked) {
+                                rowAns = [...rowAns, col.id];
+                              } else {
+                                rowAns = rowAns.filter((id: any) => id !== col.id);
+                              }
+                              
                               setAnswers({
                                 ...answers,
                                 [question.id]: {
                                   ...currentAnswer,
-                                  [option.id]: num
+                                  [row.id]: rowAns
                                 }
                               })
                             }}
-                          >
-                            {num}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                            className="w-4 h-4 text-blue-600"
+                          />
+                        </td>
+                      ))}
+                    </tr>
                   ))}
-                </div>
-              )}
+                </tbody>
+              </table>
             </div>
           </div>
         )
 
-      case 'dropdown':
-        return (
-          <select
-            value={currentAnswer || ''}
-            onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="" disabled>اختر إجابة...</option>
-            {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
-              <option key={option.id || idx} value={option.id || `opt_${idx}`}>
-                {option.text}
-              </option>
-            ))}
-          </select>
+      case 'dropdown': {
+        const searchText = dropdownSearch[question.id] || ''
+        const opts = options.options || options
+        const isMulti = options.dropdown_type === 'multiple'
+        const filteredOptions = (Array.isArray(opts) ? opts : []).filter(
+          (opt: any) => !searchText || opt.text.toLowerCase().includes(searchText.toLowerCase())
         )
+
+        if (isMulti) {
+          const selected = Array.isArray(currentAnswer) ? currentAnswer : []
+          return (
+            <div className="space-y-3">
+              <div className="relative">
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  value={searchText}
+                  onChange={(e) => setDropdownSearch(prev => ({ ...prev, [question.id]: e.target.value }))}
+                  placeholder="ابحث عن خيار..."
+                  className="w-full pr-10 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                />
+              </div>
+              <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-2">
+                {filteredOptions.map((opt: any) => (
+                  <label key={opt.id} className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${selected.includes(opt.id) ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50'}`}>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(opt.id)}
+                      onChange={(e) => {
+                        const newVal = e.target.checked
+                          ? [...selected, opt.id]
+                          : selected.filter((id: string) => id !== opt.id)
+                        setAnswers({ ...answers, [question.id]: newVal })
+                      }}
+                      className="w-4 h-4 text-blue-600 rounded"
+                    />
+                    <span className="flex-1 text-sm">{opt.text}</span>
+                  </label>
+                ))}
+                {filteredOptions.length === 0 && <p className="text-gray-400 text-sm text-center py-4">لا توجد نتائج</p>}
+              </div>
+            </div>
+          )
+        }
+
+        return (
+          <div className="space-y-2">
+            <div className="relative">
+              <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value={searchText}
+                onChange={(e) => setDropdownSearch(prev => ({ ...prev, [question.id]: e.target.value }))}
+                placeholder="ابحث عن خيار..."
+                className="w-full pr-10 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
+            <select
+              value={currentAnswer || ''}
+              onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="" disabled>اختر إجابة...</option>
+              {filteredOptions.map((option: any, idx: number) => (
+                <option key={option.id || idx} value={option.id || `opt_${idx}`}>
+                  {option.text}
+                </option>
+              ))}
+            </select>
+          </div>
+        )
+      }
 
       case 'date':
         return (
@@ -677,16 +790,13 @@ checked={isSelected}
 
       case 'file_upload':
         return (
-          <input
-            type="file"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) {
-                setAnswers({ ...answers, [question.id]: file.name })
-              }
-            }}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+            <svg className="w-12 h-12 mx-auto mb-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <p className="text-amber-700 font-medium">هذه الميزة قيد التطوير</p>
+            <p className="text-amber-600 text-sm mt-1">سيتم تفعيل رفع الملفات قريباً</p>
+          </div>
         )
 
       default:
@@ -885,6 +995,11 @@ checked={isSelected}
                     {question.text}
                     {question.required && <span className="text-red-500 mr-1">*</span>}
                   </h3>
+                  {question.type !== 'file_upload' && (
+                    <p className="text-blue-600 text-sm mt-1 font-medium">
+                      {getQuestionMaxScore(question)} نقطة
+                    </p>
+                  )}
 
                 </div>
               </div>
