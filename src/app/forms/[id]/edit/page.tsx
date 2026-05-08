@@ -9,6 +9,7 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter, useParams } from 'next/navigation'
 
 import Link from 'next/link'
+import ImageUpload from '@/components/ImageUpload'
 
 import type { QuestionType, QuestionOption } from '@/types'
 
@@ -97,6 +98,7 @@ interface FormData {
   project_id: string
 
   is_active: boolean
+  image_url: string
 
 }
 
@@ -304,7 +306,8 @@ const params = useParams()
 
         project_id: form.project_id,
 
-        is_active: form.is_active
+        is_active: form.is_active,
+        image_url: form.image_url || ''
 
       })
 
@@ -624,8 +627,8 @@ const params = useParams()
           expires_at: formData.expires_at || null,
 
           allow_delete_responses: formData.allow_delete_responses || false,
-
-          randomize_questions: formData.randomize_questions || false
+          randomize_questions: formData.randomize_questions || false,
+          image_url: formData.image_url || null
 
         })
 
@@ -903,6 +906,11 @@ const params = useParams()
           
 
           <div className="space-y-4">
+
+            <ImageUpload
+              onImageUploaded={(url) => setFormData(prev => prev ? ({ ...prev, image_url: url }) : null)}
+              currentImage={formData.image_url}
+            />
 
             <div>
 
@@ -1368,6 +1376,37 @@ const params = useParams()
                     {QUESTION_TYPES[question.type as QuestionType]?.label}
 
                   </span>
+
+                  {(() => {
+                    if (question.type === 'file_upload') return null
+                    let total = 0
+                    if (question.type === 'single_choice') {
+                      total = Math.max(0, ...parseOptions(question.options).map((o:any) => o.points || 0))
+                    } else if (question.type === 'multiple_choice') {
+                      total = parseOptions(question.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
+                    } else if (question.type === 'dropdown') {
+                      const opts = parseOptions(question.options)
+                      if (question.dropdown_type === 'multiple') {
+                        total = (question.correct_option_ids || []).reduce((s:number, id:string) => {
+                          const opt = opts.find((o:any) => o.id === id)
+                          return s + (opt?.points || 0)
+                        }, 0)
+                      } else {
+                        const opt = opts.find((o:any) => o.id === question.correct_option_id)
+                        total = opt?.points || 0
+                      }
+                    } else if (question.type === 'ranking') {
+                      total = parseOptions(question.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
+                    } else if (question.type === 'matrix') {
+                      const colSum = (question.matrix_columns || []).reduce((s:number, c:any) => s + (c.points || 0), 0)
+                      total = colSum * (question.matrix_rows || []).length
+                    } else if (question.type === 'scale') {
+                      total = Math.max(5, ...parseOptions(question.options).map((o:any) => o.points || 0))
+                    } else {
+                      total = question.points || 0
+                    }
+                    return <span className="text-xs text-blue-600 font-medium me-2">({total} نقطة)</span>
+                  })()}
 
                 </div>
 

@@ -67,7 +67,7 @@ export default function ImageUpload({ onImageUploaded, currentImage, className =
   return (
     <div className={`space-y-4 ${className}`}>
       <label className="block text-sm font-medium text-gray-700">
-        صورة المشروع
+        صورة الفورم
       </label>
       
       <div className="flex items-center gap-4">
@@ -96,7 +96,7 @@ export default function ImageUpload({ onImageUploaded, currentImage, className =
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2v6a1 1 0 002 1h3m10-11l2 2m-2-2v10a1 1 0 01-2 1h-3m-6 0a1 1 0 01-2-2v-4a1 1 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 21a7.5 7.5 0 0115 0" />
                 </svg>
                 {preview ? 'تغيير الصورة' : 'اختيار صورة'}
               </>

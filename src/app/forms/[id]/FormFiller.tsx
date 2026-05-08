@@ -52,12 +52,13 @@ interface FormFillerProps {
 export default function FormFiller({ form, questions, existingResponse, allUserResponses, project, userId }: FormFillerProps) {
   const [answers, setAnswers] = useState<Record<string, any>>({})
   const [submitting, setSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(!!existingResponse)
+  const [submitted, setSubmitted] = useState(!!existingResponse && !form.allow_multiple)
   const [error, setError] = useState('')
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [showRetryConfirm, setShowRetryConfirm] = useState(false)
   const [deletingResponse, setDeletingResponse] = useState(false)
   const [dropdownSearch, setDropdownSearch] = useState<Record<string, string>>({})
+  const [dropdownOpen, setDropdownOpen] = useState<Record<string, boolean>>({})
   const router = useRouter()
   const supabase = createClient()
 
@@ -75,7 +76,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
     }
 
     // Set Timer
-    if (form.time_limit && !submitted && !existingResponse) {
+    if (form.time_limit && !submitted) {
       setTimeLeft(form.time_limit * 60);
     }
 
@@ -738,32 +739,57 @@ checked={isSelected}
           )
         }
 
+        const isOpen = dropdownOpen[question.id] || false
+
+        const selectedOpt = opts.find((o: any) => o.id === currentAnswer)
+
         return (
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <div className="relative">
               <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
                 type="text"
-                value={searchText}
-                onChange={(e) => setDropdownSearch(prev => ({ ...prev, [question.id]: e.target.value }))}
-                placeholder="ابحث عن خيار..."
-                className="w-full pr-10 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                value={searchText || (selectedOpt?.text || '')}
+                onFocus={() => setDropdownOpen(prev => ({ ...prev, [question.id]: true }))}
+                onBlur={() => setTimeout(() => setDropdownOpen(prev => ({ ...prev, [question.id]: false })), 200)}
+                onChange={(e) => {
+                  setDropdownSearch(prev => ({ ...prev, [question.id]: e.target.value }))
+                  if (!isOpen) setDropdownOpen(prev => ({ ...prev, [question.id]: true }))
+                }}
+                placeholder="ابحث أو اختر..."
+                className="w-full pr-10 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            <select
-              value={currentAnswer || ''}
-              onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="" disabled>اختر إجابة...</option>
-              {filteredOptions.map((option: any, idx: number) => (
-                <option key={option.id || idx} value={option.id || `opt_${idx}`}>
-                  {option.text}
-                </option>
-              ))}
-            </select>
+            {isOpen && (
+              <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                {filteredOptions.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-4">لا توجد نتائج</p>
+                ) : (
+                  filteredOptions.map((opt: any) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault()
+                        setAnswers({ ...answers, [question.id]: opt.id })
+                        setDropdownSearch(prev => ({ ...prev, [question.id]: '' }))
+                        setDropdownOpen(prev => ({ ...prev, [question.id]: false }))
+                      }}
+                      className={`w-full text-right px-4 py-3 text-sm hover:bg-blue-50 transition-colors flex items-center gap-3 ${
+                        currentAnswer === opt.id ? 'bg-blue-50 font-medium text-blue-700' : ''
+                      }`}
+                    >
+                      <span className="w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center border-gray-300">
+                        {currentAnswer === opt.id && <span className="w-2 h-2 rounded-full bg-blue-600" />}
+                      </span>
+                      {opt.text}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         )
       }
@@ -940,8 +966,15 @@ checked={isSelected}
             رجوع
           </button>
           <h1 className="text-lg font-bold text-blue-700">{form.name}</h1>
-          <span className="text-sm text-gray-500">
-            {questions.length} سؤال
+          <span className="flex items-center gap-3">
+            {timeLeft !== null && !submitted && !isExpired && (
+              <span className={`text-sm font-bold ${timeLeft < 60 ? 'text-red-600' : 'text-gray-600'}`}>
+                ⏱ {formatTime(timeLeft)}
+              </span>
+            )}
+            <span className="text-sm text-gray-500">
+              {questions.length} سؤال
+            </span>
           </span>
         </div>
         
