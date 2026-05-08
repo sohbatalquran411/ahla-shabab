@@ -69,7 +69,7 @@ export default function RegisterPage() {
     e.preventDefault()
     setError('')
 
-    if (!validateStep2()) return
+    if (!validateStep1() || !validateStep2()) return
 
     setLoading(true)
 

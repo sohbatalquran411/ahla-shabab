@@ -16,7 +16,8 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   const [userResponses, setUserResponses] = useState<any[]>([])
   const [expandedForm, setExpandedForm] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [deleteModal, setDeleteModal] = useState(false)
+  const [deleteFormId, setDeleteFormId] = useState<string | null>(null)
+  const [deleteProjectModal, setDeleteProjectModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   
@@ -97,6 +98,28 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
       alert('حدث خطأ أثناء الحذف');
     }
   };
+
+  const handleDeleteForm = async () => {
+    if (!deleteFormId || profile?.role !== 'admin') return
+
+    setDeleting(true)
+    try {
+      const { error } = await supabase
+        .from('forms')
+        .delete()
+        .eq('id', deleteFormId)
+
+      if (error) throw error
+
+      setForms(prev => prev.filter(f => f.id !== deleteFormId))
+      setDeleteFormId(null)
+    } catch (error) {
+      console.error('Error deleting form:', error)
+      alert('حدث خطأ أثناء حذف الفورم')
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   const handleDeleteProject = async () => {
     if (!projectId || profile?.role !== 'admin') return
@@ -304,7 +327,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                           <Link href={`/forms/${form.id}/edit`} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="تعديل الفورم">
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                           </Link>
-                          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteModal(form.id) }} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="حذف الفورم">
+                          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteFormId(form.id) }} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="حذف الفورم">
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                           </button>
                         </div>
@@ -386,12 +409,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
       </main>
 
       
-      {/* Delete Confirmation Modal */}
-      {deleteModal && (
+      {/* Delete Form Confirmation Modal */}
+      {deleteFormId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
             className="absolute inset-0 bg-black/50"
-            onClick={() => setDeleteModal(false)}
+            onClick={() => setDeleteFormId(null)}
           />
           <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
@@ -400,23 +423,23 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
               </svg>
             </div>
             
-            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد الحذف</h3>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد حذف الفورم</h3>
             <p className="text-gray-600 text-center mb-6">
-              هل أنت متأكد من حذف مشروع "<strong>{project.name}</strong>"؟
+              هل أنت متأكد من حذف هذا الفورم؟
               <br />
-              <span className="text-red-500 text-sm">هذا الإجراء لا يمكن التراجع عنه.</span>
+              <span className="text-red-500 text-sm">سيتم حذف جميع الأسئلة والردود المرتبطة به. هذا الإجراء لا يمكن التراجع عنه.</span>
             </p>
 
             <div className="flex gap-3">
               <button
-                onClick={() => setDeleteModal(false)}
+                onClick={() => setDeleteFormId(null)}
                 disabled={deleting}
                 className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
                 إلغاء
               </button>
               <button
-                onClick={handleDeleteProject}
+                onClick={handleDeleteForm}
                 disabled={deleting}
                 className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
@@ -430,7 +453,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    حذف
+                    حذف الفورم
                   </>
                 )}
               </button>
