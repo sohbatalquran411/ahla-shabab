@@ -425,59 +425,195 @@ checked={isSelected}
         )
 
       case 'ranking':
+        const rankingItems = Array.isArray(currentAnswer) && currentAnswer.length === options.length
+          ? currentAnswer
+          : (Array.isArray(options) ? options : []).map((o: any) => o.id)
+        
         return (
           <div className="space-y-2 text-sm text-gray-500">
-            <p>ترتيب العناصر (ستتمكن من السحب لإعادة الترتيب)</p>
-            <div className="bg-gray-50 rounded-xl p-4">
-              {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
-                <div key={option.id || idx} className="flex items-center gap-3 p-2 bg-white rounded-lg mb-2">
-                  <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs">
-                    {idx + 1}
-                  </span>
-                  <span className="flex-1">{option.text}</span>
-                </div>
-              ))}
+            <p>ترتيب العناصر (استخدم الأسهم لإعادة الترتيب)</p>
+            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+              {rankingItems.map((optId: string, idx: number) => {
+                const option = options.find((o: any) => o.id === optId)
+                if (!option) return null
+                return (
+                  <div key={optId} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
+                    <span className="w-8 h-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-bold">
+                      {idx + 1}
+                    </span>
+                    <span className="flex-1 font-medium">{option.text}</span>
+                    <div className="flex flex-col gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (idx > 0) {
+                            const newArr = [...rankingItems]
+                            const temp = newArr[idx - 1]
+                            newArr[idx - 1] = newArr[idx]
+                            newArr[idx] = temp
+                            setAnswers({ ...answers, [question.id]: newArr })
+                          }
+                        }}
+                        disabled={idx === 0}
+                        className="p-1 text-gray-400 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (idx < rankingItems.length - 1) {
+                            const newArr = [...rankingItems]
+                            const temp = newArr[idx + 1]
+                            newArr[idx + 1] = newArr[idx]
+                            newArr[idx] = temp
+                            setAnswers({ ...answers, [question.id]: newArr })
+                          }
+                        }}
+                        disabled={idx === rankingItems.length - 1}
+                        className="p-1 text-gray-400 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-gray-400"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )
 
       case 'matrix':
+        const hasCols = options.length > 0 && Array.isArray(options[0].sub_options) && options[0].sub_options.length > 0
+        
         return (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-500">أسئلة متعددة:</p>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-              {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
-                <div key={option.id || idx} className="flex items-center gap-3">
-                  <span className="flex-1 text-sm">{option.text}</span>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <button
-                        key={num}
-                        type="button"
-                        className={`w-8 h-8 rounded text-sm ${
-                          currentAnswer?.[option.id] === num
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white text-gray-600 border'
-                        }`}
-                        onClick={() => {
-                          setAnswers({
-                            ...answers,
-                            [question.id]: {
-                              ...currentAnswer,
-                              [option.id]: num
-                            }
-                          })
-                          setCurrentQuestionIndex(index)
-                        }}
-                      >
-                        {num}
-                      </button>
+          <div className="space-y-3 overflow-x-auto">
+            <div className="bg-gray-50 rounded-xl p-4 min-w-[500px]">
+              {hasCols ? (
+                <table className="w-full text-right border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="p-2 border-b border-gray-200"></th>
+                      {options[0].sub_options.map((col: any) => (
+                        <th key={col.id} className="p-2 border-b border-gray-200 text-sm font-medium text-gray-600 text-center">
+                          {col.text}
+                          {col.points > 0 && <span className="block text-xs text-blue-500">({col.points})</span>}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(Array.isArray(options) ? options : []).map((row: any, rIdx: number) => (
+                      <tr key={row.id || rIdx} className="border-b border-gray-100 last:border-0 hover:bg-gray-100/50">
+                        <td className="p-3 text-sm font-medium">{row.text}</td>
+                        {options[0].sub_options.map((col: any) => (
+                          <td key={col.id} className="p-3 text-center">
+                            <input
+                              type="radio"
+                              name={`${question.id}_${row.id}`}
+                              checked={currentAnswer?.[row.id] === col.id}
+                              onChange={() => {
+                                setAnswers({
+                                  ...answers,
+                                  [question.id]: {
+                                    ...currentAnswer,
+                                    [row.id]: col.id
+                                  }
+                                })
+                              }}
+                              className="w-4 h-4 text-blue-600"
+                            />
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </div>
+                  </tbody>
+                </table>
+              ) : (
+                <div className="space-y-3">
+                  {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
+                    <div key={option.id || idx} className="flex items-center gap-3">
+                      <span className="flex-1 text-sm font-medium">{option.text}</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <button
+                            key={num}
+                            type="button"
+                            className={`w-8 h-8 rounded text-sm transition-colors ${
+                              currentAnswer?.[option.id] === num
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-white text-gray-600 border hover:bg-gray-50'
+                            }`}
+                            onClick={() => {
+                              setAnswers({
+                                ...answers,
+                                [question.id]: {
+                                  ...currentAnswer,
+                                  [option.id]: num
+                                }
+                              })
+                            }}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           </div>
+        )
+
+      case 'dropdown':
+        return (
+          <select
+            value={currentAnswer || ''}
+            onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="" disabled>اختر إجابة...</option>
+            {(Array.isArray(options) ? options : []).map((option: any, idx: number) => (
+              <option key={option.id || idx} value={option.id || `opt_${idx}`}>
+                {option.text} {option.points > 0 ? `(${option.points} نقطة)` : ''}
+              </option>
+            ))}
+          </select>
+        )
+
+      case 'date':
+        return (
+          <input
+            type="date"
+            value={currentAnswer || ''}
+            onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        )
+
+      case 'time':
+        return (
+          <input
+            type="time"
+            value={currentAnswer || ''}
+            onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        )
+
+      case 'file_upload':
+        return (
+          <input
+            type="file"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) {
+                setAnswers({ ...answers, [question.id]: file.name })
+              }
+            }}
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
         )
 
       default:
@@ -486,7 +622,7 @@ checked={isSelected}
             type="text"
             value={currentAnswer || ''}
             onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         )
     }
