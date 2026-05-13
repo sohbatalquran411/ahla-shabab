@@ -12,8 +12,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [project, setProject] = useState<any>(null)
-  const [forms, setForms] = useState<any[]>([])
-  const [curricula, setCurricula] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -47,11 +45,9 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         return
       }
 
-      const [profileResult, projectResult, formsResult, curriculaResult] = await Promise.all([
+      const [profileResult, projectResult] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', authUser.id).single(),
-        supabase.from('projects').select('*').eq('id', projectId).single(),
-        supabase.from('forms').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
-        supabase.from('curricula').select('*').eq('project_id', projectId).order('created_at', { ascending: false })
+        supabase.from('projects').select('*').eq('id', projectId).single()
       ])
 
       const profileData = profileResult.data
@@ -70,8 +66,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
       setUser(authUser)
       setProfile(profileData)
       setProject(projectData)
-      setForms(formsResult.data || [])
-      setCurricula(curriculaResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -223,108 +217,64 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
 
-        {/* Forms Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-gray-900">النماذج</h3>
-            {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
-              <Link
-                href={`/forms/create?project_id=${project.id}`}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                إضافة فورم
-              </Link>
-            )}
-          </div>
-          {forms.length === 0 ? (
-            <div className="px-6 py-12 text-center text-gray-400">لا توجد فورمز في هذا المشروع بعد</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-right">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="px-6 py-3 text-sm font-medium text-gray-600">الاسم</th>
-                    <th className="px-6 py-3 text-sm font-medium text-gray-600">تاريخ الإنشاء</th>
-                    <th className="px-6 py-3 text-sm font-medium text-gray-600 text-center">الإجراءات</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {forms.map(form => (
-                    <tr key={form.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 font-medium text-gray-900">{form.name}</td>
-                      <td className="px-6 py-4 text-gray-500 text-sm">{new Date(form.created_at).toLocaleDateString('ar-EG')}</td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <Link href={`/forms/${form.id}`} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="عرض">
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                          </Link>
-                          {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
-                            <>
-                              <Link href={`/forms/${form.id}/edit`} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="تعديل">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                              </Link>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        {/* Module Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Forms Module */}
+          {(project.modules?.forms ?? true) && (
+            <Link
+              href={`/projects/${project.id}/forms`}
+              className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg hover:border-blue-200 transition-all group"
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">النماذج</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">استعرض واملأ النماذج المتاحة لهذا المشروع</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                <span className="text-sm font-medium text-blue-600 group-hover:translate-x-[-4px] transition-transform flex items-center gap-1">
+                  الدخول للنماذج
+                  <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+              </div>
+            </Link>
           )}
-        </div>
 
-        {/* Curricula Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-gray-900">المناهج التعليمية</h3>
-            {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
-              <Link
-                href={`/admin/curricula/create?project_id=${project.id}`}
-                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2 text-sm"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                إضافة منهج
-              </Link>
-            )}
-          </div>
-          {curricula.length === 0 ? (
-            <div className="px-6 py-12 text-center text-gray-400">لا توجد مناهج في هذا المشروع بعد</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-right">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="px-6 py-3 text-sm font-medium text-gray-600">العنوان</th>
-                    <th className="px-6 py-3 text-sm font-medium text-gray-600">تاريخ الإنشاء</th>
-                    <th className="px-6 py-3 text-sm font-medium text-gray-600 text-center">الإجراءات</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {curricula.map(c => (
-                    <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 font-medium text-gray-900">{c.title}</td>
-                      <td className="px-6 py-4 text-gray-500 text-sm">{new Date(c.created_at).toLocaleDateString('ar-EG')}</td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <Link href={`/projects/${project.id}/curriculum`} className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="عرض الدروس">
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                          </Link>
-                          {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
-                            <Link href={`/admin/curricula/${c.id}/edit`} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="تعديل">
-                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                            </Link>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          {/* Curriculum Module */}
+          {project.modules?.curriculum && (
+            <Link
+              href={`/projects/${project.id}/curriculum`}
+              className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg hover:border-emerald-200 transition-all group"
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">المنهج التعليمي</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">تابع الدروس والفيديوهات التعليمية بالتسلسل</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                <span className="text-sm font-medium text-emerald-600 group-hover:translate-x-[-4px] transition-transform flex items-center gap-1">
+                  الدخول للمنهج
+                  <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+              </div>
+            </Link>
           )}
+
         </div>
       </main>
     </div>

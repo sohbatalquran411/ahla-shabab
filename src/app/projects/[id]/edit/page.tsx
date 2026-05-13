@@ -32,6 +32,8 @@ function EditProjectContent() {
   const [projectId, setProjectId] = useState<string>('')
   const [project, setProject] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
+  const [forms, setForms] = useState<any[]>([])
+  const [curricula, setCurricula] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -82,11 +84,13 @@ function EditProjectContent() {
 
       setProfile(profileData)
 
-      const { data: projectData } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', projId)
-        .single()
+      const [projectResult, formsResult, curriculaResult] = await Promise.all([
+        supabase.from('projects').select('*').eq('id', projId).single(),
+        supabase.from('forms').select('*').eq('project_id', projId).order('created_at', { ascending: false }),
+        supabase.from('curricula').select('*').eq('project_id', projId).order('created_at', { ascending: false })
+      ])
+
+      const projectData = projectResult.data
 
       if (!projectData) {
         router.push('/projects')
@@ -94,6 +98,8 @@ function EditProjectContent() {
       }
 
       setProject(projectData)
+      setForms(formsResult.data || [])
+      setCurricula(curriculaResult.data || [])
       setMediaType(projectData.image_url ? 'image' : 'icon')
       setFormData({
         name: projectData.name || '',
@@ -348,6 +354,104 @@ function EditProjectContent() {
                     {formData.description || 'وصف المشروع'}
                   </p>
                 </div>
+              </div>
+            </div>
+
+            {/* Admin: Forms Management */}
+            <div className="pt-4 border-t space-y-4">
+              <div className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-bold text-gray-900">النماذج</h4>
+                  <Link
+                    href={`/forms/create?project_id=${project.id}`}
+                    className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1.5 text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                    إضافة فورم
+                  </Link>
+                </div>
+                {forms.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-4">لا توجد فورمز في هذا المشروع بعد</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-right text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="py-2 font-medium text-gray-600">الاسم</th>
+                          <th className="py-2 font-medium text-gray-600">تاريخ الإنشاء</th>
+                          <th className="py-2 font-medium text-gray-600 text-center">الإجراءات</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {forms.map(form => (
+                          <tr key={form.id} className="hover:bg-white/50">
+                            <td className="py-2 text-gray-900">{form.name}</td>
+                            <td className="py-2 text-gray-500">{new Date(form.created_at).toLocaleDateString('ar-EG')}</td>
+                            <td className="py-2 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <Link href={`/forms/${form.id}`} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="عرض">
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                </Link>
+                                <Link href={`/forms/${form.id}/edit`} className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg" title="تعديل">
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                </Link>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Admin: Curricula Management */}
+            <div className="space-y-4">
+              <div className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-bold text-gray-900">المناهج التعليمية</h4>
+                  <Link
+                    href={`/admin/curricula/create?project_id=${project.id}`}
+                    className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-1.5 text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                    إضافة منهج
+                  </Link>
+                </div>
+                {curricula.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-4">لا توجد مناهج في هذا المشروع بعد</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-right text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="py-2 font-medium text-gray-600">العنوان</th>
+                          <th className="py-2 font-medium text-gray-600">تاريخ الإنشاء</th>
+                          <th className="py-2 font-medium text-gray-600 text-center">الإجراءات</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {curricula.map(c => (
+                          <tr key={c.id} className="hover:bg-white/50">
+                            <td className="py-2 text-gray-900">{c.title}</td>
+                            <td className="py-2 text-gray-500">{new Date(c.created_at).toLocaleDateString('ar-EG')}</td>
+                            <td className="py-2 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <Link href={`/projects/${project.id}/curriculum`} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg" title="عرض الدروس">
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                </Link>
+                                <Link href={`/admin/curricula/${c.id}/edit`} className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg" title="تعديل">
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                </Link>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
 
