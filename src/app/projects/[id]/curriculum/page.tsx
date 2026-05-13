@@ -16,6 +16,9 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
   const [allLessons, setAllLessons] = useState<any[]>([])
   const [progress, setProgress] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteCurriculumId, setDeleteCurriculumId] = useState<string | null>(null)
+  const [deleteLessonId, setDeleteLessonId] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const router = useRouter()
@@ -25,6 +28,37 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
+  }
+
+  const handleDeleteCurriculum = async () => {
+    if (!deleteCurriculumId || deleting) return
+    setDeleting(true)
+    try {
+      await supabase.from('curricula').delete().eq('id', deleteCurriculumId)
+      setCurricula(prev => prev.filter(c => c.id !== deleteCurriculumId))
+      setAllLessons(prev => prev.filter(l => l.curriculum_id !== deleteCurriculumId))
+      setDeleteCurriculumId(null)
+    } catch (error) {
+      console.error('Error deleting curriculum:', error)
+      alert('حدث خطأ أثناء حذف المنهج')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const handleDeleteLesson = async () => {
+    if (!deleteLessonId || deleting) return
+    setDeleting(true)
+    try {
+      await supabase.from('lessons').delete().eq('id', deleteLessonId)
+      setAllLessons(prev => prev.filter(l => l.id !== deleteLessonId))
+      setDeleteLessonId(null)
+    } catch (error) {
+      console.error('Error deleting lesson:', error)
+      alert('حدث خطأ أثناء حذف الدرس')
+    } finally {
+      setDeleting(false)
+    }
   }
 
   useEffect(() => {
@@ -252,35 +286,48 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
                               )}
                             </div>
 
-                            {/* Action Button */}
-                            {isCompleted ? (
-                              <Link
-                                href={`/projects/${projectId}/curriculum/${lesson.id}`}
-                                className="shrink-0 px-4 py-2 text-sm font-medium text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
-                              >
-                                إعادة المشاهدة
-                              </Link>
-                            ) : isLocked ? (
-                              <span className="shrink-0 px-4 py-2 text-sm font-medium text-gray-400 bg-gray-50 rounded-lg">
-                                مقفول
-                              </span>
-                            ) : (
-                              <Link
-                                href={`/projects/${projectId}/curriculum/${lesson.id}`}
-                                className="shrink-0 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-                              >
-                                مشاهدة
-                              </Link>
-                            )}
+                              {/* Action Button */}
+                              <div className="flex items-center gap-1">
+                                {isCompleted ? (
+                                  <Link
+                                    href={`/projects/${projectId}/curriculum/${lesson.id}`}
+                                    className="shrink-0 px-4 py-2 text-sm font-medium text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
+                                  >
+                                    إعادة المشاهدة
+                                  </Link>
+                                ) : isLocked ? (
+                                  <span className="shrink-0 px-4 py-2 text-sm font-medium text-gray-400 bg-gray-50 rounded-lg">
+                                    مقفول
+                                  </span>
+                                ) : (
+                                  <Link
+                                    href={`/projects/${projectId}/curriculum/${lesson.id}`}
+                                    className="shrink-0 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                  >
+                                    مشاهدة
+                                  </Link>
+                                )}
+                                {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
+                                  <button
+                                    onClick={() => setDeleteLessonId(lesson.id)}
+                                    className="shrink-0 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="حذف الدرس"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  </button>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
                       )
                     })}
                   </div>
 
                   {/* Admin Actions */}
                   {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-100 flex gap-2">
+                    <div className="p-4 bg-gray-50 border-t border-gray-100 flex flex-wrap gap-2">
                       <Link
                         href={`/admin/lessons/create?curriculum_id=${curriculum.id}`}
                         className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm"
@@ -295,6 +342,13 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         تعديل المنهج
                       </Link>
+                      <button
+                        onClick={() => setDeleteCurriculumId(curriculum.id)}
+                        className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        حذف المنهج
+                      </button>
                     </div>
                   )}
                 </div>
@@ -316,6 +370,54 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
           </div>
         )}
       </main>
+
+      {/* Delete Curriculum Confirmation Modal */}
+      {deleteCurriculumId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setDeleteCurriculumId(null)} />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد حذف المنهج</h3>
+            <p className="text-gray-600 text-center mb-6">
+              هل أنت متأكد من حذف هذا المنهج؟
+              <br />
+              <span className="text-red-500 text-sm">سيتم حذف جميع الدروس المرتبطة به. هذا الإجراء لا يمكن التراجع عنه.</span>
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteCurriculumId(null)} disabled={deleting} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50">إلغاء</button>
+              <button onClick={handleDeleteCurriculum} disabled={deleting} className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2">
+                {deleting ? <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>جاري الحذف...</> : <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>حذف المنهج</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Lesson Confirmation Modal */}
+      {deleteLessonId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setDeleteLessonId(null)} />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد حذف الدرس</h3>
+            <p className="text-gray-600 text-center mb-6">هل أنت متأكد من حذف هذا الدرس؟ هذا الإجراء لا يمكن التراجع عنه.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteLessonId(null)} disabled={deleting} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50">إلغاء</button>
+              <button onClick={handleDeleteLesson} disabled={deleting} className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2">
+                {deleting ? <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>جاري الحذف...</> : <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>حذف الدرس</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

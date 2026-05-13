@@ -13,8 +13,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   const [profile, setProfile] = useState<any>(null)
   const [project, setProject] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [deleteProjectModal, setDeleteProjectModal] = useState(false)
-  const [deleting, setDeleting] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   
   const router = useRouter()
@@ -76,27 +74,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
     }
   }
 
-
-  const handleDeleteProject = async () => {
-    if (!projectId || profile?.role !== 'admin') return
-
-    setDeleting(true)
-    try {
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', projectId)
-
-      if (error) throw error
-
-      router.push('/projects')
-    } catch (error) {
-      console.error('Error deleting project:', error)
-      alert('حدث خطأ أثناء حذف المشروع')
-    } finally {
-      setDeleting(false)
-    }
-  }
 
   const getIcon = (iconName: string) => {
     const icons: Record<string, any> = {
@@ -299,105 +276,8 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
             </Link>
           )}
 
-          {/* Admin Cards */}
-          {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
-            <>
-              <Link
-                href={`/projects/${project.id}/edit`}
-                className="block bg-white rounded-2xl shadow-sm border-2 border-dashed border-gray-200 p-6 hover:border-amber-300 hover:bg-amber-50/30 transition-all group"
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
-                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-amber-600 transition-colors">إعدادات المشروع</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">تعديل بيانات المشروع وإدارة الوحدات المتاحة</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-                  <span className="text-sm font-medium text-amber-600 group-hover:translate-x-[-4px] transition-transform flex items-center gap-1">
-                    فتح الإعدادات
-                    <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </span>
-                </div>
-              </Link>
-
-              <button
-                onClick={() => setDeleteProjectModal(true)}
-                className="block bg-white rounded-2xl shadow-sm border-2 border-dashed border-red-200 p-6 hover:border-red-400 hover:bg-red-50/30 transition-all group w-full text-right"
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
-                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-red-600 transition-colors">حذف المشروع</h3>
-                    <p className="text-red-500 text-sm leading-relaxed">حذف المشروع وجميع البيانات المرتبطة به نهائياً</p>
-                  </div>
-                </div>
-              </button>
-            </>
-          )}
         </div>
       </main>
-
-      {/* Delete Project Confirmation Modal */}
-      {deleteProjectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setDeleteProjectModal(false)}
-          />
-          <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد حذف المشروع</h3>
-            <p className="text-gray-600 text-center mb-6">
-              هل أنت متأكد من حذف هذا المشروع؟
-              <br />
-              <span className="text-red-500 text-sm">سيتم حذف جميع النماذج والمناهج والبيانات المرتبطة به. هذا الإجراء لا يمكن التراجع عنه.</span>
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setDeleteProjectModal(false)}
-                disabled={deleting}
-                className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
-              >
-                إلغاء
-              </button>
-              <button
-                onClick={handleDeleteProject}
-                disabled={deleting}
-                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {deleting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    جاري الحذف...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    حذف المشروع
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
