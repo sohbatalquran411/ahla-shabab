@@ -22,6 +22,11 @@ export interface User {
 }
 
 // Project types
+export interface ProjectModules {
+  forms?: boolean
+  curriculum?: boolean
+}
+
 export interface Project {
   id: string
   name: string
@@ -30,9 +35,44 @@ export interface Project {
   color: string
   target_gender: 'male' | 'female' | 'both'
   image_url?: string | null
+  modules?: ProjectModules
   created_by: string
   created_at: string
   updated_at: string
+}
+
+// Curriculum types
+export interface Curriculum {
+  id: string
+  project_id: string
+  title: string
+  description?: string
+  created_by: string
+  created_at: string
+  updated_at: string
+  lessons?: Lesson[]
+}
+
+export interface Lesson {
+  id: string
+  curriculum_id: string
+  title: string
+  description?: string
+  youtube_url: string
+  order_index: number
+  created_by: string
+  created_at: string
+  updated_at: string
+  progress?: LessonProgress
+}
+
+export interface LessonProgress {
+  id: string
+  user_id: string
+  lesson_id: string
+  completed: boolean
+  completed_at?: string
+  created_at: string
 }
 
 // Form types

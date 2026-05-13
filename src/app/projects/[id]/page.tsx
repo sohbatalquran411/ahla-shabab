@@ -12,11 +12,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [project, setProject] = useState<any>(null)
-  const [forms, setForms] = useState<any[]>([])
-  const [userResponses, setUserResponses] = useState<any[]>([])
-  const [expandedForm, setExpandedForm] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [deleteFormId, setDeleteFormId] = useState<string | null>(null)
   const [deleteProjectModal, setDeleteProjectModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -52,17 +48,13 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
       }
 
       // Run all independent queries in parallel
-      const [profileResult, projectResult, formsResult, responsesResult] = await Promise.all([
+      const [profileResult, projectResult] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', authUser.id).single(),
-        supabase.from('projects').select('*').eq('id', projectId).single(),
-        supabase.from('forms').select('*').eq('project_id', projectId).eq('is_active', true),
-        supabase.from('form_responses').select('*').eq('user_id', authUser.id)
+        supabase.from('projects').select('*').eq('id', projectId).single()
       ])
 
       const profileData = profileResult.data
       const projectData = projectResult.data
-      const formsData = formsResult.data
-      const responsesData = responsesResult.data
 
       if (!profileData || profileData.status !== 'approved') {
         router.push('/login')
@@ -77,8 +69,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
       setUser(authUser)
       setProfile(profileData)
       setProject(projectData)
-      setForms(formsData || [])
-      setUserResponses(responsesData || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -86,40 +76,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
     }
   }
 
-
-  const handleDeleteResponse = async (responseId: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذه الاستجابة؟')) return;
-    try {
-      const { error } = await supabase.from('form_responses').delete().eq('id', responseId);
-      if (error) throw error;
-      setUserResponses(prev => prev.filter(r => r.id !== responseId));
-    } catch (err) {
-      console.error(err);
-      alert('حدث خطأ أثناء الحذف');
-    }
-  };
-
-  const handleDeleteForm = async () => {
-    if (!deleteFormId || profile?.role !== 'admin') return
-
-    setDeleting(true)
-    try {
-      const { error } = await supabase
-        .from('forms')
-        .delete()
-        .eq('id', deleteFormId)
-
-      if (error) throw error
-
-      setForms(prev => prev.filter(f => f.id !== deleteFormId))
-      setDeleteFormId(null)
-    } catch (error) {
-      console.error('Error deleting form:', error)
-      alert('حدث خطأ أثناء حذف الفورم')
-    } finally {
-      setDeleting(false)
-    }
-  }
 
   const handleDeleteProject = async () => {
     if (!projectId || profile?.role !== 'admin') return
@@ -285,136 +241,119 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
 
-        {/* Forms */}
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-xl font-bold text-gray-900">الفورمز المتاحة</h3>
-          {profile?.role === 'admin' && (
+        {/* Module Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Forms Module */}
+          {(project.modules?.forms ?? true) && (
             <Link
-              href={`/forms/create?project_id=${project.id}`}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              href={`/projects/${project.id}/forms`}
+              className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg hover:border-blue-200 transition-all group"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              إضافة فورم جديد
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">النماذج</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">استعرض واملأ النماذج المتاحة لهذا المشروع</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                <span className="text-sm font-medium text-blue-600 group-hover:translate-x-[-4px] transition-transform flex items-center gap-1">
+                  الدخول للنماذج
+                  <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+              </div>
             </Link>
           )}
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {forms.map((form) => {
-            
-            const formResponses = userResponses.filter(r => r.form_id === form.id)
-            const isCompleted = formResponses.length > 0
-            
-            return (
-              <div
-                key={form.id}
-                className={`bg-white rounded-2xl shadow-sm border transition-all ${
-                  expandedForm === form.id ? 'border-blue-300 shadow-md' : 'hover:shadow-lg hover:border-blue-200 border-gray-100'
-                }`}
+          {/* Curriculum Module */}
+          {project.modules?.curriculum && (
+            <Link
+              href={`/projects/${project.id}/curriculum`}
+              className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg hover:border-emerald-200 transition-all group"
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">المنهج التعليمي</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">تابع الدروس والفيديوهات التعليمية بالتسلسل</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                <span className="text-sm font-medium text-emerald-600 group-hover:translate-x-[-4px] transition-transform flex items-center gap-1">
+                  الدخول للمنهج
+                  <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+              </div>
+            </Link>
+          )}
+
+          {/* Admin Cards */}
+          {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
+            <>
+              <Link
+                href={`/projects/${project.id}/edit`}
+                className="block bg-white rounded-2xl shadow-sm border-2 border-dashed border-gray-200 p-6 hover:border-amber-300 hover:bg-amber-50/30 transition-all group"
               >
-                <div className={`p-6 cursor-pointer ${expandedForm === form.id ? 'pb-4' : ''}`} onClick={() => setExpandedForm(prev => prev === form.id ? null : form.id)}>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                      {profile?.role === 'admin' && (
-                        <div className="flex gap-1 relative z-10">
-                          <Link href={`/forms/${form.id}/edit`} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="تعديل الفورم">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                          </Link>
-                          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteFormId(form.id) }} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="حذف الفورم">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                          </button>
-                        </div>
-                      )}
-                      <div className={`p-2 rounded-lg transition-colors ${expandedForm === form.id ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'}`}>
-                        <svg className={`w-5 h-5 transition-transform ${expandedForm === form.id ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
                   </div>
-
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">{form.name}</h4>
-                  <p className="text-gray-600 text-sm line-clamp-2">{form.description || 'لا يوجد وصف'}</p>
-
-                  <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                    <Link href={`/forms/${form.id}`} onClick={e => e.stopPropagation()} className="text-blue-600 font-medium text-sm flex items-center gap-1 hover:text-blue-700">
-                      {isCompleted && !form.allow_multiple ? 'لقد قمت بالتسجيل مسبقاً' : 'تسجيل جديد'}
-                      <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </Link>
-                    {isCompleted && (
-                      <span className="text-sm text-green-600 font-medium bg-green-50 px-3 py-1.5 rounded-lg">
-                        {formResponses.length} تسجيل
-                      </span>
-                    )}
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-amber-600 transition-colors">إعدادات المشروع</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">تعديل بيانات المشروع وإدارة الوحدات المتاحة</p>
                   </div>
                 </div>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                  <span className="text-sm font-medium text-amber-600 group-hover:translate-x-[-4px] transition-transform flex items-center gap-1">
+                    فتح الإعدادات
+                    <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
 
-                {/* Expanded responses table */}
-                {expandedForm === form.id && (
-                  <div className="border-t border-gray-100 overflow-x-auto">
-                    <table className="w-full text-right text-sm">
-                      <thead className="bg-gray-50 text-gray-600">
-                        <tr>
-                          <th className="p-3 pr-6">التاريخ والوقت</th>
-                          <th className="p-3">النتيجة</th>
-                          <th className="p-3 pl-6">إجراءات</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {formResponses.length === 0 ? (
-                          <tr>
-                            <td colSpan={3} className="p-6 text-center text-gray-400">لا توجد تسجيلات بعد</td>
-                          </tr>
-                        ) : (
-                          formResponses.map(r => (
-                            <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
-                              <td className="p-3 pr-6 text-gray-900" dir="ltr">{new Date(r.submitted_at).toLocaleString('ar-EG')}</td>
-                              <td className="p-3 text-blue-600 font-medium">{r.score} / {r.max_score}</td>
-                              <td className="p-3 pl-6">
-                                {form.allow_delete_responses && (
-                                  <button onClick={() => handleDeleteResponse(r.id)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors flex items-center gap-1" title="حذف">
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
+              <button
+                onClick={() => setDeleteProjectModal(true)}
+                className="block bg-white rounded-2xl shadow-sm border-2 border-dashed border-red-200 p-6 hover:border-red-400 hover:bg-red-50/30 transition-all group w-full text-right"
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                    <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                   </div>
-                )}
-              </div>
-            )
-          })}
-
-          {forms.length === 0 && (
-            <div className="col-span-full text-center py-12 bg-white rounded-2xl border border-gray-100">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <p className="text-gray-500">لا توجد فورمز في هذا المشروع حالياً</p>
-            </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-red-600 transition-colors">حذف المشروع</h3>
+                    <p className="text-red-500 text-sm leading-relaxed">حذف المشروع وجميع البيانات المرتبطة به نهائياً</p>
+                  </div>
+                </div>
+              </button>
+            </>
           )}
         </div>
       </main>
 
-      
-      {/* Delete Form Confirmation Modal */}
-      {deleteFormId && (
+      {/* Delete Project Confirmation Modal */}
+      {deleteProjectModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
+          <div
             className="absolute inset-0 bg-black/50"
-            onClick={() => setDeleteFormId(null)}
+            onClick={() => setDeleteProjectModal(false)}
           />
           <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
@@ -422,24 +361,22 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            
-            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد حذف الفورم</h3>
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد حذف المشروع</h3>
             <p className="text-gray-600 text-center mb-6">
-              هل أنت متأكد من حذف هذا الفورم؟
+              هل أنت متأكد من حذف هذا المشروع؟
               <br />
-              <span className="text-red-500 text-sm">سيتم حذف جميع الأسئلة والردود المرتبطة به. هذا الإجراء لا يمكن التراجع عنه.</span>
+              <span className="text-red-500 text-sm">سيتم حذف جميع النماذج والمناهج والبيانات المرتبطة به. هذا الإجراء لا يمكن التراجع عنه.</span>
             </p>
-
             <div className="flex gap-3">
               <button
-                onClick={() => setDeleteFormId(null)}
+                onClick={() => setDeleteProjectModal(false)}
                 disabled={deleting}
                 className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
                 إلغاء
               </button>
               <button
-                onClick={handleDeleteForm}
+                onClick={handleDeleteProject}
                 disabled={deleting}
                 className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
@@ -453,7 +390,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    حذف الفورم
+                    حذف المشروع
                   </>
                 )}
               </button>

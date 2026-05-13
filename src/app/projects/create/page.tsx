@@ -35,7 +35,8 @@ export default function CreateProjectPage() {
     target_gender: 'both',
     icon: 'mosque',
     color: '#10B981',
-    image_url: ''
+    image_url: '',
+    modules: { forms: true, curriculum: false }
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -81,6 +82,7 @@ export default function CreateProjectPage() {
           icon: formData.icon,
           color: formData.color,
           image_url: formData.image_url,
+          modules: formData.modules,
           created_by: user.id
         })
 
@@ -250,6 +252,52 @@ export default function CreateProjectPage() {
                     {formData.description || 'وصف المشروع'}
                   </p>
                 </div>
+              </div>
+            </div>
+
+            {/* Module Settings */}
+            <div className="space-y-3 pt-4 border-t">
+              <label className="block text-sm font-medium text-gray-700">الوحدات المتاحة في المشروع</label>
+              <div className="grid grid-cols-2 gap-4">
+                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  formData.modules.forms ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-gray-50'
+                }`}>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={formData.modules.forms}
+                      onChange={(e) => setFormData(prev => ({ ...prev, modules: { ...prev.modules, forms: e.target.checked } }))}
+                      className="sr-only"
+                    />
+                    <div className={`w-10 h-6 rounded-full transition-colors ${formData.modules.forms ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                      <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform mt-1 ${formData.modules.forms ? 'translate-x-5' : 'translate-x-1'}`} />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">النماذج</p>
+                    <p className="text-xs text-gray-500">إضافة نماذج واستبيانات للمشروع</p>
+                  </div>
+                </label>
+
+                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  formData.modules.curriculum ? 'border-emerald-400 bg-emerald-50' : 'border-gray-200 bg-gray-50'
+                }`}>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={formData.modules.curriculum}
+                      onChange={(e) => setFormData(prev => ({ ...prev, modules: { ...prev.modules, curriculum: e.target.checked } }))}
+                      className="sr-only"
+                    />
+                    <div className={`w-10 h-6 rounded-full transition-colors ${formData.modules.curriculum ? 'bg-emerald-600' : 'bg-gray-300'}`}>
+                      <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform mt-1 ${formData.modules.curriculum ? 'translate-x-5' : 'translate-x-1'}`} />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">المنهج التعليمي</p>
+                    <p className="text-xs text-gray-500">إضافة دروس فيديو تعليمية متسلسلة</p>
+                  </div>
+                </label>
               </div>
             </div>
 
