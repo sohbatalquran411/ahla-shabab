@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -18,12 +18,13 @@ export default function LessonPage({ params }: { params: Promise<{ id: string; l
   const [prevLesson, setPrevLesson] = useState<any>(null)
   const [nextLesson, setNextLesson] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [completing, setCompleting] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const router = useRouter()
   const supabase = createClient()
   const { settings } = useAppSettings()
+  const playerRef = useRef<any>(null)
+  const completedRef = useRef(false)
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -59,14 +60,12 @@ export default function LessonPage({ params }: { params: Promise<{ id: string; l
       setProfile(profileData)
       setProject(projectData)
 
-      // Fetch lesson
       const { data: lessonData } = await supabase
         .from('lessons').select('*').eq('id', lessonId).single()
 
       if (!lessonData) { router.back(); return }
       setLesson(lessonData)
 
-      // Fetch user's progress
       const { data: progressData } = await supabase
         .from('lesson_progress').select('*')
         .eq('user_id', authUser.id)
@@ -74,8 +73,8 @@ export default function LessonPage({ params }: { params: Promise<{ id: string; l
         .maybeSingle()
 
       setProgress(progressData)
+      if (progressData?.completed) completedRef.current = true
 
-      // Fetch all lessons in same curriculum for navigation
       const { data: allLessons } = await supabase
         .from('lessons').select('*')
         .eq('curriculum_id', lessonData.curriculum_id)
@@ -94,9 +93,9 @@ export default function LessonPage({ params }: { params: Promise<{ id: string; l
     }
   }
 
-  const handleComplete = async () => {
-    if (!lessonId || !user || completing) return
-    setCompleting(true)
+  const markComplete = useCallback(async () => {
+    if (!lessonId || !user || completedRef.current) return
+    completedRef.current = true
     try {
       if (progress?.id) {
         await supabase
@@ -118,19 +117,67 @@ export default function LessonPage({ params }: { params: Promise<{ id: string; l
         if (data) setProgress(data)
         else setProgress({ completed: true })
       }
-
       setProgress((prev: any) => ({ ...prev, completed: true }))
     } catch (error) {
       console.error('Error marking lesson complete:', error)
-      alert('حدث خطأ أثناء حفظ التقدم')
-    } finally {
-      setCompleting(false)
     }
-  }
+  }, [lessonId, user, progress, supabase])
 
-  function getYouTubeEmbedUrl(url: string) {
+  // Navigate to next lesson when video ends
+  const onVideoEnded = useCallback(() => {
+    markComplete()
+    if (nextLesson) {
+      setTimeout(() => {
+        router.push(`/projects/${projectId}/curriculum/${nextLesson.id}`)
+      }, 1500)
+    }
+  }, [markComplete, nextLesson, projectId, router])
+
+  useEffect(() => {
+    if (!lesson || !lesson.youtube_url || loading) return
+
+    const videoId = extractYouTubeId(lesson.youtube_url)
+    if (!videoId) return
+
+    // Load YouTube IFrame API if not already loaded
+    if (!(window as any).YT) {
+      const tag = document.createElement('script')
+      tag.src = 'https://www.youtube.com/iframe_api'
+      const firstScriptTag = document.getElementsByTagName('script')[0]
+      firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag)
+
+      ;(window as any).onYouTubeIframeAPIReady = () => {
+        createPlayer(videoId)
+      }
+    } else {
+      createPlayer(videoId)
+    }
+
+    function createPlayer(vId: string) {
+      if (playerRef.current) {
+        playerRef.current.destroy()
+      }
+      playerRef.current = new (window as any).YT.Player('youtube-player', {
+        videoId: vId,
+        playerVars: {
+          autoplay: 1,
+          rel: 0,
+          modestbranding: 1
+        },
+        events: {
+          onStateChange: (event: any) => {
+            if (event.data === (window as any).YT.PlayerState.ENDED) {
+              onVideoEnded()
+            }
+          }
+        }
+      })
+    }
+  }, [lesson, loading, onVideoEnded])
+
+  function extractYouTubeId(url: string) {
     const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/)
-    return match ? `https://www.youtube.com/embed/${match[1]}` : null
+    return match ? match[1] : null
   }
 
   if (loading || !project || !lesson) {
@@ -141,7 +188,6 @@ export default function LessonPage({ params }: { params: Promise<{ id: string; l
     )
   }
 
-  const embedUrl = getYouTubeEmbedUrl(lesson.youtube_url)
   const isCompleted = progress?.completed
 
   return (
@@ -159,26 +205,9 @@ export default function LessonPage({ params }: { params: Promise<{ id: string; l
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Video Player */}
-          {embedUrl ? (
-            <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
-              <iframe
-                src={embedUrl}
-                className="absolute inset-0 w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                title={lesson.title}
-              />
-            </div>
-          ) : (
-            <div className="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400">
-              <div className="text-center">
-                <svg className="w-12 h-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <p className="text-sm">رابط الفيديو غير صالح</p>
-              </div>
-            </div>
-          )}
+          <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+            <div id="youtube-player" className="absolute inset-0 w-full h-full" />
+          </div>
 
           {/* Lesson Content */}
           <div className="p-6">
@@ -205,25 +234,6 @@ export default function LessonPage({ params }: { params: Promise<{ id: string; l
             {lesson.description && (
               <p className="text-gray-600 leading-relaxed mb-6">{lesson.description}</p>
             )}
-
-            {/* Complete Button */}
-            <button
-              onClick={handleComplete}
-              disabled={completing || isCompleted}
-              className={`w-full py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-                isCompleted
-                  ? 'bg-emerald-100 text-emerald-600 cursor-default'
-                  : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-200'
-              } disabled:opacity-50`}
-            >
-              {completing ? (
-                <><div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>جاري الحفظ...</>
-              ) : isCompleted ? (
-                <><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>لقد أكملت هذا الدرس ✓</>
-              ) : (
-                <><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>تم الانتهاء من الدرس</>
-              )}
-            </button>
 
             {/* Navigation */}
             <div className="mt-6 flex items-center justify-between gap-4">

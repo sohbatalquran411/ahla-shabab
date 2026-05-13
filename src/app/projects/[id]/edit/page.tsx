@@ -37,12 +37,22 @@ function EditProjectContent() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [invites, setInvites] = useState<any[]>([])
+  const [showCreateInvite, setShowCreateInvite] = useState(false)
+  const [newInvite, setNewInvite] = useState({ max_uses: 0, expires_in_days: '' })
+  const [creatingInvite, setCreatingInvite] = useState(false)
+  const [origin, setOrigin] = useState('')
+
+  useEffect(() => {
+    setOrigin(window.location.origin)
+  }, [])
   
   const [mediaType, setMediaType] = useState<'image' | 'icon'>('icon')
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     target_gender: 'both',
+    visibility: 'public' as 'public' | 'private',
     icon: 'mosque',
     color: '#10B981',
     image_url: '',
@@ -84,10 +94,11 @@ function EditProjectContent() {
 
       setProfile(profileData)
 
-      const [projectResult, formsResult, curriculaResult] = await Promise.all([
+      const [projectResult, formsResult, curriculaResult, invitesResult] = await Promise.all([
         supabase.from('projects').select('*').eq('id', projId).single(),
         supabase.from('forms').select('*').eq('project_id', projId).order('created_at', { ascending: false }),
-        supabase.from('curricula').select('*').eq('project_id', projId).order('created_at', { ascending: false })
+        supabase.from('curricula').select('*').eq('project_id', projId).order('created_at', { ascending: false }),
+        supabase.from('project_invites').select('*').eq('project_id', projId).order('created_at', { ascending: false })
       ])
 
       const projectData = projectResult.data
@@ -100,11 +111,13 @@ function EditProjectContent() {
       setProject(projectData)
       setForms(formsResult.data || [])
       setCurricula(curriculaResult.data || [])
+      setInvites(invitesResult.data || [])
       setMediaType(projectData.image_url ? 'image' : 'icon')
       setFormData({
         name: projectData.name || '',
         description: projectData.description || '',
         target_gender: projectData.target_gender || 'both',
+        visibility: projectData.visibility || 'public',
         icon: projectData.icon || 'mosque',
         color: projectData.color || '#10B981',
         image_url: projectData.image_url || '',
@@ -140,6 +153,7 @@ function EditProjectContent() {
           name: formData.name,
           description: formData.description,
           target_gender: formData.target_gender,
+          visibility: formData.visibility,
           icon: formData.icon,
           color: formData.color,
           image_url: formData.image_url,
@@ -155,6 +169,80 @@ function EditProjectContent() {
       setError(err.message || 'حدث خطأ أثناء تحديث المشروع')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const generateToken = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let result = ''
+    for (let i = 0; i < 32; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return result
+  }
+
+  const handleCreateInvite = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCreatingInvite(true)
+    try {
+      const token = generateToken()
+      const expiresAt = newInvite.expires_in_days
+        ? new Date(Date.now() + parseInt(newInvite.expires_in_days) * 86400000).toISOString()
+        : null
+
+      const { error: createError } = await supabase
+        .from('project_invites')
+        .insert({
+          project_id: projectId,
+          token,
+          max_uses: newInvite.max_uses || 0,
+          expires_at: expiresAt,
+          created_by: profile.id
+        })
+
+      if (createError) throw createError
+
+      // Refresh invites
+      const { data: freshInvites } = await supabase
+        .from('project_invites')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false })
+
+      setInvites(freshInvites || [])
+      setNewInvite({ max_uses: 0, expires_in_days: '' })
+      setShowCreateInvite(false)
+    } catch (err: any) {
+      setError(err.message || 'حدث خطأ أثناء إنشاء رابط الدعوة')
+    } finally {
+      setCreatingInvite(false)
+    }
+  }
+
+  const handleDeleteInvite = async (inviteId: string) => {
+    if (!confirm('هل أنت متأكد من حذف رابط الدعوة؟')) return
+    try {
+      await supabase.from('project_invites').delete().eq('id', inviteId)
+      setInvites(prev => prev.filter(i => i.id !== inviteId))
+    } catch (err: any) {
+      setError(err.message || 'حدث خطأ أثناء حذف رابط الدعوة')
+    }
+  }
+
+  const copyToClipboard = async (token: string) => {
+    const url = `${window.location.origin}/join/${token}`
+    try {
+      await navigator.clipboard.writeText(url)
+      alert('تم نسخ رابط الدعوة')
+    } catch {
+      // Fallback
+      const input = document.createElement('input')
+      input.value = url
+      document.body.appendChild(input)
+      input.select()
+      document.execCommand('copy')
+      document.body.removeChild(input)
+      alert('تم نسخ رابط الدعوة')
     }
   }
 
@@ -244,6 +332,45 @@ function EditProjectContent() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Visibility Toggle */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-700">إظهار المشروع</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, visibility: 'public' }))}
+                  className={`p-4 rounded-xl font-medium transition-all border-2 ${
+                    formData.visibility === 'public'
+                      ? 'border-green-600 bg-green-50 text-green-700'
+                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <span className="text-2xl mb-1 block">🌍</span>
+                  عام (الكل يراه)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, visibility: 'private' }))}
+                  className={`p-4 rounded-xl font-medium transition-all border-2 ${
+                    formData.visibility === 'private'
+                      ? 'border-purple-600 bg-purple-50 text-purple-700'
+                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <span className="text-2xl mb-1 block">🔒</span>
+                  خاص (باستخدام روابط الدعوة)
+                </button>
+              </div>
+              {formData.visibility === 'private' && (
+                <div className="bg-purple-50 border border-purple-200 text-purple-800 px-4 py-3 rounded-xl text-sm flex items-start gap-2">
+                  <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>المشاهدون لن يروا هذا المشروع إلا عبر رابط الدعوة. يمكنك إنشاء روابط دعوة من قسم "روابط الدعوة" بالأسفل.</span>
+                </div>
+              )}
             </div>
 
             {/* Media Type Toggle */}
@@ -444,6 +571,120 @@ function EditProjectContent() {
                                 <Link href={`/admin/curricula/${c.id}/edit`} className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg" title="تعديل">
                                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </Link>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Invite Links Management */}
+            <div className="pt-4 border-t space-y-4">
+              <div className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-bold text-gray-900">روابط الدعوة</h4>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateInvite(true)}
+                    className="px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-1.5 text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                    إنشاء رابط
+                  </button>
+                </div>
+
+                {showCreateInvite && (
+                  <form onSubmit={handleCreateInvite} className="mb-4 p-4 bg-white rounded-xl border border-gray-200 space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="block text-xs font-medium text-gray-600">الحد الأقصى للاستخدام (0 = غير محدود)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={newInvite.max_uses}
+                          onChange={(e) => setNewInvite(prev => ({ ...prev, max_uses: parseInt(e.target.value) || 0 }))}
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-xs font-medium text-gray-600">صلاحية الرابط (أيام، اترك فارغاً لعدم انتهاء الصلاحية)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={newInvite.expires_in_days}
+                          onChange={(e) => setNewInvite(prev => ({ ...prev, expires_in_days: e.target.value }))}
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                          placeholder="مثال: 7"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        disabled={creatingInvite}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm disabled:opacity-50"
+                      >
+                        {creatingInvite ? 'جاري الإنشاء...' : 'إنشاء'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowCreateInvite(false)}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                      >
+                        إلغاء
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {invites.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-4">لا توجد روابط دعوة بعد</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-right text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="py-2 font-medium text-gray-600">الرابط</th>
+                          <th className="py-2 font-medium text-gray-600">الاستخدام</th>
+                          <th className="py-2 font-medium text-gray-600">تاريخ الانتهاء</th>
+                          <th className="py-2 font-medium text-gray-600 text-center">الإجراءات</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {invites.map(invite => (
+                          <tr key={invite.id} className="hover:bg-white/50">
+                            <td className="py-2 text-gray-900 dir-ltr text-left text-xs" style={{ direction: 'ltr', textAlign: 'left' }}>
+                              {origin ? `${origin}/join/${invite.token.substring(0, 12)}...` : invite.token.substring(0, 12) + '...'}
+                            </td>
+                            <td className="py-2 text-gray-500">{invite.use_count}{invite.max_uses > 0 ? ` / ${invite.max_uses}` : ''}</td>
+                            <td className="py-2 text-gray-500">
+                              {invite.expires_at
+                                ? new Date(invite.expires_at).toLocaleDateString('ar-EG')
+                                : 'بدون'
+                              }
+                            </td>
+                            <td className="py-2 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => copyToClipboard(invite.token)}
+                                  className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg"
+                                  title="نسخ الرابط"
+                                >
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteInvite(invite.id)}
+                                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
+                                  title="حذف"
+                                >
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
                               </div>
                             </td>
                           </tr>

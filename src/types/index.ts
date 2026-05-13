@@ -36,9 +36,28 @@ export interface Project {
   target_gender: 'male' | 'female' | 'both'
   image_url?: string | null
   modules?: ProjectModules
+  visibility?: 'public' | 'private'
   created_by: string
   created_at: string
   updated_at: string
+}
+
+export interface ProjectInvite {
+  id: string
+  project_id: string
+  token: string
+  max_uses: number
+  use_count: number
+  expires_at: string | null
+  created_by: string
+  created_at: string
+}
+
+export interface UserProject {
+  id: string
+  user_id: string
+  project_id: string
+  created_at: string
 }
 
 // Curriculum types

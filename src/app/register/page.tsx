@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     name: '',
@@ -19,6 +19,8 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const inviteToken = searchParams.get('invite')
   const supabase = createClient()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -124,9 +126,9 @@ export default function RegisterPage() {
             email: formData.email,
             password: formData.password
           })
-          router.push('/dashboard')
+          router.push(inviteToken ? `/join/${inviteToken}` : '/dashboard')
         } else {
-          router.push('/login?pending=true')
+          router.push(inviteToken ? `/login?pending=true&invite=${inviteToken}` : '/login?pending=true')
         }
       }
     } catch (error: any) {
@@ -402,6 +404,18 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
   )
 }
 

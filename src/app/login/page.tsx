@@ -61,14 +61,20 @@ export default function LoginPage() {
 
       // Handle "Remember Me" functionality
       if (rememberMe) {
-        // Store a flag in localStorage to indicate the user wants to be remembered
         localStorage.setItem('rememberMe', 'true')
       } else {
-        // Remove the flag if unchecked
         localStorage.removeItem('rememberMe')
       }
 
-      router.push('/dashboard')
+      // Check for invite token
+      const urlParams = new URLSearchParams(window.location.search)
+      const inviteToken = urlParams.get('invite')
+
+      if (inviteToken) {
+        router.push(`/join/${inviteToken}`)
+      } else {
+        router.push('/dashboard')
+      }
       router.refresh()
     } catch (error: any) {
       setError(error.message || 'حدث خطأ أثناء تسجيل الدخول')
