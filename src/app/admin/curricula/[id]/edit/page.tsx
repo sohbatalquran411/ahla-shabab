@@ -212,7 +212,7 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
             </div>
             <div className="flex gap-4 pt-4 border-t">
               <button type="submit" disabled={saving} className="flex-1 py-4 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-all disabled:opacity-50 shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
-                {saving ? <><div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>جاري الحفظ...</> : <>حفظ التعديلات</>}
+                {saving ? <span className="flex items-center gap-2"><div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>جاري الحفظ...</span> : <span>حفظ التعديلات</span>}
               </button>
               <Link href={projectId ? `/projects/${projectId}/curriculum` : '/admin'} className="px-6 py-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors">إلغاء</Link>
             </div>
@@ -292,10 +292,9 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
               className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium flex items-center gap-2 disabled:opacity-50"
             >
               {bulkAdding ? (
-                <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>جاري الحفظ...</>
+                <span className="flex items-center gap-2"><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>جاري الحفظ...</span>
               ) : (
-                <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
-                حفظ الدروس الجديدة
+                <span className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>حفظ الدروس الجديدة</span>
               )}
             </button>
           </div>
@@ -392,7 +391,7 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
             <div className="flex gap-3">
               <button onClick={() => setDeleteId(null)} disabled={deleting} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 disabled:opacity-50">إلغاء</button>
               <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2">
-                {deleting ? <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>جاري الحذف...</> : <>حذف الدرس</>}
+                {deleting ? <span className="flex items-center gap-2"><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>جاري الحذف...</span> : <span>حذف الدرس</span>}
               </button>
             </div>
           </div>
