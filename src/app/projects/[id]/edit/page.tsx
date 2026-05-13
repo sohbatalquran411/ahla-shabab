@@ -36,6 +36,7 @@ function EditProjectContent() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   
+  const [mediaType, setMediaType] = useState<'image' | 'icon'>('icon')
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -93,6 +94,7 @@ function EditProjectContent() {
       }
 
       setProject(projectData)
+      setMediaType(projectData.image_url ? 'image' : 'icon')
       setFormData({
         name: projectData.name || '',
         description: projectData.description || '',
@@ -185,12 +187,6 @@ function EditProjectContent() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Image Upload */}
-            <ImageUpload
-              onImageUploaded={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-              currentImage={formData.image_url}
-            />
-
             {/* Project Name */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">اسم المشروع *</label>
@@ -244,45 +240,83 @@ function EditProjectContent() {
               </div>
             </div>
 
-            {/* Icon Selection */}
+            {/* Media Type Toggle */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">الأيقونة</label>
-              <div className="grid grid-cols-4 gap-3">
-                {ICON_OPTIONS.map(icon => (
-                  <button
-                    key={icon.value}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, icon: icon.value }))}
-                    className={`p-4 rounded-xl transition-all border-2 ${
-                      formData.icon === icon.value
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
-                    }`}
-                  >
-                    <span className="text-3xl">{icon.icon}</span>
-                  </button>
-                ))}
+              <label className="block text-sm font-medium text-gray-700">صورة المشروع</label>
+              <div className="flex gap-3 mb-4">
+                <button
+                  type="button"
+                  onClick={() => { setMediaType('image'); setFormData(prev => ({ ...prev, image_url: '' })) }}
+                  className={`flex-1 p-3 rounded-xl font-medium transition-all border-2 ${
+                    mediaType === 'image'
+                      ? 'border-blue-600 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  صورة
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setMediaType('icon'); setFormData(prev => ({ ...prev, image_url: '' })) }}
+                  className={`flex-1 p-3 rounded-xl font-medium transition-all border-2 ${
+                    mediaType === 'icon'
+                      ? 'border-blue-600 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  أيقونة ولون
+                </button>
               </div>
-            </div>
 
-            {/* Color Selection */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">اللون</label>
-              <div className="grid grid-cols-8 gap-3">
-                {COLOR_OPTIONS.map(color => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, color }))}
-                    className={`w-12 h-12 rounded-xl transition-all ${
-                      formData.color === color
-                        ? 'ring-4 ring-offset-2 ring-gray-400 scale-110'
-                        : 'hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
+              {mediaType === 'image' ? (
+                <ImageUpload
+                  onImageUploaded={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+                  currentImage={formData.image_url}
+                />
+              ) : (
+                <div className="space-y-4">
+                  {/* Icon Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">اختر الأيقونة</label>
+                    <div className="grid grid-cols-4 gap-3">
+                      {ICON_OPTIONS.map(icon => (
+                        <button
+                          key={icon.value}
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, icon: icon.value }))}
+                          className={`p-4 rounded-xl transition-all border-2 ${
+                            formData.icon === icon.value
+                              ? 'border-blue-600 bg-blue-50'
+                              : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                          }`}
+                        >
+                          <span className="text-3xl">{icon.icon}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Color Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">اختر اللون</label>
+                    <div className="grid grid-cols-8 gap-3">
+                      {COLOR_OPTIONS.map(color => (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, color }))}
+                          className={`w-12 h-12 rounded-xl transition-all ${
+                            formData.color === color
+                              ? 'ring-4 ring-offset-2 ring-gray-400 scale-110'
+                              : 'hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Preview */}
@@ -291,9 +325,9 @@ function EditProjectContent() {
               <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
                 {formData.image_url ? (
                   <div className="w-full h-44 overflow-hidden">
-                    <img 
-                      src={formData.image_url} 
-                      alt="صورة المشروع" 
+                    <img
+                      src={formData.image_url}
+                      alt="صورة المشروع"
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />
@@ -314,52 +348,6 @@ function EditProjectContent() {
                     {formData.description || 'وصف المشروع'}
                   </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Module Settings */}
-            <div className="space-y-3 pt-4 border-t">
-              <label className="block text-sm font-medium text-gray-700">الوحدات المتاحة في المشروع</label>
-              <div className="grid grid-cols-2 gap-4">
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  formData.modules.forms ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-gray-50'
-                }`}>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={formData.modules.forms}
-                      onChange={(e) => setFormData(prev => ({ ...prev, modules: { ...prev.modules, forms: e.target.checked } }))}
-                      className="sr-only"
-                    />
-                    <div className={`w-10 h-6 rounded-full transition-colors ${formData.modules.forms ? 'bg-blue-600' : 'bg-gray-300'}`}>
-                      <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform mt-1 ${formData.modules.forms ? 'translate-x-5' : 'translate-x-1'}`} />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">النماذج</p>
-                    <p className="text-xs text-gray-500">إضافة نماذج واستبيانات للمشروع</p>
-                  </div>
-                </label>
-
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  formData.modules.curriculum ? 'border-emerald-400 bg-emerald-50' : 'border-gray-200 bg-gray-50'
-                }`}>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={formData.modules.curriculum}
-                      onChange={(e) => setFormData(prev => ({ ...prev, modules: { ...prev.modules, curriculum: e.target.checked } }))}
-                      className="sr-only"
-                    />
-                    <div className={`w-10 h-6 rounded-full transition-colors ${formData.modules.curriculum ? 'bg-emerald-600' : 'bg-gray-300'}`}>
-                      <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform mt-1 ${formData.modules.curriculum ? 'translate-x-5' : 'translate-x-1'}`} />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">المنهج التعليمي</p>
-                    <p className="text-xs text-gray-500">إضافة دروس فيديو تعليمية متسلسلة</p>
-                  </div>
-                </label>
               </div>
             </div>
 
