@@ -181,8 +181,7 @@ function EditProjectContent() {
     return result
   }
 
-  const handleCreateInvite = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleCreateInvite = async () => {
     setCreatingInvite(true)
     try {
       const token = generateToken()
@@ -598,7 +597,7 @@ function EditProjectContent() {
                 </div>
 
                 {showCreateInvite && (
-                  <form onSubmit={handleCreateInvite} className="mb-4 p-4 bg-white rounded-xl border border-gray-200 space-y-3">
+                  <div className="mb-4 p-4 bg-white rounded-xl border border-gray-200 space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <label className="block text-xs font-medium text-gray-600">الحد الأقصى للاستخدام (0 = غير محدود)</label>
@@ -624,8 +623,9 @@ function EditProjectContent() {
                     </div>
                     <div className="flex gap-2">
                       <button
-                        type="submit"
+                        type="button"
                         disabled={creatingInvite}
+                        onClick={handleCreateInvite}
                         className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm disabled:opacity-50"
                       >
                         {creatingInvite ? 'جاري الإنشاء...' : 'إنشاء'}
@@ -638,7 +638,7 @@ function EditProjectContent() {
                         إلغاء
                       </button>
                     </div>
-                  </form>
+                  </div>
                 )}
 
                 {invites.length === 0 ? (
