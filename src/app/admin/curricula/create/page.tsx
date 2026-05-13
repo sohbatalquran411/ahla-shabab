@@ -35,15 +35,15 @@ function CreateCurriculumContent() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/login'); return }
 
-      const { error: insertError } = await supabase.from('curricula').insert({
+      const { data: newCurriculum, error: insertError } = await supabase.from('curricula').insert({
         project_id: projectId,
         title: title.trim(),
         description: description.trim(),
         created_by: user.id
-      })
+      }).select('id').single()
 
       if (insertError) throw insertError
-      router.push(`/projects/${projectId}/curriculum`)
+      router.push(`/admin/curricula/${newCurriculum.id}/edit`)
     } catch (err: any) {
       setError(err.message || 'حدث خطأ')
     } finally {
