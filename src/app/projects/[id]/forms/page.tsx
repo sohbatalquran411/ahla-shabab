@@ -16,8 +16,7 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
   const [userResponses, setUserResponses] = useState<any[]>([])
   const [expandedForm, setExpandedForm] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [deleteFormId, setDeleteFormId] = useState<string | null>(null)
-  const [deleting, setDeleting] = useState(false)
+  const [deletingResponse, setDeletingResponse] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const router = useRouter()
@@ -80,22 +79,6 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
     }
   }
 
-  const handleDeleteForm = async () => {
-    if (!deleteFormId || profile?.role !== 'admin') return
-    setDeleting(true)
-    try {
-      const { error } = await supabase.from('forms').delete().eq('id', deleteFormId)
-      if (error) throw error
-      setForms(prev => prev.filter(f => f.id !== deleteFormId))
-      setDeleteFormId(null)
-    } catch (error) {
-      console.error('Error deleting form:', error)
-      alert('حدث خطأ أثناء حذف الفورم')
-    } finally {
-      setDeleting(false)
-    }
-  }
-
   if (loading || !project) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -150,16 +133,7 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
           <p className="text-gray-500 mt-1">النماذج المتاحة في هذا المشروع</p>
         </div>
 
-        {/* Forms Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">الفورمز المتاحة</h2>
-          {(profile?.role === 'admin' || profile?.role === 'supervisor') && (
-            <Link href={`/forms/create?project_id=${project.id}`} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-              إضافة فورم جديد
-            </Link>
-          )}
-        </div>
+        <h2 className="text-xl font-bold text-gray-900 mb-6">الفورمز المتاحة</h2>
 
         {/* Forms Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -175,16 +149,6 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     </div>
                     <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                      {profile?.role === 'admin' && (
-                        <div className="flex gap-1 relative z-10">
-                          <Link href={`/forms/${form.id}/edit`} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="تعديل الفورم">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                          </Link>
-                          <button onClick={() => { setDeleteFormId(form.id) }} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="حذف الفورم">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                          </button>
-                        </div>
-                      )}
                       <div className={`p-2 rounded-lg transition-colors ${expandedForm === form.id ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'}`}>
                         <svg className={`w-5 h-5 transition-transform ${expandedForm === form.id ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                       </div>
@@ -251,34 +215,6 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
           )}
         </div>
       </main>
-
-      {/* Delete Form Confirmation Modal */}
-      {deleteFormId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setDeleteFormId(null)} />
-          <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-            </div>
-            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">تأكيد حذف الفورم</h3>
-            <p className="text-gray-600 text-center mb-6">
-              هل أنت متأكد من حذف هذا الفورم؟
-              <br />
-              <span className="text-red-500 text-sm">سيتم حذف جميع الأسئلة والردود المرتبطة به. هذا الإجراء لا يمكن التراجع عنه.</span>
-            </p>
-            <div className="flex gap-3">
-              <button onClick={() => setDeleteFormId(null)} disabled={deleting} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50">إلغاء</button>
-              <button onClick={handleDeleteForm} disabled={deleting} className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
-                {deleting ? (
-                  <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>جاري الحذف...</>
-                ) : (
-                  <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>حذف الفورم</>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
