@@ -381,11 +381,11 @@ export default function ResultsPage() {
     if (!showAnalytics || formQuestions.length === 0) return []
 
     return formQuestions.map(q => {
-      let options: any[] = []
+      let options: any = []
       if (typeof q.options === 'string') {
         try { options = JSON.parse(q.options) } catch { options = [] }
       } else {
-        options = Array.isArray(q.options) ? q.options : (q.options?.options || [])
+        options = q.options?.options || q.options || []
       }
 
       const totalResponses = formResponses.length
@@ -404,7 +404,7 @@ export default function ResultsPage() {
           }
         })
 
-        const labels = options.map(o => ({
+        const labels = options.map((o: any) => ({
           id: o.id,
           text: o.text,
           count: counts[o.id] || 0,
@@ -427,7 +427,7 @@ export default function ResultsPage() {
           }
         })
 
-        const labels = options.map(o => ({
+        const labels = options.map((o: any) => ({
           id: o.id,
           text: o.text,
           count: counts[o.id] || 0,
