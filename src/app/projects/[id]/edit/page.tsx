@@ -102,10 +102,10 @@ function EditProjectContent() {
         supabase.from('projects').select('*').eq('id', projId).single(),
         supabase.from('forms').select('*').eq('project_id', projId).order('created_at', { ascending: false }),
         supabase.from('curricula').select('*').eq('project_id', projId).order('created_at', { ascending: false }),
-        supabase.from('project_supervisors').select('*, profile:profiles(*)').eq('project_id', projId).order('created_at', { ascending: false }),
-        supabase.from('project_bans').select('*, profile:profiles(*)').eq('project_id', projId).order('created_at', { ascending: false }),
+        supabase.from('project_supervisors').select('*, profile:profiles!user_id(*)').eq('project_id', projId).order('created_at', { ascending: false }),
+        supabase.from('project_bans').select('*, profile:profiles!user_id(*)').eq('project_id', projId).order('created_at', { ascending: false }),
         supabase.from('profiles').select('*').order('name'),
-        supabase.from('user_projects').select('*, profile:profiles(*)').eq('project_id', projId).order('created_at', { ascending: false })
+        supabase.from('user_projects').select('*, profile:profiles!user_id(*)').eq('project_id', projId).order('created_at', { ascending: false })
       ])
 
       const projectData = projectResult.data
@@ -200,11 +200,9 @@ function EditProjectContent() {
           setSupervisors(prev => prev.filter(s => s.id !== sup.id))
         }
       } else {
-        const { data: newSup, error } = await supabase
+        const { error } = await supabase
           .from('project_supervisors')
           .insert({ project_id: projectId, user_id: userId, created_by: profile?.id })
-          .select('*, profile:profiles(*)')
-          .single()
 
         if (error) {
           if (error.code === '23505') {
@@ -212,7 +210,8 @@ function EditProjectContent() {
           } else throw error
           return
         }
-        if (newSup) setSupervisors(prev => [newSup, ...prev])
+        const p = allProfiles.find(p => p.id === userId) || projectUsers.find((pu: any) => pu.profile?.id === userId)?.profile
+        setSupervisors(prev => [{ id: 's_' + Date.now(), user_id: userId, profile: p || { name: '', email: '' } }, ...prev])
       }
       setError('')
     } catch (err: any) {
@@ -229,11 +228,9 @@ function EditProjectContent() {
           setBans(prev => prev.filter(b => b.id !== ban.id))
         }
       } else {
-        const { data: newBan, error } = await supabase
+        const { error } = await supabase
           .from('project_bans')
           .insert({ project_id: projectId, user_id: userId, created_by: profile?.id })
-          .select('*, profile:profiles(*)')
-          .single()
 
         if (error) {
           if (error.code === '23505') {
@@ -241,10 +238,12 @@ function EditProjectContent() {
           } else throw error
           return
         }
-        if (newBan) setBans(prev => [newBan, ...prev])
+        const p = allProfiles.find(p => p.id === userId) || projectUsers.find((pu: any) => pu.profile?.id === userId)?.profile
+        setBans(prev => [{ id: 'b_' + Date.now(), user_id: userId, profile: p || { name: '', email: '' } }, ...prev])
       }
       setError('')
     } catch (err: any) {
+      console.error(err)
       setError(err.message || 'حدث خطأ أثناء تعديل الحظر')
     }
   }
