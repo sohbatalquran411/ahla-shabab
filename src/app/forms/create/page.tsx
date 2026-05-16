@@ -41,6 +41,7 @@ interface Question {
   type: QuestionType
   required: boolean
   points: number
+  has_counter?: boolean
   options: QuestionOption[]
   // Matrix-specific
   matrix_rows?: MatrixRow[]

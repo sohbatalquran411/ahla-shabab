@@ -56,7 +56,9 @@ interface Question {
 
   points: number
 
-      options: QuestionOption[]
+  has_counter?: boolean
+
+  options: QuestionOption[]
 
   order_index?: number
 
