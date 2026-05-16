@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { User } from '@/types'
+import NotificationsPopover from './NotificationsPopover'
 
 interface HeaderProps {
   user: User
@@ -80,6 +81,7 @@ export default function Header({ user, settings, onMenuClick, showMenuButton = t
                 لوحة تحكم المدير
               </Link>
             )}
+            <NotificationsPopover />
             <div className="w-px h-6 bg-gray-200 mx-2"></div>
             <button onClick={handleLogout} className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors">
               تسجيل الخروج

@@ -130,7 +130,7 @@ export default function PublicProjectsView({ projects: initialProjects }: Public
               </h1>
               <p className="text-lg sm:text-xl text-gray-600 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
                 منصة متكاملة لإدارة المشاريع الشبابية، تنظيم المتطوعين، 
-                وتقديم المناهج التعليمية والاستمارات بكل سهولة
+                وتقديم المحتوى التعليمي والاستمارات بكل سهولة
               </p>
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
                 <Link href="/register"
@@ -202,7 +202,7 @@ export default function PublicProjectsView({ projects: initialProjects }: Public
                   'تنظيم وإدارة المشاريع الشبابية بكل احترافية',
                   'متابعة المتطوعين وتسجيلهم في المشاريع',
                   'إنشاء استمارات ونماذج متقدمة لجمع البيانات',
-                  'تقديم مناهج تعليمية ودروس تفاعلية',
+                  'تقديم محتوى تعليمي ودروس تفاعلية',
                   'إحصائيات وتقارير دقيقة لأداء المشاريع',
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 justify-end">
@@ -282,7 +282,7 @@ export default function PublicProjectsView({ projects: initialProjects }: Public
             {[
               { icon: '🚀', title: 'إدارة المشاريع', desc: 'إنشاء وتنظيم المشاريع الشبابية بسهولة ومتابعة المتطوعين' },
               { icon: '📋', title: 'استمارات مخصصة', desc: 'نماذج واستبيانات متطورة لجمع البيانات والمعلومات' },
-              { icon: '📚', title: 'مناهج تعليمية', desc: 'دروس وفيديوهات تعليمية متكاملة مع تتبع التقدم' },
+              { icon: '📚', title: 'محتوى تعليمي', desc: 'دروس وفيديوهات تعليمية متكاملة مع تتبع التقدم' },
               { icon: '👥', title: 'إدارة المتطوعين', desc: 'تسجيل ومتابعة المتطوعين وإدارة أدوارهم بكفاءة' },
               { icon: '📊', title: 'إحصائيات دقيقة', desc: 'لوحة تحكم متكاملة تعرض إحصائيات المشاريع والمستخدمين' },
               { icon: '🔒', title: 'خصوصية وأمان', desc: 'صلاحيات مرنة للمستخدمين وإدارة المحتوى بشكل آمن' },

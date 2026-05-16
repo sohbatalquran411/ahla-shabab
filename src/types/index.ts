@@ -37,6 +37,8 @@ export interface Project {
   image_url?: string | null
   modules?: ProjectModules
   visibility?: 'public' | 'private'
+  is_archived?: boolean
+  original_project_id?: string | null
   created_by: string
   created_at: string
   updated_at: string
@@ -57,15 +59,48 @@ export interface UserProject {
   id: string
   user_id: string
   project_id: string
+  expires_at?: string | null
+  created_at: string
+}
+
+export interface ProjectSupervisor {
+  id: string
+  project_id: string
+  user_id: string
+  created_by: string
+  created_at: string
+  profiles?: { name: string; email: string }
+}
+
+export interface ProjectBan {
+  id: string
+  project_id: string
+  user_id: string
+  created_by: string
+  created_at: string
+  profiles?: { name: string; email: string }
+}
+
+export interface Notification {
+  id: string
+  user_id: string
+  title: string
+  body?: string
+  type: string
+  link?: string
+  is_read: boolean
   created_at: string
 }
 
 // Curriculum types
+export type LessonType = 'video' | 'audio' | 'text'
+
 export interface Curriculum {
   id: string
   project_id: string
   title: string
   description?: string
+  is_sequential?: boolean
   created_by: string
   created_at: string
   updated_at: string
@@ -77,7 +112,11 @@ export interface Lesson {
   curriculum_id: string
   title: string
   description?: string
-  youtube_url: string
+  type: LessonType
+  youtube_url?: string
+  audio_url?: string
+  content?: string
+  allow_comments?: boolean
   order_index: number
   created_by: string
   created_at: string
@@ -94,12 +133,22 @@ export interface LessonProgress {
   created_at: string
 }
 
+export interface LessonComment {
+  id: string
+  lesson_id: string
+  user_id: string
+  content: string
+  created_at: string
+  profiles?: {
+    name: string
+  }
+}
+
 // Form types
 export type QuestionType = 
   | 'text'
   | 'textarea'
   | 'single_choice'
-  | 'single_choice_with_counter'
   | 'multiple_choice'
   | 'scale'
   | 'ranking'
@@ -113,8 +162,6 @@ export interface QuestionOption {
   id: string
   text: string
   points: number
-  sub_options?: QuestionOption[]
-  max_count?: number
 }
 
 export interface Question {
@@ -133,7 +180,6 @@ export interface Form {
   project_id: string
   name: string
   description: string
-  target_gender: 'male' | 'female' | 'both'
   created_by: string
   created_at: string
   updated_at: string
@@ -153,6 +199,17 @@ export interface FormResponse {
   score: number
   max_score: number
   submitted_at: string
+}
+
+// Notification types
+export type NotificationType = 'assignment' | 'info'
+
+export interface NotificationPreference {
+  id: string
+  user_id: string
+  notification_type: NotificationType
+  enabled: boolean
+  created_at: string
 }
 
 // Dashboard stats
