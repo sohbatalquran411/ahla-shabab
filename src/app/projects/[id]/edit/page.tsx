@@ -43,8 +43,8 @@ function EditProjectContent() {
   const [bans, setBans] = useState<any[]>([])
   const [allProfiles, setAllProfiles] = useState<any[]>([])
   const [projectUsers, setProjectUsers] = useState<any[]>([])
-  const [selectedSupervisorId, setSelectedSupervisorId] = useState('')
-  const [selectedBanId, setSelectedBanId] = useState('')
+  const [searchSupervisorQuery, setSearchSupervisorQuery] = useState('')
+  const [searchBanQuery, setSearchBanQuery] = useState('')
 
   useEffect(() => {
     setOrigin(window.location.origin)
@@ -322,45 +322,6 @@ function EditProjectContent() {
               />
             </div>
 
-            {/* Visibility Toggle */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">إظهار المشروع</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, visibility: 'public' }))}
-                  className={`p-4 rounded-xl font-medium transition-all border-2 ${
-                    formData.visibility === 'public'
-                      ? 'border-green-600 bg-green-50 text-green-700'
-                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <span className="text-2xl mb-1 block">🌍</span>
-                  عام (الكل يراه)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, visibility: 'private' }))}
-                  className={`p-4 rounded-xl font-medium transition-all border-2 ${
-                    formData.visibility === 'private'
-                      ? 'border-purple-600 bg-purple-50 text-purple-700'
-                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <span className="text-2xl mb-1 block">🔒</span>
-                  خاص (باستخدام روابط الدعوة)
-                </button>
-              </div>
-              {formData.visibility === 'private' && (
-                <div className="bg-purple-50 border border-purple-200 text-purple-800 px-4 py-3 rounded-xl text-sm flex items-start gap-2">
-                  <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>المشاهدون لن يروا هذا المشروع إلا عبر رابط المشاركة المباشر.</span>
-                </div>
-              )}
-            </div>
-
             {/* Media Type Toggle */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">صورة المشروع</label>
@@ -570,43 +531,79 @@ function EditProjectContent() {
               </div>
             </div>
 
-            {/* Copy Project Link */}
+            {/* Visibility Toggle */}
             <div className="pt-4 border-t space-y-4">
               <div className="bg-gray-50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-bold text-gray-900">مشاركة المشروع</h4>
+                  <h4 className="font-bold text-gray-900">إظهار المشروع</h4>
                 </div>
-                <p className="text-sm text-gray-500 mb-3">انسخ الرابط لإرساله للآخرين للانضمام للمشروع</p>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    readOnly
-                    value={origin ? `${origin}/projects/${projectId}` : ''}
-                    className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm dir-ltr text-left"
-                    dir="ltr"
-                  />
+                <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => {
-                      const url = `${window.location.origin}/projects/${projectId}`
-                      navigator.clipboard.writeText(url).then(() => alert('تم نسخ رابط المشروع')).catch(() => {
-                        const input = document.createElement('input')
-                        input.value = url
-                        document.body.appendChild(input)
-                        input.select()
-                        document.execCommand('copy')
-                        document.body.removeChild(input)
-                        alert('تم نسخ رابط المشروع')
-                      })
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm whitespace-nowrap flex items-center gap-1.5"
+                    onClick={() => setFormData(prev => ({ ...prev, visibility: 'public' }))}
+                    className={`p-4 rounded-xl font-medium transition-all border-2 ${
+                      formData.visibility === 'public'
+                        ? 'border-green-600 bg-green-50 text-green-700'
+                        : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
+                    }`}
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                    نسخ الرابط
+                    <span className="text-2xl mb-1 block">🌍</span>
+                    عام (الكل يراه)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, visibility: 'private' }))}
+                    className={`p-4 rounded-xl font-medium transition-all border-2 ${
+                      formData.visibility === 'private'
+                        ? 'border-purple-600 bg-purple-50 text-purple-700'
+                        : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="text-2xl mb-1 block">🔒</span>
+                    خاص (باستخدام روابط الدعوة)
                   </button>
                 </div>
               </div>
             </div>
+
+            {formData.visibility === 'private' && (
+              <div className="pt-4 border-t space-y-4">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-bold text-gray-900">مشاركة المشروع</h4>
+                  </div>
+                  <p className="text-sm text-gray-500 mb-3">انسخ الرابط لإرساله للآخرين للانضمام للمشروع</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={origin ? `${origin}/projects/${projectId}` : ''}
+                      className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm dir-ltr text-left"
+                      dir="ltr"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = `${window.location.origin}/projects/${projectId}`
+                        navigator.clipboard.writeText(url).then(() => alert('تم نسخ رابط المشروع')).catch(() => {
+                          const input = document.createElement('input')
+                          input.value = url
+                          document.body.appendChild(input)
+                          input.select()
+                          document.execCommand('copy')
+                          document.body.removeChild(input)
+                          alert('تم نسخ رابط المشروع')
+                        })
+                      }}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm whitespace-nowrap flex items-center gap-1.5"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                      نسخ الرابط
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Admin: Archive Toggle */}
             {profile?.role === 'admin' && (
@@ -639,45 +636,67 @@ function EditProjectContent() {
                 {(() => {
                   const supervisorIds = new Set(supervisors.map(s => s.user_id))
                   const banIds = new Set(bans.map(b => b.user_id))
-                  const usersSource = (profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean))
-                    .filter((p: any) => !banIds.has(p.id))
+                  const allUsers = (profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean))
+                  const available = allUsers.filter((p: any) => !banIds.has(p.id))
+                  const filtered = searchSupervisorQuery
+                    ? available.filter((p: any) =>
+                        p.name.toLowerCase().includes(searchSupervisorQuery.toLowerCase()) ||
+                        p.email.toLowerCase().includes(searchSupervisorQuery.toLowerCase())
+                      )
+                    : []
                   return (
                     <div className="space-y-3">
-                      <div className="flex gap-2">
-                        <select
-                          value={selectedSupervisorId}
-                          onChange={(e) => setSelectedSupervisorId(e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="">اختر مستخدم...</option>
-                          {usersSource.map((p: any) => (
-                            <option key={p.id} value={p.id}>
-                              {p.name || 'غير معروف'} ({p.email})
-                            </option>
-                          ))}
-                        </select>
-                        {selectedSupervisorId && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              handleToggleSupervisor(selectedSupervisorId, supervisorIds.has(selectedSupervisorId))
-                              setSelectedSupervisorId('')
-                            }}
-                            className={`px-4 py-2 text-sm rounded-lg transition-colors whitespace-nowrap ${
-                              supervisorIds.has(selectedSupervisorId)
-                                ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                                : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                            }`}
-                          >
-                            {supervisorIds.has(selectedSupervisorId) ? 'إزالة' : 'إضافة'}
-                          </button>
-                        )}
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={searchSupervisorQuery}
+                          onChange={(e) => setSearchSupervisorQuery(e.target.value)}
+                          placeholder="ابحث بالاسم أو البريد..."
+                          className="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                       </div>
+                      {searchSupervisorQuery && filtered.length > 0 && (
+                        <div className="space-y-1 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-2 bg-white">
+                          {filtered.map((p: any) => (
+                            <div key={p.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm bg-gray-100 text-gray-600">
+                                  {(p.name || p.email)?.[0] || '?'}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">{p.name || 'غير معروف'}</p>
+                                  <p className="text-xs text-gray-500">{p.email}</p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleToggleSupervisor(p.id, supervisorIds.has(p.id))
+                                  setSearchSupervisorQuery('')
+                                }}
+                                className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                                  supervisorIds.has(p.id)
+                                    ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                                }`}
+                              >
+                                {supervisorIds.has(p.id) ? 'إزالة' : 'إضافة'}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {searchSupervisorQuery && filtered.length === 0 && (
+                        <p className="text-gray-400 text-sm text-center py-2">لا يوجد مستخدمون</p>
+                      )}
                       {supervisors.length > 0 && (
-                        <div className="space-y-1 max-h-60 overflow-y-auto">
+                        <div className="space-y-1 max-h-60 overflow-y-auto border-t pt-2">
                           <p className="text-xs text-gray-500 mb-1">المشرفون الحاليون:</p>
                           {supervisors.map((s: any) => {
-                            const p = usersSource.find((u: any) => u.id === s.user_id)
+                            const p = allUsers.find((u: any) => u.id === s.user_id)
                             if (!p) return null
                             return (
                               <div key={s.user_id} className="flex items-center justify-between bg-blue-50 rounded-lg px-3 py-2 border border-blue-200">
@@ -694,7 +713,7 @@ function EditProjectContent() {
                                   type="button"
                                   onClick={() => {
                                     handleToggleSupervisor(s.user_id, true)
-                                    setSelectedSupervisorId('')
+                                    setSearchSupervisorQuery('')
                                   }}
                                   className="px-3 py-1 text-sm rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
                                 >
@@ -704,9 +723,6 @@ function EditProjectContent() {
                             )
                           })}
                         </div>
-                      )}
-                      {usersSource.length === 0 && (
-                        <p className="text-gray-400 text-sm text-center py-2">لا يوجد مستخدمون متاحون</p>
                       )}
                     </div>
                   )
@@ -724,44 +740,66 @@ function EditProjectContent() {
                 {(() => {
                   const supervisorIds = new Set(supervisors.map(s => s.user_id))
                   const banIds = new Set(bans.map(b => b.user_id))
-                  const usersSource = (profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean))
+                  const allUsers = (profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean))
+                  const filtered = searchBanQuery
+                    ? allUsers.filter((p: any) =>
+                        p.name.toLowerCase().includes(searchBanQuery.toLowerCase()) ||
+                        p.email.toLowerCase().includes(searchBanQuery.toLowerCase())
+                      )
+                    : []
                   return (
                     <div className="space-y-3">
-                      <div className="flex gap-2">
-                        <select
-                          value={selectedBanId}
-                          onChange={(e) => setSelectedBanId(e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="">اختر مستخدم...</option>
-                          {usersSource.map((p: any) => (
-                            <option key={p.id} value={p.id}>
-                              {p.name || 'غير معروف'} ({p.email})
-                            </option>
-                          ))}
-                        </select>
-                        {selectedBanId && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              handleToggleBan(selectedBanId, banIds.has(selectedBanId))
-                              setSelectedBanId('')
-                            }}
-                            className={`px-4 py-2 text-sm rounded-lg transition-colors whitespace-nowrap ${
-                              banIds.has(selectedBanId)
-                                ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                                : 'bg-red-50 text-red-600 hover:bg-red-100'
-                            }`}
-                          >
-                            {banIds.has(selectedBanId) ? 'إلغاء الحظر' : 'حظر'}
-                          </button>
-                        )}
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={searchBanQuery}
+                          onChange={(e) => setSearchBanQuery(e.target.value)}
+                          placeholder="ابحث بالاسم أو البريد..."
+                          className="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                       </div>
+                      {searchBanQuery && filtered.length > 0 && (
+                        <div className="space-y-1 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-2 bg-white">
+                          {filtered.map((p: any) => (
+                            <div key={p.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm bg-gray-100 text-gray-600">
+                                  {(p.name || p.email)?.[0] || '?'}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">{p.name || 'غير معروف'}</p>
+                                  <p className="text-xs text-gray-500">{p.email}</p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleToggleBan(p.id, banIds.has(p.id))
+                                  setSearchBanQuery('')
+                                }}
+                                className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                                  banIds.has(p.id)
+                                    ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                                    : 'bg-red-50 text-red-600 hover:bg-red-100'
+                                }`}
+                              >
+                                {banIds.has(p.id) ? 'إلغاء الحظر' : 'حظر'}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {searchBanQuery && filtered.length === 0 && (
+                        <p className="text-gray-400 text-sm text-center py-2">لا يوجد مستخدمون</p>
+                      )}
                       {bans.length > 0 && (
-                        <div className="space-y-1 max-h-60 overflow-y-auto">
+                        <div className="space-y-1 max-h-60 overflow-y-auto border-t pt-2">
                           <p className="text-xs text-gray-500 mb-1">المحظورون حالياً:</p>
                           {bans.map((b: any) => {
-                            const p = usersSource.find((u: any) => u.id === b.user_id)
+                            const p = allUsers.find((u: any) => u.id === b.user_id)
                             if (!p) return null
                             return (
                               <div key={b.user_id} className="flex items-center justify-between bg-red-50 rounded-lg px-3 py-2 border border-red-200">
@@ -778,7 +816,7 @@ function EditProjectContent() {
                                   type="button"
                                   onClick={() => {
                                     handleToggleBan(b.user_id, true)
-                                    setSelectedBanId('')
+                                    setSearchBanQuery('')
                                   }}
                                   className="px-3 py-1 text-sm rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
                                 >
@@ -788,9 +826,6 @@ function EditProjectContent() {
                             )
                           })}
                         </div>
-                      )}
-                      {usersSource.length === 0 && (
-                        <p className="text-gray-400 text-sm text-center py-2">لا يوجد مستخدمون</p>
                       )}
                     </div>
                   )

@@ -801,8 +801,8 @@ const searchParams = useSearchParams()
                   })()}
                 </div>
 
-                {/* Text validation options */}
-                {(question.type === 'text' || question.type === 'textarea') && (
+                {/* Text validation options (short text only) */}
+                {question.type === 'text' && (
                   <div className="ms-2 sm:ms-11 mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
                     <p className="text-sm font-medium text-purple-700 mb-2">نوع التحقق من الإجابة:</p>
                     <div className="flex flex-wrap gap-2">
