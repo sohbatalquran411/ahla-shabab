@@ -1398,21 +1398,20 @@ const params = useParams()
                   const opts: any[] = parseOptions(question.options)
                   const meta = opts[0] || {}
                   const vt = meta.validation_type || ''
+                  const vcat = meta.validation_category || ''
                   const firstOptions = [
-                    { value: '', label: 'بدون تحقق' },
                     { value: 'name', label: 'اسم' },
                     { value: 'email', label: 'ايميل' },
                     { value: 'phone', label: 'رقم هاتف' },
-                    { value: 'plain', label: 'نص بدون تحقق' },
                     { value: 'number', label: 'رقم' },
+                    { value: 'plain', label: 'نص بدون تحقق' },
                     { value: 'text_check', label: 'نص بتحقق' },
                   ]
                   const currentFirst = firstOptions.find(o => {
-                    if (!vt) return o.value === ''
+                    if (vcat) return o.value === vcat
+                    if (!vt || vt === '') return o.value === 'plain'
                     if (vt === 'name' || vt === 'email' || vt === 'phone' || vt === 'plain') return o.value === vt
-                    if (['equal_to','not_equal_to','less_than','less_than_or_equal','greater_than','greater_than_or_equal','between','not_between','whole_number','is_number'].includes(vt)) return o.value === 'number'
-                    if (['contains_word','does_not_contain'].includes(vt)) return o.value === 'text_check'
-                    return o.value === ''
+                    return o.value === 'plain'
                   }) || firstOptions[0]
 
                   const secondOptions = (() => {
@@ -1444,16 +1443,16 @@ const params = useParams()
 
                   const setValidation = (firstVal: string, secondVal?: string) => {
                     if (firstVal === '' || firstVal === 'email' || firstVal === 'phone' || firstVal === 'plain') {
-                      updateQuestion(qIndex, { options: [{ validation_type: firstVal, validation_value: '', validation_min: '', validation_max: '' }] as any })
+                      updateQuestion(qIndex, { options: [{ validation_type: firstVal, validation_category: '', validation_value: '', validation_min: '', validation_max: '' }] as any })
                     } else if (firstVal === 'name') {
                       const wordCount = secondVal ? parseInt(secondVal.split('_')[1]) : 2
-                      updateQuestion(qIndex, { options: [{ validation_type: 'name', validation_value: String(wordCount), validation_min: '', validation_max: '' }] as any })
+                      updateQuestion(qIndex, { options: [{ validation_type: 'name', validation_category: 'name', validation_value: String(wordCount), validation_min: '', validation_max: '' }] as any })
                     } else if (firstVal === 'number') {
                       const sv = secondVal || 'equal_to'
-                      updateQuestion(qIndex, { options: [{ validation_type: sv, validation_value: '', validation_min: '', validation_max: '' }] as any })
+                      updateQuestion(qIndex, { options: [{ validation_type: sv, validation_category: 'number', validation_value: '', validation_min: '', validation_max: '' }] as any })
                     } else if (firstVal === 'text_check') {
                       const sv = secondVal || 'contains_word'
-                      updateQuestion(qIndex, { options: [{ validation_type: sv, validation_value: sv === 'contains_word' || sv === 'does_not_contain' ? '' : '', validation_min: '', validation_max: '' }] as any })
+                      updateQuestion(qIndex, { options: [{ validation_type: sv, validation_category: 'text_check', validation_value: sv === 'contains_word' || sv === 'does_not_contain' ? '' : '', validation_min: '', validation_max: '' }] as any })
                     }
                   }
 
