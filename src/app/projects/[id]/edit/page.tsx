@@ -37,21 +37,19 @@ function EditProjectContent() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const [invites, setInvites] = useState<any[]>([])
-  const [showCreateInvite, setShowCreateInvite] = useState(false)
-  const [newInvite, setNewInvite] = useState({ max_uses: 0, expires_in_days: '' })
-  const [creatingInvite, setCreatingInvite] = useState(false)
   const [origin, setOrigin] = useState('')
   const [is_archived, setIsArchived] = useState(false)
   const [supervisors, setSupervisors] = useState<any[]>([])
   const [bans, setBans] = useState<any[]>([])
-  const [newSupervisorEmail, setNewSupervisorEmail] = useState('')
-  const [newBanEmail, setNewBanEmail] = useState('')
+  const [allProfiles, setAllProfiles] = useState<any[]>([])
+  const [projectUsers, setProjectUsers] = useState<any[]>([])
+  const [searchSupervisor, setSearchSupervisor] = useState('')
+  const [searchBan, setSearchBan] = useState('')
 
   useEffect(() => {
     setOrigin(window.location.origin)
   }, [])
-  
+
   const [mediaType, setMediaType] = useState<'image' | 'icon'>('icon')
   const [formData, setFormData] = useState({
     name: '',
@@ -100,13 +98,14 @@ function EditProjectContent() {
 
       setProfile(profileData)
 
-      const [projectResult, formsResult, curriculaResult, invitesResult, supervisorsResult, bansResult] = await Promise.all([
+      const [projectResult, formsResult, curriculaResult, supervisorsResult, bansResult, profilesResult, projectUsersResult] = await Promise.all([
         supabase.from('projects').select('*').eq('id', projId).single(),
         supabase.from('forms').select('*').eq('project_id', projId).order('created_at', { ascending: false }),
         supabase.from('curricula').select('*').eq('project_id', projId).order('created_at', { ascending: false }),
-        supabase.from('project_invites').select('*').eq('project_id', projId).order('created_at', { ascending: false }),
         supabase.from('project_supervisors').select('*, profile:profiles(*)').eq('project_id', projId).order('created_at', { ascending: false }),
-        supabase.from('project_bans').select('*, profile:profiles(*)').eq('project_id', projId).order('created_at', { ascending: false })
+        supabase.from('project_bans').select('*, profile:profiles(*)').eq('project_id', projId).order('created_at', { ascending: false }),
+        supabase.from('profiles').select('*').order('name'),
+        supabase.from('user_projects').select('*, profile:profiles(*)').eq('project_id', projId).order('created_at', { ascending: false })
       ])
 
       const projectData = projectResult.data
@@ -119,9 +118,10 @@ function EditProjectContent() {
       setProject(projectData)
       setForms(formsResult.data || [])
       setCurricula(curriculaResult.data || [])
-      setInvites(invitesResult.data || [])
       setSupervisors(supervisorsResult.data || [])
       setBans(bansResult.data || [])
+      setAllProfiles(profilesResult.data || [])
+      setProjectUsers(projectUsersResult.data || [])
       setMediaType(projectData.image_url ? 'image' : 'icon')
       setFormData({
         name: projectData.name || '',
@@ -185,192 +185,67 @@ function EditProjectContent() {
     }
   }
 
-  const generateToken = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    let result = ''
-    for (let i = 0; i < 32; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length))
-    }
-    return result
-  }
-
-  const handleCreateInvite = async () => {
-    setCreatingInvite(true)
-    try {
-      const token = generateToken()
-      const expiresAt = newInvite.expires_in_days
-        ? new Date(Date.now() + parseInt(newInvite.expires_in_days) * 86400000).toISOString()
-        : null
-
-      const { error: createError } = await supabase
-        .from('project_invites')
-        .insert({
-          project_id: projectId,
-          token,
-          max_uses: newInvite.max_uses || 0,
-          expires_at: expiresAt,
-          created_by: profile.id
-        })
-
-      if (createError) throw createError
-
-      // Refresh invites
-      const { data: freshInvites } = await supabase
-        .from('project_invites')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: false })
-
-      setInvites(freshInvites || [])
-      setNewInvite({ max_uses: 0, expires_in_days: '' })
-      setShowCreateInvite(false)
-    } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء إنشاء رابط الدعوة')
-    } finally {
-      setCreatingInvite(false)
-    }
-  }
-
-  const handleDeleteInvite = async (inviteId: string) => {
-    if (!confirm('هل أنت متأكد من حذف رابط الدعوة؟')) return
-    try {
-      await supabase.from('project_invites').delete().eq('id', inviteId)
-      setInvites(prev => prev.filter(i => i.id !== inviteId))
-    } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء حذف رابط الدعوة')
-    }
-  }
-
-  const copyToClipboard = async (token: string) => {
-    const url = `${window.location.origin}/join/${token}`
-    try {
-      await navigator.clipboard.writeText(url)
-      alert('تم نسخ رابط الدعوة')
-    } catch {
-      // Fallback
-      const input = document.createElement('input')
-      input.value = url
-      document.body.appendChild(input)
-      input.select()
-      document.execCommand('copy')
-      document.body.removeChild(input)
-      alert('تم نسخ رابط الدعوة')
-    }
-  }
-
   const handleToggleArchive = async () => {
     const newValue = !is_archived
     setIsArchived(newValue)
     setFormData(prev => ({ ...prev, is_archived: newValue }))
   }
 
-  const handleAddSupervisor = async () => {
-    if (!newSupervisorEmail.trim()) return
+  const handleToggleSupervisor = async (userId: string, isCurrentlySupervisor: boolean) => {
     try {
-      const { data: userData, error: userError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', newSupervisorEmail.trim())
-        .single()
-
-      if (userError || !userData) {
-        setError('لم يتم العثور على مستخدم بهذا البريد الإلكتروني')
-        return
-      }
-
-      const { error: insertError } = await supabase
-        .from('project_supervisors')
-        .insert({ project_id: projectId, user_id: userData.id })
-        .single()
-
-      if (insertError) {
-        if (insertError.code === '23505') {
-          setError('هذا المستخدم مشرف بالفعل')
-        } else {
-          throw insertError
+      if (isCurrentlySupervisor) {
+        const sup = supervisors.find(s => s.user_id === userId)
+        if (sup) {
+          await supabase.from('project_supervisors').delete().eq('id', sup.id)
+          setSupervisors(prev => prev.filter(s => s.id !== sup.id))
         }
-        return
-      }
+      } else {
+        const { data: newSup, error } = await supabase
+          .from('project_supervisors')
+          .insert({ project_id: projectId, user_id: userId, created_by: profile?.id })
+          .select('*, profile:profiles(*)')
+          .single()
 
-      const { data: newSupervisor } = await supabase
-        .from('project_supervisors')
-        .select('*, profile:profiles(*)')
-        .eq('project_id', projectId)
-        .eq('user_id', userData.id)
-        .single()
-
-      if (newSupervisor) {
-        setSupervisors(prev => [newSupervisor, ...prev])
+        if (error) {
+          if (error.code === '23505') {
+            setError('هذا المستخدم مشرف بالفعل')
+          } else throw error
+          return
+        }
+        if (newSup) setSupervisors(prev => [newSup, ...prev])
       }
-      setNewSupervisorEmail('')
       setError('')
     } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء إضافة المشرف')
+      setError(err.message || 'حدث خطأ أثناء تعديل المشرف')
     }
   }
 
-  const handleRemoveSupervisor = async (supervisorId: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا المشرف؟')) return
+  const handleToggleBan = async (userId: string, isCurrentlyBanned: boolean) => {
     try {
-      await supabase.from('project_supervisors').delete().eq('id', supervisorId)
-      setSupervisors(prev => prev.filter(s => s.id !== supervisorId))
-    } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء حذف المشرف')
-    }
-  }
-
-  const handleAddBan = async () => {
-    if (!newBanEmail.trim()) return
-    try {
-      const { data: userData, error: userError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', newBanEmail.trim())
-        .single()
-
-      if (userError || !userData) {
-        setError('لم يتم العثور على مستخدم بهذا البريد الإلكتروني')
-        return
-      }
-
-      const { error: insertError } = await supabase
-        .from('project_bans')
-        .insert({ project_id: projectId, user_id: userData.id })
-        .single()
-
-      if (insertError) {
-        if (insertError.code === '23505') {
-          setError('هذا المستخدم محظور بالفعل')
-        } else {
-          throw insertError
+      if (isCurrentlyBanned) {
+        const ban = bans.find(b => b.user_id === userId)
+        if (ban) {
+          await supabase.from('project_bans').delete().eq('id', ban.id)
+          setBans(prev => prev.filter(b => b.id !== ban.id))
         }
-        return
-      }
+      } else {
+        const { data: newBan, error } = await supabase
+          .from('project_bans')
+          .insert({ project_id: projectId, user_id: userId, created_by: profile?.id })
+          .select('*, profile:profiles(*)')
+          .single()
 
-      const { data: newBan } = await supabase
-        .from('project_bans')
-        .select('*, profile:profiles(*)')
-        .eq('project_id', projectId)
-        .eq('user_id', userData.id)
-        .single()
-
-      if (newBan) {
-        setBans(prev => [newBan, ...prev])
+        if (error) {
+          if (error.code === '23505') {
+            setError('هذا المستخدم محظور بالفعل')
+          } else throw error
+          return
+        }
+        if (newBan) setBans(prev => [newBan, ...prev])
       }
-      setNewBanEmail('')
       setError('')
     } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء حظر المستخدم')
-    }
-  }
-
-  const handleRemoveBan = async (banId: string) => {
-    if (!confirm('هل أنت متأكد من إلغاء حظر هذا المستخدم؟')) return
-    try {
-      await supabase.from('project_bans').delete().eq('id', banId)
-      setBans(prev => prev.filter(b => b.id !== banId))
-    } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء إلغاء الحظر')
+      setError(err.message || 'حدث خطأ أثناء تعديل الحظر')
     }
   }
 
@@ -496,7 +371,7 @@ function EditProjectContent() {
                   <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>المشاهدون لن يروا هذا المشروع إلا عبر رابط الدعوة. يمكنك إنشاء روابط دعوة من قسم "روابط الدعوة" بالأسفل.</span>
+                  <span>المشاهدون لن يروا هذا المشروع إلا عبر رابط المشاركة المباشر.</span>
                 </div>
               )}
             </div>
@@ -710,118 +585,41 @@ function EditProjectContent() {
               </div>
             </div>
 
-            {/* Invite Links Management */}
+            {/* Copy Project Link */}
             <div className="pt-4 border-t space-y-4">
               <div className="bg-gray-50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-bold text-gray-900">روابط الدعوة</h4>
+                  <h4 className="font-bold text-gray-900">مشاركة المشروع</h4>
+                </div>
+                <p className="text-sm text-gray-500 mb-3">انسخ الرابط لإرساله للآخرين للانضمام للمشروع</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={origin ? `${origin}/projects/${projectId}` : ''}
+                    className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm dir-ltr text-left"
+                    dir="ltr"
+                  />
                   <button
                     type="button"
-                    onClick={() => setShowCreateInvite(true)}
-                    className="px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-1.5 text-sm"
+                    onClick={() => {
+                      const url = `${window.location.origin}/projects/${projectId}`
+                      navigator.clipboard.writeText(url).then(() => alert('تم نسخ رابط المشروع')).catch(() => {
+                        const input = document.createElement('input')
+                        input.value = url
+                        document.body.appendChild(input)
+                        input.select()
+                        document.execCommand('copy')
+                        document.body.removeChild(input)
+                        alert('تم نسخ رابط المشروع')
+                      })
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm whitespace-nowrap flex items-center gap-1.5"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                    إنشاء رابط
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                    نسخ الرابط
                   </button>
                 </div>
-
-                {showCreateInvite && (
-                  <div className="mb-4 p-4 bg-white rounded-xl border border-gray-200 space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="block text-xs font-medium text-gray-600">الحد الأقصى للاستخدام (0 = غير محدود)</label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={newInvite.max_uses}
-                          onChange={(e) => setNewInvite(prev => ({ ...prev, max_uses: parseInt(e.target.value) || 0 }))}
-                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="block text-xs font-medium text-gray-600">صلاحية الرابط (أيام، اترك فارغاً لعدم انتهاء الصلاحية)</label>
-                        <input
-                          type="number"
-                          min="1"
-                          value={newInvite.expires_in_days}
-                          onChange={(e) => setNewInvite(prev => ({ ...prev, expires_in_days: e.target.value }))}
-                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
-                          placeholder="مثال: 7"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        disabled={creatingInvite}
-                        onClick={handleCreateInvite}
-                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm disabled:opacity-50"
-                      >
-                        {creatingInvite ? 'جاري الإنشاء...' : 'إنشاء'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowCreateInvite(false)}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
-                      >
-                        إلغاء
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {invites.length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-4">لا توجد روابط دعوة بعد</p>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-right text-sm">
-                      <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="py-2 font-medium text-gray-600">الرابط</th>
-                          <th className="py-2 font-medium text-gray-600">الاستخدام</th>
-                          <th className="py-2 font-medium text-gray-600">تاريخ الانتهاء</th>
-                          <th className="py-2 font-medium text-gray-600 text-center">الإجراءات</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {invites.map(invite => (
-                          <tr key={invite.id} className="hover:bg-white/50">
-                            <td className="py-2 text-gray-900 dir-ltr text-left text-xs" style={{ direction: 'ltr', textAlign: 'left' }}>
-                              {origin ? `${origin}/join/${invite.token.substring(0, 12)}...` : invite.token.substring(0, 12) + '...'}
-                            </td>
-                            <td className="py-2 text-gray-500">{invite.use_count}{invite.max_uses > 0 ? ` / ${invite.max_uses}` : ''}</td>
-                            <td className="py-2 text-gray-500">
-                              {invite.expires_at
-                                ? new Date(invite.expires_at).toLocaleDateString('ar-EG')
-                                : 'بدون'
-                              }
-                            </td>
-                            <td className="py-2 text-center">
-                              <div className="flex items-center justify-center gap-1">
-                                <button
-                                  type="button"
-                                  onClick={() => copyToClipboard(invite.token)}
-                                  className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg"
-                                  title="نسخ الرابط"
-                                >
-                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteInvite(invite.id)}
-                                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
-                                  title="حذف"
-                                >
-                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -851,51 +649,66 @@ function EditProjectContent() {
               <div className="bg-gray-50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-bold text-gray-900">المشرفون</h4>
+                  <span className="text-xs text-gray-500">{supervisors.length} مشرف</span>
                 </div>
-                <div className="flex gap-2 mb-4">
+                <div className="relative mb-4">
                   <input
-                    type="email"
-                    value={newSupervisorEmail}
-                    onChange={(e) => setNewSupervisorEmail(e.target.value)}
-                    placeholder="البريد الإلكتروني للمشرف"
-                    className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                    dir="ltr"
+                    type="text"
+                    value={searchSupervisor}
+                    onChange={(e) => setSearchSupervisor(e.target.value)}
+                    placeholder="بحث بالاسم أو البريد..."
+                    className="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  <button
-                    type="button"
-                    onClick={handleAddSupervisor}
-                    className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm whitespace-nowrap"
-                  >
-                    إضافة مشرف
-                  </button>
+                  <svg className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
-                {supervisors.length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-4">لا يوجد مشرفون بعد</p>
-                ) : (
-                  <div className="space-y-2">
-                    {supervisors.map(supervisor => (
-                      <div key={supervisor.id} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-gray-200">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">
-                            {supervisor.profile?.full_name?.[0] || supervisor.profile?.email?.[0] || '?'}
-                          </div>
-                          <div>
-                          <p className="text-sm font-medium text-gray-900">{supervisor.profile?.name || supervisor.profile?.email || 'غير معروف'}</p>
-                          <p className="text-xs text-gray-500">{supervisor.profile?.email}</p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSupervisor(supervisor.id)}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
-                          title="حذف"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+
+                {(() => {
+                  const supervisorIds = new Set(supervisors.map(s => s.user_id))
+                  const banIds = new Set(bans.map(b => b.user_id))
+                  const usersSource = profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean)
+                  const filtered = usersSource.filter((p: any) =>
+                    p.name.toLowerCase().includes(searchSupervisor.toLowerCase()) ||
+                    p.email.toLowerCase().includes(searchSupervisor.toLowerCase())
+                  )
+                  return (
+                    <div className="space-y-1 max-h-80 overflow-y-auto">
+                      {filtered.length === 0 ? (
+                        <p className="text-gray-400 text-sm text-center py-4">لا يوجد مستخدمون</p>
+                      ) : (
+                        filtered.map((p: any) => {
+                          const isSupervisor = supervisorIds.has(p.id)
+                          const isBanned = banIds.has(p.id)
+                          return (
+                            <div key={p.id} className={`flex items-center justify-between bg-white rounded-lg px-3 py-2 border ${isBanned ? 'border-red-200 bg-red-50' : 'border-gray-200'}`}>
+                              <div className="flex items-center gap-2">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${isSupervisor ? 'bg-blue-100 text-blue-600' : isBanned ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}`}>
+                                  {(p.name || p.email)?.[0] || '?'}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">{p.name || 'غير معروف'}</p>
+                                  <p className="text-xs text-gray-500">{p.email}{isSupervisor ? ' • مشرف' : ''}{isBanned ? ' • محظور' : ''}</p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleSupervisor(p.id, isSupervisor)}
+                                className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                                  isSupervisor
+                                    ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                                }`}
+                              >
+                                {isSupervisor ? 'إزالة' : 'مشرف'}
+                              </button>
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
+                  )
+                })()}
               </div>
             </div>
 
@@ -903,51 +716,67 @@ function EditProjectContent() {
             <div className="space-y-4">
               <div className="bg-gray-50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-bold text-gray-900">المستخدمون المحظورون</h4>
+                  <h4 className="font-bold text-gray-900">الحظر</h4>
+                  <span className="text-xs text-gray-500">{bans.length} محظور</span>
                 </div>
-                <div className="flex gap-2 mb-4">
+                <div className="relative mb-4">
                   <input
-                    type="email"
-                    value={newBanEmail}
-                    onChange={(e) => setNewBanEmail(e.target.value)}
-                    placeholder="البريد الإلكتروني للمستخدم"
-                    className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                    dir="ltr"
+                    type="text"
+                    value={searchBan}
+                    onChange={(e) => setSearchBan(e.target.value)}
+                    placeholder="بحث بالاسم أو البريد..."
+                    className="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  <button
-                    type="button"
-                    onClick={handleAddBan}
-                    className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm whitespace-nowrap"
-                  >
-                    حظر
-                  </button>
+                  <svg className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
-                {bans.length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-4">لا يوجد مستخدمون محظورون</p>
-                ) : (
-                  <div className="space-y-2">
-                    {bans.map(ban => (
-                      <div key={ban.id} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-gray-200">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm">
-                            {ban.profile?.full_name?.[0] || ban.profile?.email?.[0] || '?'}
-                          </div>
-                          <div>
-                          <p className="text-sm font-medium text-gray-900">{ban.profile?.name || ban.profile?.email || 'غير معروف'}</p>
-                          <p className="text-xs text-gray-500">{ban.profile?.email}</p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveBan(ban.id)}
-                          className="px-3 py-1 text-sm text-green-600 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
-                        >
-                          إلغاء الحظر
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+
+                {(() => {
+                  const supervisorIds = new Set(supervisors.map(s => s.user_id))
+                  const banIds = new Set(bans.map(b => b.user_id))
+                  const usersSource = profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean)
+                  const filtered = usersSource.filter((p: any) =>
+                    p.name.toLowerCase().includes(searchBan.toLowerCase()) ||
+                    p.email.toLowerCase().includes(searchBan.toLowerCase())
+                  )
+                  return (
+                    <div className="space-y-1 max-h-80 overflow-y-auto">
+                      {filtered.length === 0 ? (
+                        <p className="text-gray-400 text-sm text-center py-4">لا يوجد مستخدمون</p>
+                      ) : (
+                        filtered.map((p: any) => {
+                          const isSupervisor = supervisorIds.has(p.id)
+                          const isBanned = banIds.has(p.id)
+                          return (
+                            <div key={p.id} className={`flex items-center justify-between bg-white rounded-lg px-3 py-2 border ${isBanned ? 'border-red-200 bg-red-50' : 'border-gray-200'}`}>
+                              <div className="flex items-center gap-2">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${isBanned ? 'bg-red-100 text-red-600' : isSupervisor ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
+                                  {(p.name || p.email)?.[0] || '?'}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">{p.name || 'غير معروف'}</p>
+                                  <p className="text-xs text-gray-500">{p.email}{isBanned ? ' • محظور' : ''}{isSupervisor ? ' • مشرف' : ''}</p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleBan(p.id, isBanned)}
+                                className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                                  isBanned
+                                    ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                                    : 'bg-red-50 text-red-600 hover:bg-red-100'
+                                }`}
+                              >
+                                {isBanned ? 'إلغاء الحظر' : 'حظر'}
+                              </button>
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
+                  )
+                })()}
               </div>
             </div>
 
