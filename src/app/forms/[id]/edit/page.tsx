@@ -684,6 +684,7 @@ const params = useParams()
           type: q.type,
           required: q.required,
           points: q.points,
+          has_counter: q.has_counter || false,
           order_index: index,
           options: JSON.stringify(optionsData)
         }
