@@ -680,17 +680,6 @@ const searchParams = useSearchParams()
             <h2 className="text-xl font-bold text-gray-900">
               الأسئلة ({(formData.questions || []).length})
             </h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setShowQuestionPicker(true)}
-                className="px-4 py-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                استرداد سؤال
-              </button>
-            </div>
           </div>
 
 
@@ -802,107 +791,152 @@ const searchParams = useSearchParams()
                 </div>
 
                 {/* Text validation options (short text only) */}
-                {question.type === 'text' && (
-                  <div className="ms-2 sm:ms-11 mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                    <p className="text-sm font-medium text-purple-700 mb-2">نوع التحقق من الإجابة:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        { value: '', label: 'بدون تحقق' },
-                        { value: 'name', label: 'اسم' },
-                        { value: 'email', label: 'بريد إلكتروني' },
-                        { value: 'phone', label: 'رقم هاتف' },
-                        { value: 'plain', label: 'نص عادي' },
-                        { value: 'contains_word', label: 'يحتوي على كلمة' },
-                        { value: 'is_number', label: 'رقم' },
-                        { value: 'whole_number', label: 'عدد صحيح' },
-                        { value: 'greater_than', label: 'أكبر من' },
-                        { value: 'greater_than_or_equal', label: 'أكبر من أو يساوي' },
-                        { value: 'less_than', label: 'أقل من' },
-                        { value: 'less_than_or_equal', label: 'أقل من أو يساوي' },
-                        { value: 'equal_to', label: 'يساوي' },
-                        { value: 'not_equal_to', label: 'لا يساوي' },
-                        { value: 'between', label: 'بين' },
-                        { value: 'not_between', label: 'ليس بين' }
-                      ].map(opt => (
-                        <button
-                          key={opt.value}
-                          onClick={() => {
-                            const currentOpts: any[] = parseOptions(question.options)
-                            const currentMeta = currentOpts[0] || {}
-                            const validationType = currentMeta.validation_type
-                            if (validationType === opt.value && opt.value !== '') {
-                              updateQuestion(qIndex, { options: [{ validation_type: '', validation_value: '', validation_min: '', validation_max: '' }] as any })
-                            } else {
-                              updateQuestion(qIndex, { options: [{ validation_type: opt.value, validation_value: currentMeta.validation_value || '', validation_min: currentMeta.validation_min || '', validation_max: currentMeta.validation_max || '' }] as any })
-                            }
+                {question.type === 'text' && (() => {
+                  const opts: any[] = parseOptions(question.options)
+                  const meta = opts[0] || {}
+                  const vt = meta.validation_type || ''
+                  const firstOptions = [
+                    { value: '', label: 'بدون تحقق' },
+                    { value: 'name', label: 'اسم' },
+                    { value: 'email', label: 'ايميل' },
+                    { value: 'phone', label: 'رقم هاتف' },
+                    { value: 'plain', label: 'نص بدون تحقق' },
+                    { value: 'number', label: 'رقم' },
+                    { value: 'text_check', label: 'نص بتحقق' },
+                  ]
+                  const currentFirst = firstOptions.find(o => {
+                    if (!vt) return o.value === ''
+                    if (vt === 'name' || vt === 'email' || vt === 'phone' || vt === 'plain') return o.value === vt
+                    if (['equal_to','not_equal_to','less_than','less_than_or_equal','greater_than','greater_than_or_equal','between','not_between','whole_number','is_number'].includes(vt)) return o.value === 'number'
+                    if (['contains_word','does_not_contain'].includes(vt)) return o.value === 'text_check'
+                    return o.value === ''
+                  }) || firstOptions[0]
+
+                  const secondOptions = (() => {
+                    if (currentFirst.value === 'name') return [
+                      { value: 'name_2', label: 'ثنائي' },
+                      { value: 'name_3', label: 'ثلاثي' },
+                      { value: 'name_4', label: 'رباعي' },
+                    ]
+                    if (currentFirst.value === 'number') return [
+                      { value: 'equal_to', label: 'يساوي' },
+                      { value: 'not_equal_to', label: 'لا يساوي' },
+                      { value: 'less_than', label: 'أقل من' },
+                      { value: 'less_than_or_equal', label: 'أقل من أو يساوي' },
+                      { value: 'greater_than', label: 'أكبر من' },
+                      { value: 'greater_than_or_equal', label: 'أكبر من أو يساوي' },
+                      { value: 'between', label: 'بين' },
+                      { value: 'not_between', label: 'ليس بين' },
+                      { value: 'whole_number', label: 'عدد صحيح' },
+                      { value: 'is_number', label: 'اعداد عشرية' },
+                    ]
+                    if (currentFirst.value === 'text_check') return [
+                      { value: 'equal_to', label: 'يساوي' },
+                      { value: 'not_equal_to', label: 'لا يساوي' },
+                      { value: 'contains_word', label: 'يحتوى على' },
+                      { value: 'does_not_contain', label: 'لا يحتوى على' },
+                    ]
+                    return []
+                  })()
+
+                  const setValidation = (firstVal: string, secondVal?: string) => {
+                    if (firstVal === '' || firstVal === 'email' || firstVal === 'phone' || firstVal === 'plain') {
+                      updateQuestion(qIndex, { options: [{ validation_type: firstVal, validation_value: '', validation_min: '', validation_max: '' }] as any })
+                    } else if (firstVal === 'name') {
+                      const wordCount = secondVal ? parseInt(secondVal.split('_')[1]) : 2
+                      updateQuestion(qIndex, { options: [{ validation_type: 'name', validation_value: String(wordCount), validation_min: '', validation_max: '' }] as any })
+                    } else if (firstVal === 'number') {
+                      const sv = secondVal || ''
+                      updateQuestion(qIndex, { options: [{ validation_type: sv, validation_value: '', validation_min: '', validation_max: '' }] as any })
+                    } else if (firstVal === 'text_check') {
+                      const sv = secondVal || 'contains_word'
+                      updateQuestion(qIndex, { options: [{ validation_type: sv, validation_value: sv === 'contains_word' || sv === 'does_not_contain' ? '' : '', validation_min: '', validation_max: '' }] as any })
+                    }
+                  }
+
+                  const currentSecondVal = (() => {
+                    if (currentFirst.value === 'name') {
+                      const wc = meta.validation_value || '2'
+                      return `name_${wc}`
+                    }
+                    if (currentFirst.value === 'number' || currentFirst.value === 'text_check') {
+                      if (['contains_word','does_not_contain','equal_to','not_equal_to','less_than','less_than_or_equal','greater_than','greater_than_or_equal','between','not_between','whole_number','is_number'].includes(vt)) return vt
+                    }
+                    return ''
+                  })()
+
+                  return (
+                    <div className="ms-2 sm:ms-11 mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <p className="text-sm font-medium text-purple-700 mb-2">نوع التحقق من الإجابة:</p>
+                      <div className="flex flex-wrap gap-2">
+                        <select
+                          value={currentFirst.value}
+                          onChange={(e) => {
+                            setValidation(e.target.value)
                           }}
-                          className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                            ((parseOptions(question.options)[0] as any)?.validation_type || '') === opt.value
-                              ? 'bg-purple-600 text-white'
-                              : 'bg-white text-gray-700 hover:bg-purple-100 border border-purple-200'
-                          }`}
+                          className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
                         >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                    {(() => {
-                      const opts: any[] = parseOptions(question.options)
-                      const meta = opts[0] || {}
-                      const vt = meta.validation_type
-                      if (vt === 'contains_word') {
-                        return (
-                          <div className="mt-2">
-                            <input
-                              type="text"
-                              value={meta.validation_word || ''}
-                              onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: 'contains_word', validation_word: e.target.value }] as any })}
-                              placeholder="أدخل الكلمة المطلوبة..."
-                              className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
-                            />
-                          </div>
-                        )
-                      }
-                      if (vt === 'greater_than' || vt === 'greater_than_or_equal' || vt === 'less_than' || vt === 'less_than_or_equal' || vt === 'equal_to' || vt === 'not_equal_to') {
-                        return (
-                          <div className="mt-2">
-                            <input
-                              type="number"
-                              step="any"
-                              value={meta.validation_value ?? ''}
-                              onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: vt, validation_value: e.target.value, validation_min: '', validation_max: '' }] as any })}
-                              placeholder="أدخل القيمة..."
-                              className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
-                            />
-                          </div>
-                        )
-                      }
-                      if (vt === 'between' || vt === 'not_between') {
-                        return (
-                          <div className="mt-2 flex gap-2">
+                          {firstOptions.map(o => (
+                            <option key={o.value} value={o.value}>{o.label}</option>
+                          ))}
+                        </select>
+                        {secondOptions.length > 0 && (
+                          <select
+                            value={currentSecondVal}
+                            onChange={(e) => {
+                              setValidation(currentFirst.value, e.target.value)
+                            }}
+                            className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
+                          >
+                            <option value="">اختر...</option>
+                            {secondOptions.map(o => (
+                              <option key={o.value} value={o.value}>{o.label}</option>
+                            ))}
+                          </select>
+                        )}
+                        {(currentFirst.value === 'text_check' && (vt === 'contains_word' || vt === 'does_not_contain')) && (
+                          <input
+                            type="text"
+                            value={meta.validation_value || ''}
+                            onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: vt, validation_value: e.target.value, validation_min: '', validation_max: '' }] as any })}
+                            placeholder="أدخل النص..."
+                            className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 w-40"
+                          />
+                        )}
+                        {(currentFirst.value === 'number' && (vt === 'equal_to' || vt === 'not_equal_to' || vt === 'less_than' || vt === 'less_than_or_equal' || vt === 'greater_than' || vt === 'greater_than_or_equal')) && (
+                          <input
+                            type="number"
+                            step="any"
+                            value={meta.validation_value ?? ''}
+                            onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: vt, validation_value: e.target.value, validation_min: '', validation_max: '' }] as any })}
+                            placeholder="القيمة..."
+                            className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 w-32"
+                          />
+                        )}
+                        {(currentFirst.value === 'number' && (vt === 'between' || vt === 'not_between')) && (
+                          <>
                             <input
                               type="number"
                               step="any"
                               value={meta.validation_min ?? ''}
                               onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: vt, validation_min: e.target.value, validation_max: meta.validation_max || '', validation_value: '' }] as any })}
-                              placeholder="القيمة الصغرى..."
-                              className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
+                              placeholder="الصغرى..."
+                              className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 w-28"
                             />
                             <input
                               type="number"
                               step="any"
                               value={meta.validation_max ?? ''}
                               onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: vt, validation_min: meta.validation_min || '', validation_max: e.target.value, validation_value: '' }] as any })}
-                              placeholder="القيمة العظمى..."
-                              className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
+                              placeholder="العظمى..."
+                              className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 w-28"
                             />
-                          </div>
-                        )
-                      }
-                      return null
-                    })()}
-                  </div>
-                )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })()}
 
                 {/* Matrix specific UI */}
                 {question.type === 'matrix' && (
