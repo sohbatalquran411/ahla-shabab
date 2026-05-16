@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import type { User, UserRole, AccountStatus, Gender } from '@/types'
+import type { User, UserRole, AccountStatus, Gender, Project, UserProject } from '@/types'
 
 type FilterStatus = 'all' | 'pending' | 'approved' | 'rejected'
 type FilterRole = 'all' | UserRole
@@ -27,6 +27,13 @@ export default function AdminUsersPage() {
     phone: '',
     gender: '' as Gender | ''
   })
+
+  // Projects modal state
+  const [showProjectsModal, setShowProjectsModal] = useState(false)
+  const [allProjects, setAllProjects] = useState<Project[]>([])
+  const [userProjects, setUserProjects] = useState<string[]>([])
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([])
+  const [projectsLoading, setProjectsLoading] = useState(false)
   
   const router = useRouter()
   const supabase = createClient()
@@ -83,7 +90,7 @@ export default function AdminUsersPage() {
     setActionLoading(true)
     try {
       if (action === 'delete') {
-        const confirmed = confirm('نل أنت متأكد من حذف نذا المستخدم؟')
+        const confirmed = confirm('هل أنت متأكد من حذف هذا المستخدم؟')
         if (!confirmed) {
           setActionLoading(false)
           return
@@ -162,6 +169,116 @@ export default function AdminUsersPage() {
       alert('حدث خطأ أثناء تحديث المستخدم')
     } finally {
       setActionLoading(false)
+    }
+  }
+
+  const openProjectsModal = async (user: User) => {
+    setSelectedUser(user)
+    setShowProjectsModal(true)
+    setProjectsLoading(true)
+    try {
+      const [projectsResult, assignmentsResult] = await Promise.all([
+        supabase
+          .from('projects')
+          .select('*')
+          .eq('is_archived', false)
+          .order('name'),
+        supabase
+          .from('user_projects')
+          .select('project_id')
+          .eq('user_id', user.id)
+      ])
+
+      if (projectsResult.error) throw projectsResult.error
+      if (assignmentsResult.error) throw assignmentsResult.error
+
+      setAllProjects(projectsResult.data || [])
+      const assignedIds = (assignmentsResult.data || []).map(up => up.project_id)
+      setUserProjects(assignedIds)
+      setSelectedProjects([...assignedIds])
+    } catch (error) {
+      console.error('Error loading projects:', error)
+      alert('حدث خطأ أثناء تحميل المشاريع')
+    } finally {
+      setProjectsLoading(false)
+    }
+  }
+
+  const handleProjectToggle = (projectId: string) => {
+    setSelectedProjects(prev =>
+      prev.includes(projectId)
+        ? prev.filter(id => id !== projectId)
+        : [...prev, projectId]
+    )
+  }
+
+  const handleSaveProjects = async () => {
+    if (!selectedUser) return
+    setProjectsLoading(true)
+    try {
+      const newlyAssigned = selectedProjects.filter(id => !userProjects.includes(id))
+
+      // Delete all existing assignments for this user
+      const { error: deleteError } = await supabase
+        .from('user_projects')
+        .delete()
+        .eq('user_id', selectedUser.id)
+
+      if (deleteError) throw deleteError
+
+      // Insert selected assignments
+      if (selectedProjects.length > 0) {
+        const inserts = selectedProjects.map(projectId => ({
+          user_id: selectedUser.id,
+          project_id: projectId
+        }))
+
+        const { error: insertError } = await supabase
+          .from('user_projects')
+          .insert(inserts)
+
+        if (insertError) throw insertError
+      }
+
+      // Create notifications for newly assigned projects (check preferences)
+      if (newlyAssigned.length > 0) {
+        // Check if user has disabled assignment notifications
+        const { data: pref } = await supabase
+          .from('notification_preferences')
+          .select('enabled')
+          .eq('user_id', selectedUser.id)
+          .eq('notification_type', 'assignment')
+          .maybeSingle()
+
+        const shouldNotify = pref ? pref.enabled : true
+
+        if (shouldNotify) {
+          const projectNames = allProjects
+            .filter(p => newlyAssigned.includes(p.id))
+            .reduce((acc, p) => { acc[p.id] = p.name; return acc }, {} as Record<string, string>)
+
+          const notifications = newlyAssigned.map(projectId => ({
+            user_id: selectedUser.id,
+            title: `تم إضافتك إلى مشروع ${projectNames[projectId] || ''}`,
+            type: 'assignment',
+            link: `/projects/${projectId}`
+          }))
+
+          const { error: notifError } = await supabase
+            .from('notifications')
+            .insert(notifications)
+
+          if (notifError) console.error('Error creating notifications:', notifError)
+        }
+      }
+
+      setUserProjects([...selectedProjects])
+      setShowProjectsModal(false)
+    } catch (error) {
+      console.error('Error saving projects:', error)
+      alert('حدث خطأ أثناء حفظ المشاريع')
+    } finally {
+      setProjectsLoading(false)
     }
   }
 
@@ -439,7 +556,7 @@ export default function AdminUsersPage() {
               setShowModal(false)
               setSelectedUser(null)
               setEditingUser(false)
-}}
+            }}
           />
           <div className="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-bold text-gray-900 mb-4">
@@ -469,7 +586,7 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">رقم الناتف</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">رقم الهاتف</label>
                   <input
                     type="text"
                     value={editFormData.phone || ''}
@@ -532,6 +649,17 @@ export default function AdminUsersPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                     تعديل البيانات
+                  </button>
+
+                  {/* Manage Projects */}
+                  <button
+                    onClick={() => openProjectsModal(selectedUser)}
+                    className="w-full py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                    المشاريع
                   </button>
 
                   {/* Reset Password */}
@@ -645,7 +773,104 @@ export default function AdminUsersPage() {
           </div>
         </div>
       )}
+
+      {/* Projects Sub-Modal */}
+      {showProjectsModal && selectedUser && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => {
+              if (!projectsLoading) {
+                setShowProjectsModal(false)
+              }
+            }}
+          />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              إدارة مشاريع المستخدم
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              {selectedUser.name} : اختر المشاريع التي يمكن لهذا المستخدم الوصول إليها
+            </p>
+
+            {projectsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-emerald-600 border-t-transparent"></div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 max-h-80 overflow-y-auto">
+                  {allProjects.map(project => {
+                    const isChecked = selectedProjects.includes(project.id)
+                    return (
+                      <label
+                        key={project.id}
+                        className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                          isChecked
+                            ? 'border-emerald-500 bg-emerald-50'
+                            : 'border-gray-200 bg-white hover:border-gray-300'
+                        }`}
+                      >
+                        <div
+                          className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold shrink-0"
+                          style={{ backgroundColor: project.color || '#10B981' }}
+                        >
+                          {project.icon ? (
+                            <span className="text-lg">{project.icon}</span>
+                          ) : (
+                            <span className="text-sm">{project.name.charAt(0)}</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{project.name}</p>
+                          {project.description && (
+                            <p className="text-sm text-gray-500 truncate">{project.description}</p>
+                          )}
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleProjectToggle(project.id)}
+                          className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 shrink-0"
+                        />
+                      </label>
+                    )
+                  })}
+                  {allProjects.length === 0 && (
+                    <div className="col-span-full py-12 text-center text-gray-500">
+                      لا توجد مشاريع متاحة
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleSaveProjects}
+                    disabled={projectsLoading}
+                    className="flex-1 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {projectsLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                        جاري الحفظ...
+                      </>
+                    ) : (
+                      'حفظ'
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setShowProjectsModal(false)}
+                    disabled={projectsLoading}
+                    className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
-

@@ -260,13 +260,13 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">المنهج التعليمي</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">المحتوى التعليمي</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">تابع الدروس والفيديوهات التعليمية بالتسلسل</p>
                 </div>
               </div>
               <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                 <span className="text-sm font-medium text-emerald-600 group-hover:translate-x-[-4px] transition-transform flex items-center gap-1">
-                  الدخول للمنهج
+                  الدخول للمحتوى
                   <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>

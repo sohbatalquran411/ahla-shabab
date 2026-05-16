@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import type { Gender } from '@/types'
+import type { Gender, NotificationType } from '@/types'
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null)
@@ -14,6 +14,9 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [showNotifPrefs, setShowNotifPrefs] = useState(false)
+  const [notifPrefs, setNotifPrefs] = useState<{ assignment: boolean }>({ assignment: true })
+  const [savingNotif, setSavingNotif] = useState(false)
   
   const [formData, setFormData] = useState({
     name: '',
@@ -61,6 +64,20 @@ export default function ProfilePage() {
         phone: profileData.phone || '',
         gender: profileData.gender || ''
       })
+
+      // Fetch notification preferences
+      const { data: prefs } = await supabase
+        .from('notification_preferences')
+        .select('notification_type, enabled')
+        .eq('user_id', user.id)
+
+      if (prefs) {
+        const prefMap: { assignment: boolean } = { assignment: true }
+        prefs.forEach(p => {
+          if (p.notification_type === 'assignment') prefMap.assignment = p.enabled
+        })
+        setNotifPrefs(prefMap)
+      }
     } catch (error) {
       console.error('Error fetching profile:', error)
     } finally {
@@ -140,6 +157,29 @@ export default function ProfilePage() {
       setError(err.message || 'حدث خطأ أثناء تغيير الباسورد')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleSaveNotifPrefs = async () => {
+    setSavingNotif(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Upsert assignment preference
+      const { error } = await supabase
+        .from('notification_preferences')
+        .upsert({
+          user_id: user.id,
+          notification_type: 'assignment',
+          enabled: notifPrefs.assignment
+        }, { onConflict: 'user_id, notification_type' })
+
+      if (error) throw error
+    } catch (err) {
+      console.error('Error saving notification preferences:', err)
+    } finally {
+      setSavingNotif(false)
     }
   }
 
@@ -390,6 +430,57 @@ export default function ProfilePage() {
                 )}
               </button>
             </form>
+          )}
+        </div>
+
+        {/* Notification Preferences */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
+          <button
+            onClick={() => setShowNotifPrefs(!showNotifPrefs)}
+            className="w-full flex items-center justify-between py-3 hover:bg-gray-50 rounded-xl px-4 transition-colors"
+          >
+            <span className="flex items-center gap-2 font-medium text-gray-800">
+              <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              إعدادات الإشعارات
+            </span>
+            <svg className={`w-5 h-5 text-gray-400 transition-transform ${showNotifPrefs ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {showNotifPrefs && (
+            <div className="mt-4 pt-4 border-t space-y-4">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p className="font-medium text-gray-900">إشعارات إضافة المشاريع</p>
+                  <p className="text-sm text-gray-500">عند إضافتك إلى مشروع جديد من الإدارة</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setNotifPrefs(prev => ({ ...prev, assignment: !prev.assignment }))}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${notifPrefs.assignment ? 'bg-blue-500' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${notifPrefs.assignment ? 'translate-x-7' : 'translate-x-0.5'}`} />
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={handleSaveNotifPrefs}
+                disabled={savingNotif}
+                className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {savingNotif ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    جاري الحفظ...
+                  </>
+                ) : (
+                  'حفظ الإعدادات'
+                )}
+              </button>
+            </div>
           )}
         </div>
 

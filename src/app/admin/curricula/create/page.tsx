@@ -8,6 +8,7 @@ import Link from 'next/link'
 function CreateCurriculumContent() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [isSequential, setIsSequential] = useState(true)
   const [projectName, setProjectName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -27,7 +28,7 @@ function CreateCurriculumContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim()) { setError('يرجى إدخال عنوان المنهج'); return }
+    if (!title.trim()) { setError('يرجى إدخال عنوان المحتوى'); return }
     if (!projectId) { setError('المشروع مطلوب'); return }
 
     setLoading(true)
@@ -39,6 +40,7 @@ function CreateCurriculumContent() {
         project_id: projectId,
         title: title.trim(),
         description: description.trim(),
+        is_sequential: isSequential,
         created_by: user.id
       }).select('id').single()
 
@@ -59,7 +61,7 @@ function CreateCurriculumContent() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             رجوع
           </button>
-          <h1 className="text-lg font-bold text-emerald-700">إضافة منهج جديد</h1>
+          <h1 className="text-lg font-bold text-emerald-700">إضافة محتوى جديد</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -75,18 +77,33 @@ function CreateCurriculumContent() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">عنوان المنهج *</label>
+              <label className="block text-sm font-medium text-gray-700">عنوان المحتوى *</label>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="مثال: دورة الفقه المبسط" required />
             </div>
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">الوصف</label>
-              <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="وصف مختصر للمنهج..." />
+              <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="وصف مختصر للمحتوى..." />
+            </div>
+
+            {/* Sequential Toggle */}
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <div>
+                <p className="font-medium text-gray-900">الترتيب التسلسلي</p>
+                <p className="text-sm text-gray-500">إذا كان مفعّلاً، لا يفتح الدرس التالي إلا بعد إنهاء الدرس الحالي</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSequential(!isSequential)}
+                className={`relative w-14 h-7 rounded-full transition-colors ${isSequential ? 'bg-emerald-500' : 'bg-gray-300'}`}
+              >
+                <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${isSequential ? 'translate-x-7' : 'translate-x-0.5'}`} />
+              </button>
             </div>
 
             <div className="flex gap-4 pt-4 border-t">
               <button type="submit" disabled={loading} className="flex-1 py-4 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-all disabled:opacity-50 shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
-                {loading ? <><div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>جاري الإنشاء...</> : <>إضافة المنهج</>}
+                {loading ? <><div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>جاري الإنشاء...</> : <>إضافة المحتوى</>}
               </button>
               <Link href={projectId ? `/projects/${projectId}/curriculum` : '/admin'} className="px-6 py-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors">إلغاء</Link>
             </div>

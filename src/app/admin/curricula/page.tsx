@@ -23,7 +23,7 @@ export default async function AdminCurriculaPage() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             رجوع للوحة التحكم
           </Link>
-          <h1 className="text-lg font-bold text-emerald-700">المناهج التعليمية</h1>
+          <h1 className="text-lg font-bold text-emerald-700">المحتوى التعليمي</h1>
           <div className="w-10" />
         </div>
       </header>
@@ -54,7 +54,7 @@ export default async function AdminCurriculaPage() {
                 </tr>
               ))}
               {(!curricula || curricula.length === 0) && (
-                <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-400">لا توجد مناهج بعد</td></tr>
+                <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-400">لا يوجد محتوى بعد</td></tr>
               )}
             </tbody>
           </table>

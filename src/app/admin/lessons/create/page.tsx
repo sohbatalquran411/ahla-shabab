@@ -4,11 +4,15 @@ import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import type { LessonType } from '@/types'
 
 function CreateLessonContent() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [type, setType] = useState<LessonType>('video')
   const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [audioUrl, setAudioUrl] = useState('')
+  const [content, setContent] = useState('')
   const [curriculumTitle, setCurriculumTitle] = useState('')
   const [projectId, setProjectId] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,8 +37,10 @@ function CreateLessonContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) { setError('يرجى إدخال عنوان الدرس'); return }
-    if (!youtubeUrl.trim()) { setError('يرجى إدخال رابط يوتيوب'); return }
-    if (!curriculumId) { setError('المنهج مطلوب'); return }
+    if (!curriculumId) { setError('المحتوى مطلوب'); return }
+    if (type === 'video' && !youtubeUrl.trim()) { setError('يرجى إدخال رابط يوتيوب'); return }
+    if (type === 'audio' && !audioUrl.trim()) { setError('يرجى إدخال رابط صوت'); return }
+    if (type === 'text' && !content.trim()) { setError('يرجى إدخال المحتوى النصي'); return }
 
     setLoading(true)
     try {
@@ -48,13 +54,16 @@ function CreateLessonContent() {
         .order('order_index', { ascending: false })
         .limit(1)
 
-      const nextOrder = (existingLessons && existingLessons.length > 0) ? existingLessons[0].order_index + 1 : 0
+      const nextOrder = existingLessons && existingLessons.length > 0 ? existingLessons[0].order_index + 1 : 0
 
       const { error: insertError } = await supabase.from('lessons').insert({
         curriculum_id: curriculumId,
         title: title.trim(),
         description: description.trim(),
-        youtube_url: youtubeUrl.trim(),
+        type,
+        youtube_url: type === 'video' ? youtubeUrl.trim() : null,
+        audio_url: type === 'audio' ? audioUrl.trim() : null,
+        content: type === 'text' ? content.trim() : null,
         order_index: nextOrder,
         created_by: user.id
       })
@@ -85,7 +94,7 @@ function CreateLessonContent() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           {curriculumTitle && (
             <div className="mb-6 p-3 bg-gray-50 rounded-xl text-sm text-gray-600">
-              المنهج: <span className="font-semibold text-gray-900">{curriculumTitle}</span>
+              المحتوى: <span className="font-semibold text-gray-900">{curriculumTitle}</span>
             </div>
           )}
           {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">{error}</div>}
@@ -93,18 +102,48 @@ function CreateLessonContent() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">عنوان الدرس *</label>
-              <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="مثال: مقدمة في الفقه" required />
+              <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required />
             </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">النوع</label>
+              <div className="grid grid-cols-3 gap-3">
+                {(['video', 'audio', 'text'] as LessonType[]).map(t => (
+                  <button key={t} type="button" onClick={() => setType(t)}
+                    className={`p-3 rounded-xl font-medium transition-all border-2 ${
+                      type === t ? 'border-emerald-600 bg-emerald-50 text-emerald-700' : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {t === 'video' ? '🎬 فيديو' : t === 'audio' ? '🎧 صوت' : '📝 نص'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {type === 'video' && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">رابط يوتيوب *</label>
+                <input type="url" value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+              </div>
+            )}
+
+            {type === 'audio' && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">رابط SoundCloud *</label>
+                <input type="url" value={audioUrl} onChange={e => setAudioUrl(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="https://soundcloud.com/..." />
+              </div>
+            )}
+
+            {type === 'text' && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">المحتوى النصي *</label>
+                <textarea value={content} onChange={e => setContent(e.target.value)} rows={8} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="اكتب المحتوى هنا..." />
+              </div>
+            )}
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">الوصف</label>
-              <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="وصف مختصر للدرس..." />
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">رابط يوتيوب *</label>
-              <input type="url" value={youtubeUrl} onChange={e => setYoutubeUrl(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="https://www.youtube.com/watch?v=..." required />
-              <p className="text-xs text-gray-400">ادخل رابط الفيديو من يوتيوب</p>
+              <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
             </div>
 
             <div className="flex gap-4 pt-4 border-t">

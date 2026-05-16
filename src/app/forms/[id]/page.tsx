@@ -37,11 +37,6 @@ export default async function FormPage({ params }: PageProps) {
     redirect('/dashboard')
   }
 
-  // Check if form is for this user's gender
-  if (form.target_gender !== 'both' && form.target_gender !== profile.gender) {
-    redirect('/dashboard')
-  }
-
   const { data: questions } = await supabase
     .from('questions')
     .select('*')

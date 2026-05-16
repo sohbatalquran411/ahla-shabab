@@ -125,7 +125,7 @@ export default function AdminProjectsPage() {
 
   const deleteProject = async (projectId: string) => {
 
-    if (!confirm('نل أنت متأكد من حذف نذا المشروع؟ سيتم حذف جميع الفورمز المرتبطة بن.')) {
+    if (!confirm('هل أنت متأكد من حذف هذا المشروع؟ سيتم حذف جميع الفورمز المرتبطة به.')) {
 
       return
 
@@ -163,6 +163,378 @@ export default function AdminProjectsPage() {
 
 
 
+  const cloneProject = async (projectId: string) => {
+
+    try {
+
+      const { data: project, error: projectError } = await supabase
+
+        .from('projects')
+
+        .select('*')
+
+        .eq('id', projectId)
+
+        .single()
+
+
+
+      if (projectError) throw projectError
+
+      if (!project) throw new Error('المشروع غير موجود')
+
+
+
+      const { data: newProject, error: insertError } = await supabase
+
+        .from('projects')
+
+        .insert({
+
+          name: project.name + ' (نسخة)',
+
+          description: project.description,
+
+          icon: project.icon,
+
+          color: project.color,
+
+          target_gender: project.target_gender,
+
+          image_url: project.image_url,
+
+          modules: project.modules,
+
+          visibility: project.visibility,
+
+          original_project_id: projectId,
+
+          created_by: profile.id
+
+        })
+
+        .select()
+
+        .single()
+
+
+
+      if (insertError) throw insertError
+
+
+
+      const { data: curricula } = await supabase
+
+        .from('curricula')
+
+        .select('*')
+
+        .eq('project_id', projectId)
+
+
+
+      if (curricula && curricula.length > 0) {
+
+        for (const curriculum of curricula) {
+
+          const { data: newCurriculum, error: curError } = await supabase
+
+            .from('curricula')
+
+            .insert({
+
+              project_id: newProject.id,
+
+              title: curriculum.title,
+
+              description: curriculum.description,
+
+              is_sequential: curriculum.is_sequential,
+
+              created_by: profile.id
+
+            })
+
+            .select()
+
+            .single()
+
+
+
+          if (curError) throw curError
+
+
+
+          const { data: lessons } = await supabase
+
+            .from('lessons')
+
+            .select('*')
+
+            .eq('curriculum_id', curriculum.id)
+
+            .order('order_index')
+
+
+
+          if (lessons && lessons.length > 0) {
+
+            const lessonsToInsert = lessons.map(lesson => ({
+
+              curriculum_id: newCurriculum.id,
+
+              title: lesson.title,
+
+              description: lesson.description,
+
+              type: lesson.type,
+
+              youtube_url: lesson.youtube_url,
+
+              audio_url: lesson.audio_url,
+
+              content: lesson.content,
+
+              allow_comments: lesson.allow_comments,
+
+              order_index: lesson.order_index,
+
+              created_by: profile.id
+
+            }))
+
+
+
+            const { error: lessonsError } = await supabase
+
+              .from('lessons')
+
+              .insert(lessonsToInsert)
+
+
+
+            if (lessonsError) throw lessonsError
+
+          }
+
+        }
+
+      }
+
+
+
+      const { data: forms } = await supabase
+
+        .from('forms')
+
+        .select('*')
+
+        .eq('project_id', projectId)
+
+
+
+      if (forms && forms.length > 0) {
+
+        for (const form of forms) {
+
+          const { data: newForm, error: formError } = await supabase
+
+            .from('forms')
+
+            .insert({
+
+              project_id: newProject.id,
+
+              name: form.name,
+
+              description: form.description,
+
+              target_gender: form.target_gender,
+
+              is_active: form.is_active,
+
+              time_limit: form.time_limit,
+
+              expires_at: form.expires_at,
+
+              allow_delete_responses: form.allow_delete_responses,
+
+              randomize_questions: form.randomize_questions,
+
+              allow_multiple: form.allow_multiple,
+
+              image_url: form.image_url,
+
+              created_by: profile.id
+
+            })
+
+            .select()
+
+            .single()
+
+
+
+          if (formError) throw formError
+
+
+
+          const { data: questions } = await supabase
+
+            .from('questions')
+
+            .select('*')
+
+            .eq('form_id', form.id)
+
+            .order('order_index')
+
+
+
+          if (questions && questions.length > 0) {
+
+            const questionsToInsert = questions.map(q => ({
+
+              form_id: newForm.id,
+
+              text: q.text,
+
+              type: q.type,
+
+              required: q.required,
+
+              points: q.points,
+
+              order_index: q.order_index,
+
+              options: q.options
+
+            }))
+
+
+
+            const { error: questionsError } = await supabase
+
+              .from('questions')
+
+              .insert(questionsToInsert)
+
+
+
+            if (questionsError) throw questionsError
+
+          }
+
+        }
+
+      }
+
+
+
+      await fetchProjects()
+
+      alert('تم نسخ المشروع بنجاح')
+
+    } catch (error: any) {
+
+      alert('حدث خطأ أثناء نسخ المشروع: ' + error.message)
+
+    }
+
+  }
+
+
+
+  const transferProject = async (projectId: string) => {
+
+    const email = prompt('أدخل البريد الإلكتروني للمالك الجديد:')
+
+    if (!email) return
+
+
+
+    try {
+
+      const { data: user, error: userError } = await supabase
+
+        .from('profiles')
+
+        .select('id')
+
+        .eq('email', email)
+
+        .maybeSingle()
+
+
+
+      if (userError) throw userError
+
+      if (!user) {
+
+        alert('لم يتم العثور على مستخدم بهذا البريد الإلكتروني')
+
+        return
+
+      }
+
+
+
+      const { error: updateError } = await supabase
+
+        .from('projects')
+
+        .update({ created_by: user.id })
+
+        .eq('id', projectId)
+
+
+
+      if (updateError) throw updateError
+
+      await fetchProjects()
+
+      alert('تم نقل ملكية المشروع بنجاح')
+
+    } catch (error: any) {
+
+      alert('حدث خطأ أثناء نقل الملكية: ' + error.message)
+
+    }
+
+  }
+
+
+
+  const toggleArchive = async (projectId: string, currentState: boolean) => {
+
+    try {
+
+      const { error } = await supabase
+
+        .from('projects')
+
+        .update({ is_archived: !currentState })
+
+        .eq('id', projectId)
+
+
+
+      if (error) throw error
+
+      await fetchProjects()
+
+      alert(currentState ? 'تم إلغاء أرشفة المشروع بنجاح' : 'تم أرشفة المشروع بنجاح')
+
+    } catch (error: any) {
+
+      alert('حدث خطأ: ' + error.message)
+
+    }
+
+  }
+
+
+
   if (loading) {
 
     return (
@@ -190,8 +562,11 @@ export default function AdminProjectsPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 
           <button
+
             onClick={() => router.back()}
+
             className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+
           >
 
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -254,7 +629,7 @@ export default function AdminProjectsPage() {
 
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المنشئ</th>
 
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الفئة المستندفة</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الفئة المستهدفة</th>
 
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد الفورمز</th>
 
@@ -271,9 +646,13 @@ export default function AdminProjectsPage() {
                 {projects.map((project) => (
 
                   <tr
+
                     key={project.id}
+
                     className="hover:bg-gray-50 cursor-pointer"
+
                     onClick={() => router.push(`/projects/${project.id}`)}
+
                   >
 
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -291,8 +670,11 @@ export default function AdminProjectsPage() {
                         ) : (
 
                           <div
+
                             className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
+
                             style={{ backgroundColor: `${project.color}20`, color: project.color }}
+
                           >
 
                             {project.icon === 'mosque' ? '🕌' : project.icon === 'sun' ? '☀️' : project.icon === 'quran' ? '📖' : project.icon === 'book' ? '📚' : project.icon === 'star' ? '⭐' : project.icon === 'heart' ? '❤️' : project.icon === 'hand' ? '🤲' : '🌙'}
@@ -326,7 +708,9 @@ export default function AdminProjectsPage() {
                         project.target_gender === 'female' ? 'bg-pink-100 text-pink-700' :
                         'bg-purple-100 text-purple-700'
                       }`}>
+
                         {project.target_gender === 'male' ? 'ذكور' : project.target_gender === 'female' ? 'إناث' : 'الكل'}
+
                       </span>
 
                     </td>
@@ -348,18 +732,73 @@ export default function AdminProjectsPage() {
                       <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
 
                         <Link
+
                           href={`/projects/${project.id}/edit?id=${project.id}`}
+
                           className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+
                           title="تعديل"
+
                         >
+
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+
                         </Link>
+
                         <button
-                          onClick={() => deleteProject(project.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="حذف"
+
+                          onClick={() => cloneProject(project.id)}
+
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+
+                          title="نسخ"
+
                         >
+
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+
+                        </button>
+
+                        <button
+
+                          onClick={() => transferProject(project.id)}
+
+                          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+
+                          title="نقل ملكية"
+
+                        >
+
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+
+                        </button>
+
+                        <button
+
+                          onClick={() => toggleArchive(project.id, project.is_archived)}
+
+                          className={`p-2 rounded-lg transition-colors ${project.is_archived ? 'text-blue-600 hover:bg-blue-50' : 'text-gray-600 hover:bg-gray-50'}`}
+
+                          title={project.is_archived ? 'إلغاء الأرشفة' : 'أرشفة'}
+
+                        >
+
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+
+                        </button>
+
+                        <button
+
+                          onClick={() => deleteProject(project.id)}
+
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+
+                          title="حذف"
+
+                        >
+
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+
                         </button>
 
                       </div>
@@ -385,4 +824,3 @@ export default function AdminProjectsPage() {
   )
 
 }
-

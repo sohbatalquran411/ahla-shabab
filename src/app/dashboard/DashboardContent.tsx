@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -9,7 +9,7 @@ import type { User, Project } from '@/types'
 import Header from '@/components/Header'
 
 interface DashboardContentProps {
-  user: User
+  profile: User
   projects: Project[]
   stats?: {
     total_users: number
@@ -67,11 +67,24 @@ const Icons = {
   )
 }
 
-export default function DashboardContent({ user, projects, stats }: DashboardContentProps) {
+export default function DashboardContent({ profile, projects, stats }: DashboardContentProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   const router = useRouter()
   const supabase = createClient()
   const { settings } = useAppSettings()
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', profile.id)
+        .eq('is_read', false)
+      setUnreadCount(count || 0)
+    }
+    fetchUnread()
+  }, [profile.id, supabase])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -84,7 +97,17 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50">
-      <Header user={user} settings={settings} onMenuClick={() => setSidebarOpen(true)} />
+      <Header user={profile} settings={settings} onMenuClick={() => setSidebarOpen(true)} />
+
+      {/* Unread notifications banner */}
+      {unreadCount > 0 && (
+        <Link
+          href="/notifications"
+          className="block bg-blue-600 text-white text-center py-2 px-4 text-sm font-medium hover:bg-blue-700 transition-colors"
+        >
+          لديك {unreadCount} إشعار{unreadCount !== 1 ? 'ات' : ''} غير مقروء
+        </Link>
+      )}
 
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
@@ -138,7 +161,7 @@ export default function DashboardContent({ user, projects, stats }: DashboardCon
               <span className="font-medium">الملف الشخصي</span>
             </Link>
 
-            {user.role === 'admin' && (
+            {profile.role === 'admin' && (
               <>
                 <div className="h-px bg-gray-200 my-4"></div>
                 <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3 px-3">الإدارة</p>

@@ -38,9 +38,14 @@ export default async function DashboardPage() {
     .select('*')
     .order('created_at', { ascending: false })
 
-  // Filter by gender if user is supervisor
   if (profile.role === 'supervisor') {
-    projectsQuery = projectsQuery.or(`target_gender.eq.${profile.gender},target_gender.eq.both`)
+    const { data: supervisorProjectIds } = await supabase
+      .from('project_supervisors')
+      .select('project_id')
+      .eq('user_id', profile.id)
+
+    const supervisorIds = (supervisorProjectIds || []).map(s => s.project_id)
+    projectsQuery = projectsQuery.or(`created_by.eq.${profile.id},id.in.(${supervisorIds.join(',') || 'none'})`)
   }
 
   const { data: projects } = await projectsQuery
@@ -63,10 +68,9 @@ export default async function DashboardPage() {
 
   return (
     <DashboardContent 
-      user={profile} 
+      profile={profile} 
       projects={projects || []} 
       stats={stats ?? undefined}
     />
   )
 }
-

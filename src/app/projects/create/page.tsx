@@ -294,7 +294,7 @@ export default function CreateProjectPage() {
                     </div>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">المنهج التعليمي</p>
+                    <p className="font-medium text-gray-900">المحتوى التعليمي</p>
                     <p className="text-xs text-gray-500">إضافة دروس فيديو تعليمية متسلسلة</p>
                   </div>
                 </label>

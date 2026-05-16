@@ -13,10 +13,9 @@ const QUESTION_TYPES = {
   text: { label: 'نص', icon: 'T', description: 'إجابة نصية قصيرة', explanation: 'مثال: "ما اسمك؟"' },
   textarea: { label: 'نص طويل', icon: '¶', description: 'إجابة مفصلة', explanation: 'مثال: "صف تجربتك"' },
   single_choice: { label: 'اختيار واحد', icon: '○', description: 'اختيار إجابة واحدة', explanation: 'مثال: "نعم أو لا"' },
-  single_choice_with_counter: { label: 'اختيار مع عداد', icon: '⊕', description: 'اختيار مع إدخال عدد', explanation: 'مثال: "ذكر - كم مرة؟"' },
   multiple_choice: { label: 'اختيار متعدد', icon: '☑', description: 'اختيار عدة إجابات', explanation: 'مثال: "الهوايات"' },
   dropdown: { label: 'قائمة منسدلة', icon: '▼', description: 'اختيار من قائمة', explanation: 'قائمة مضغوطة لتوفير المساحة' },
-  scale: { label: 'تقييم', icon: '⭐', description: 'تقييم من 1 إلى 5', explanation: 'مثال: تقييم الأداء' },
+  scale: { label: 'تقييم', icon: '⭐', description: 'تقييم من 1 إلى 10', explanation: 'مثال: تقييم الأداء' },
   ranking: { label: 'ترتيب', icon: '#', description: 'ترتيب العناصر', explanation: 'ترتيب العناصر حسب الأولوية' },
   matrix: { label: 'مصفوفة', icon: '⊞', description: 'خيارات مشتركة', explanation: 'عدة أسئلة مع نفس الخيارات' },
   date: { label: 'تاريخ', icon: '📅', description: 'إدخال تاريخ', explanation: 'مثال: "تاريخ الميلاد"' },
@@ -43,7 +42,6 @@ interface Question {
   required: boolean
   points: number
   options: QuestionOption[]
-  sub_options?: QuestionOption[] // For nested options like prayer times
   // Matrix-specific
   matrix_rows?: MatrixRow[]
   matrix_columns?: MatrixColumn[]
@@ -57,7 +55,6 @@ interface Question {
 interface FormData {
   name: string
   description: string
-  target_gender: 'male' | 'female' | 'both'
   allow_multiple: boolean
   image_url: string
   questions: Question[]
@@ -72,6 +69,7 @@ interface ExistingForm {
   name: string
   project_id: string
   questions: any[]
+  projects?: { name: string }
 }
 
 function CreateFormContent() {
@@ -87,7 +85,6 @@ function CreateFormContent() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
-    target_gender: 'both',
     allow_multiple: false,
     time_limit: null,
     expires_at: '',
@@ -159,11 +156,10 @@ const searchParams = useSearchParams()
 
       setProjectName(project.name)
 
-      // Get existing forms for question reuse
+      // Get existing forms from ALL projects for question reuse
       const { data: forms } = await supabase
         .from('forms')
-        .select('*, questions(*)')
-        .eq('project_id', projId)
+        .select('*, questions(*), projects(name)')
 
       setExistingForms(forms || [])
     } catch (error) {
@@ -180,24 +176,21 @@ const searchParams = useSearchParams()
       type,
       required: false,
       points: 0,
-      options: [],
-      sub_options: []
+      options: []
     }
 
     // Add default options based on type
-    if (type === 'single_choice' || type === 'single_choice_with_counter' || type === 'multiple_choice') {
+    if (type === 'single_choice' || type === 'multiple_choice') {
       newQuestion.options = [
         { id: `opt_${Date.now()}_1`, text: '', points: 0 },
         { id: `opt_${Date.now()}_2`, text: '', points: 0 }
       ]
     } else if (type === 'scale') {
-      newQuestion.options = [
-        { id: `opt_${Date.now()}_1`, text: '1', points: 1 },
-        { id: `opt_${Date.now()}_2`, text: '2', points: 2 },
-        { id: `opt_${Date.now()}_3`, text: '3', points: 3 },
-        { id: `opt_${Date.now()}_4`, text: '4', points: 4 },
-        { id: `opt_${Date.now()}_5`, text: '5', points: 5 }
-      ]
+      newQuestion.options = Array.from({ length: 10 }, (_, i) => ({
+        id: `opt_${Date.now()}_${i + 1}`,
+        text: String(i + 1),
+        points: i + 1
+      }))
     } else if (type === 'matrix') {
       newQuestion.matrix_rows = [
         { id: `row_${Date.now()}_1`, text: '', required: true },
@@ -325,53 +318,6 @@ const searchParams = useSearchParams()
     })
   }
 
-  const addSubOption = (questionIndex: number, optionIndex: number) => {
-    const newSubOption: QuestionOption = {
-      id: `subopt_${Date.now()}`,
-      text: '',
-      points: 0
-    }
-
-    const question = formData.questions[questionIndex]
-    const option = question.options[optionIndex]
-    
-    const updatedOptions = [...question.options]
-    updatedOptions[optionIndex] = {
-      ...option,
-      sub_options: [...(option.sub_options || []), newSubOption]
-    }
-
-    updateQuestion(questionIndex, { options: updatedOptions })
-  }
-
-  const removeSubOption = (questionIndex: number, optionIndex: number, subOptionIndex: number) => {
-    const question = formData.questions[questionIndex]
-    const option = question.options[optionIndex]
-    
-    const updatedOptions = [...question.options]
-    updatedOptions[optionIndex] = {
-      ...option,
-      sub_options: parseOptions(option.sub_options).filter((_: any, i: number) => i !== subOptionIndex)
-    }
-
-    updateQuestion(questionIndex, { options: updatedOptions })
-  }
-
-  const updateSubOption = (questionIndex: number, optionIndex: number, subOptionIndex: number, updates: Partial<QuestionOption>) => {
-    const question = formData.questions[questionIndex]
-    const option = question.options[optionIndex]
-    
-    const updatedOptions = [...question.options]
-    updatedOptions[optionIndex] = {
-      ...option,
-      sub_options: parseOptions(option.sub_options).map((sub: any, i: number) =>
-        i === subOptionIndex ? { ...sub, ...updates } : sub
-      )
-    }
-
-    updateQuestion(questionIndex, { options: updatedOptions })
-  }
-
   const importQuestion = (question: any) => {
     const newQuestion: Question = {
       id: `q_${Date.now()}`,
@@ -379,8 +325,7 @@ const searchParams = useSearchParams()
       type: question.type,
       required: question.required || false,
       points: question.points || 0,
-      options: parseOptions(question.options),
-      sub_options: parseOptions(question.sub_options)
+      options: parseOptions(question.options)
     }
 
     setFormData(prev => ({
@@ -410,7 +355,6 @@ const searchParams = useSearchParams()
           project_id: projectId,
           name: formData.name,
           description: formData.description,
-          target_gender: formData.target_gender,
           allow_multiple: formData.allow_multiple,
           time_limit: formData.time_limit,
           expires_at: formData.expires_at || null,
@@ -454,10 +398,7 @@ const searchParams = useSearchParams()
             options: items
           }
         } else {
-          optionsData = parseOptions(q.options).map((opt: any) => ({
-            ...opt,
-            sub_options: parseOptions(opt.sub_options).map((sub: any) => sub)
-          }))
+          optionsData = parseOptions(q.options)
         }
 
         return {
@@ -552,7 +493,7 @@ const searchParams = useSearchParams()
             let totalPoints = 0
             questions.forEach((q: any) => {
               if (q.type === 'file_upload') return
-              if (q.type === 'single_choice' || q.type === 'single_choice_with_counter') {
+              if (q.type === 'single_choice') {
                 totalPoints += Math.max(0, ...parseOptions(q.options).map((o:any) => o.points || 0))
               } else if (q.type === 'multiple_choice') {
                 totalPoints += parseOptions(q.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
@@ -573,7 +514,7 @@ const searchParams = useSearchParams()
                 const colSum = (q.matrix_columns || []).reduce((s:number, c:any) => s + (c.points || 0), 0)
                 totalPoints += colSum * (q.matrix_rows || []).length
               } else if (q.type === 'scale') {
-                totalPoints += Math.max(5, ...parseOptions(q.options).map((o:any) => o.points || 0))
+                totalPoints += Math.max(10, ...parseOptions(q.options).map((o:any) => o.points || 0))
               } else {
                 totalPoints += q.points || 0
               }
@@ -619,31 +560,6 @@ const searchParams = useSearchParams()
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="وصف مختصر للنموذج..."
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">الفئة المستندفة</label>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { value: 'both', label: 'الكل', color: 'purple' },
-                  { value: 'male', label: 'ذكور فقط', color: 'blue' },
-                  { value: 'female', label: 'إناث فقط', color: 'pink' }
-                ].map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => setFormData(prev => ({ ...prev, target_gender: option.value as any }))}
-className={`px-4 py-3 rounded-xl font-medium transition-all ${
-                      formData.target_gender === option.value
-                        ? option.color === 'purple' ? 'bg-purple-600 text-white shadow-lg' :
-                          option.color === 'blue' ? 'bg-blue-600 text-white shadow-lg' :
-                          'bg-pink-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Allow Multiple */}
@@ -837,7 +753,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                     <span className="text-sm text-gray-700">مطلوب</span>
                   </label>
                   
-                  {!['single_choice', 'single_choice_with_counter', 'multiple_choice', 'dropdown', 'ranking', 'matrix'].includes(question.type) && (
+                  {!['single_choice', 'multiple_choice', 'dropdown', 'ranking', 'matrix'].includes(question.type) && (
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-700">النقاط:</label>
                     <input
@@ -856,7 +772,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                   {(() => {
                     if (question.type === 'file_upload') return null
                     let total = 0
-                    if (question.type === 'single_choice' || question.type === 'single_choice_with_counter') {
+                    if (question.type === 'single_choice') {
                       total = Math.max(0, ...parseOptions(question.options).map((o:any) => o.points || 0))
                     } else if (question.type === 'multiple_choice') {
                       total = parseOptions(question.options).reduce((s:number, o:any) => s + (o.points || 0), 0)
@@ -877,13 +793,116 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                       const colSum = (question.matrix_columns || []).reduce((s:number, c:any) => s + (c.points || 0), 0)
                       total = colSum * (question.matrix_rows || []).length
                     } else if (question.type === 'scale') {
-                      total = Math.max(5, ...parseOptions(question.options).map((o:any) => o.points || 0))
+                      total = Math.max(10, ...parseOptions(question.options).map((o:any) => o.points || 0))
                     } else {
                       total = question.points || 0
                     }
                     return <span className="text-xs text-blue-600 font-medium me-2">({total} نقطة)</span>
                   })()}
                 </div>
+
+                {/* Text validation options */}
+                {(question.type === 'text' || question.type === 'textarea') && (
+                  <div className="ms-2 sm:ms-11 mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                    <p className="text-sm font-medium text-purple-700 mb-2">نوع التحقق من الإجابة:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: '', label: 'بدون تحقق' },
+                        { value: 'name', label: 'اسم' },
+                        { value: 'email', label: 'بريد إلكتروني' },
+                        { value: 'phone', label: 'رقم هاتف' },
+                        { value: 'plain', label: 'نص عادي' },
+                        { value: 'contains_word', label: 'يحتوي على كلمة' },
+                        { value: 'is_number', label: 'رقم' },
+                        { value: 'whole_number', label: 'عدد صحيح' },
+                        { value: 'greater_than', label: 'أكبر من' },
+                        { value: 'greater_than_or_equal', label: 'أكبر من أو يساوي' },
+                        { value: 'less_than', label: 'أقل من' },
+                        { value: 'less_than_or_equal', label: 'أقل من أو يساوي' },
+                        { value: 'equal_to', label: 'يساوي' },
+                        { value: 'not_equal_to', label: 'لا يساوي' },
+                        { value: 'between', label: 'بين' },
+                        { value: 'not_between', label: 'ليس بين' }
+                      ].map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => {
+                            const currentOpts: any[] = parseOptions(question.options)
+                            const currentMeta = currentOpts[0] || {}
+                            const validationType = currentMeta.validation_type
+                            if (validationType === opt.value && opt.value !== '') {
+                              updateQuestion(qIndex, { options: [{ validation_type: '', validation_value: '', validation_min: '', validation_max: '' }] as any })
+                            } else {
+                              updateQuestion(qIndex, { options: [{ validation_type: opt.value, validation_value: currentMeta.validation_value || '', validation_min: currentMeta.validation_min || '', validation_max: currentMeta.validation_max || '' }] as any })
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                            ((parseOptions(question.options)[0] as any)?.validation_type || '') === opt.value
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-white text-gray-700 hover:bg-purple-100 border border-purple-200'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                    {(() => {
+                      const opts: any[] = parseOptions(question.options)
+                      const meta = opts[0] || {}
+                      const vt = meta.validation_type
+                      if (vt === 'contains_word') {
+                        return (
+                          <div className="mt-2">
+                            <input
+                              type="text"
+                              value={meta.validation_word || ''}
+                              onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: 'contains_word', validation_word: e.target.value }] as any })}
+                              placeholder="أدخل الكلمة المطلوبة..."
+                              className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
+                            />
+                          </div>
+                        )
+                      }
+                      if (vt === 'greater_than' || vt === 'greater_than_or_equal' || vt === 'less_than' || vt === 'less_than_or_equal' || vt === 'equal_to' || vt === 'not_equal_to') {
+                        return (
+                          <div className="mt-2">
+                            <input
+                              type="number"
+                              step="any"
+                              value={meta.validation_value ?? ''}
+                              onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: vt, validation_value: e.target.value, validation_min: '', validation_max: '' }] as any })}
+                              placeholder="أدخل القيمة..."
+                              className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
+                            />
+                          </div>
+                        )
+                      }
+                      if (vt === 'between' || vt === 'not_between') {
+                        return (
+                          <div className="mt-2 flex gap-2">
+                            <input
+                              type="number"
+                              step="any"
+                              value={meta.validation_min ?? ''}
+                              onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: vt, validation_min: e.target.value, validation_max: meta.validation_max || '', validation_value: '' }] as any })}
+                              placeholder="القيمة الصغرى..."
+                              className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
+                            />
+                            <input
+                              type="number"
+                              step="any"
+                              value={meta.validation_max ?? ''}
+                              onChange={(e) => updateQuestion(qIndex, { options: [{ validation_type: vt, validation_min: meta.validation_min || '', validation_max: e.target.value, validation_value: '' }] as any })}
+                              placeholder="القيمة العظمى..."
+                              className="w-full px-3 py-1.5 bg-white border border-purple-200 rounded-lg text-sm focus:ring-1 focus:ring-purple-500"
+                            />
+                          </div>
+                        )
+                      }
+                      return null
+                    })()}
+                  </div>
+                )}
 
                 {/* Matrix specific UI */}
                 {question.type === 'matrix' && (
@@ -1091,14 +1110,14 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                 )}
 
                 {/* Options for other choice questions */}
-                {(question.type === 'single_choice' || question.type === 'single_choice_with_counter' || question.type === 'multiple_choice' || question.type === 'ranking') && (
+                {(question.type === 'single_choice' || question.type === 'multiple_choice' || question.type === 'ranking') && (
                   <div className="ms-2 sm:ms-11 space-y-3">
                     <p className="text-sm font-medium text-gray-700">الخيارات:</p>
                     {parseOptions(question.options).map((option: any, oIndex: number) => (
                       <div key={option.id} className="bg-white rounded-lg p-3 border border-gray-200">
                         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
                           <span className="text-gray-400">
-                            {question.type === 'single_choice' ? '○' : question.type === 'single_choice_with_counter' ? '⊕' : question.type === 'ranking' ? '#' : '☑'}
+                            {question.type === 'single_choice' ? '○' : question.type === 'ranking' ? '#' : '☑'}
                           </span>
                           <input
                             type="text"
@@ -1107,17 +1126,6 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             placeholder="نص الخيار..."
                             className="w-full sm:flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500"
                           />
-                          {question.type === 'single_choice_with_counter' && (
-                            <input
-                              type="number"
-                              min="1"
-                              value={option.max_count || ''}
-                              onChange={(e) => updateOption(qIndex, oIndex, { max_count: e.target.value ? Number(e.target.value) : undefined })}
-                              placeholder="أقصى عدد"
-                              className="w-24 px-2 py-2 border border-amber-200 rounded-lg text-center text-sm bg-amber-50"
-                              title="أقصى عدد يمكن إدخاله"
-                            />
-                          )}
                           <input
                             type="number"
                             min="0"
@@ -1136,60 +1144,6 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
                             </svg>
                           </button>
                         </div>
-                        {question.type === 'single_choice_with_counter' && option.max_count && (
-                          <div className="mt-2 mr-9 text-xs text-amber-600 bg-amber-50 rounded-md px-3 py-1.5 inline-flex items-center gap-1.5">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                            العداد: 0 – {option.max_count}
-                          </div>
-                        )}
-                        {/* Sub-options for nested choices */}
-                        {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
-                          <div className="mt-3 ms-2 sm:ms-6 space-y-2 overflow-x-hidden">
-                            <button
-                              onClick={() => addSubOption(qIndex, oIndex)}
-                              className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
-                            >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                              </svg>
-                              إضافة خيارات فرعية
-                            </button>
-                            
-                            {option.sub_options && (option.sub_options || []).length > 0 && (
-                              <div className="bg-amber-50 rounded-lg p-2 space-y-2 border border-amber-200 overflow-x-auto">
-                                <p className="text-xs text-amber-700 font-medium">خيارات فرعية:</p>
-                                {parseOptions(option.sub_options).map((subOpt: any, sIndex: number) => (
-                                  <div key={subOpt.id} className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-white rounded-lg p-2 min-w-min">
-                                    <span className="text-gray-400 text-sm">↳</span>
-                                    <input
-                                      type="text"
-                                      value={subOpt.text}
-                                      onChange={(e) => updateSubOption(qIndex, oIndex, sIndex, { text: e.target.value })}
-                                      placeholder="خيار فرعي..."
-                                      className="w-full sm:flex-1 min-w-[120px] px-2 py-1 border border-gray-200 rounded text-sm"
-                                    />
-                                    <input
-                                      type="number"
-                                      min="0"
-                                      value={subOpt.points}
-                                      onChange={(e) => updateSubOption(qIndex, oIndex, sIndex, { points: Number(e.target.value) })}
-                                      className="w-16 px-1 py-1 border border-gray-200 rounded text-sm text-center"
-                                      title="النقاط"
-                                    />
-                                    <button
-                                      onClick={() => removeSubOption(qIndex, oIndex, sIndex)}
-                                      className="p-1 text-red-500 hover:bg-red-50 rounded"
-                                    >
-                                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                      </svg>
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
                       </div>
                     ))}
                     
@@ -1208,7 +1162,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
 
                 {question.type === 'scale' && (
                   <div className="ms-2 sm:ms-11 bg-blue-50 rounded-lg p-4 overflow-x-auto">
-                    <p className="text-sm font-medium text-blue-700 mb-3">مقياس التقييم (1-5)</p>
+                    <p className="text-sm font-medium text-blue-700 mb-3">مقياس التقييم (1-10)</p>
                     <div className="flex justify-between items-center min-w-[200px]">
                       {parseOptions(question.options).map((opt: any) => (
                         <div key={opt.id} className="text-center">
@@ -1243,40 +1197,51 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
               </div>
             )}
             
-            {/* Add Question Button and Dropdown Menu */}
-            <div className="relative mt-8">
+            {/* Add Question Button and Import Button */}
+            <div className="flex gap-3 mt-8">
+              <div className="relative flex-1">
+                <button
+                  onClick={() => setQuestionMenuOpen(!questionMenuOpen)}
+                  className="w-full py-4 border-2 border-dashed border-blue-300 text-blue-600 rounded-xl hover:bg-blue-50 hover:border-blue-400 font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  إضافة سؤال جديد
+                </button>
+                
+                {questionMenuOpen && (
+                  <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 shadow-xl rounded-xl z-20 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-4">
+                    {(Object.entries(QUESTION_TYPES) as [QuestionType, typeof QUESTION_TYPES['text']][]).map(([type, info]) => (
+                      <button
+                        key={type}
+                        onClick={() => {
+                          if (type === 'file_upload') return
+                          addQuestion(type)
+                          setQuestionMenuOpen(false)
+                        }}
+                        className={`flex flex-col items-center justify-center text-center p-3 rounded-lg transition-colors border ${type === 'file_upload' ? 'opacity-50 cursor-not-allowed bg-gray-50 border-gray-200' : 'hover:bg-blue-50 border-transparent hover:border-blue-200'}`}
+                        title={type === 'file_upload' ? 'قيد التطوير' : ''}
+                      >
+                        <span className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 font-bold ${type === 'file_upload' ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600'}`}>
+                          {info.icon}
+                        </span>
+                        <span className="font-medium text-gray-800 text-sm mb-1">{info.label}</span>
+                        <span className="text-xs text-gray-500">{type === 'file_upload' ? 'قيد التطوير' : info.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button
-                onClick={() => setQuestionMenuOpen(!questionMenuOpen)}
-                className="w-full py-4 border-2 border-dashed border-blue-300 text-blue-600 rounded-xl hover:bg-blue-50 hover:border-blue-400 font-bold transition-all flex items-center justify-center gap-2"
+                onClick={() => setShowQuestionPicker(true)}
+                className="py-4 px-6 border-2 border-dashed border-emerald-300 text-emerald-600 rounded-xl hover:bg-emerald-50 hover:border-emerald-400 font-bold transition-all flex items-center justify-center gap-2"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
                 </svg>
-                إضافة سؤال جديد
+                استيراد سؤال
               </button>
-              
-              {questionMenuOpen && (
-                <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 shadow-xl rounded-xl z-20 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-4">
-                  {(Object.entries(QUESTION_TYPES) as [QuestionType, typeof QUESTION_TYPES['text']][]).map(([type, info]) => (
-                    <button
-                      key={type}
-                      onClick={() => {
-                        if (type === 'file_upload') return
-                        addQuestion(type)
-                        setQuestionMenuOpen(false)
-                      }}
-                      className={`flex flex-col items-center justify-center text-center p-3 rounded-lg transition-colors border ${type === 'file_upload' ? 'opacity-50 cursor-not-allowed bg-gray-50 border-gray-200' : 'hover:bg-blue-50 border-transparent hover:border-blue-200'}`}
-                      title={type === 'file_upload' ? 'قيد التطوير' : ''}
-                    >
-                      <span className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 font-bold ${type === 'file_upload' ? 'bg-gray-200 text-gray-400' : 'bg-blue-100 text-blue-600'}`}>
-                        {info.icon}
-                      </span>
-                      <span className="font-medium text-gray-800 text-sm mb-1">{info.label}</span>
-                      <span className="text-xs text-gray-500">{type === 'file_upload' ? 'قيد التطوير' : info.description}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -1383,7 +1348,7 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowQuestionPicker(false)} />
           <div className="relative bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-xl">
             <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900">استرداد سؤال من فورم سابقة</h3>
+              <h3 className="text-lg font-bold text-gray-900">استيراد سؤال من فورم سابقة</h3>
               <button onClick={() => setShowQuestionPicker(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1394,12 +1359,17 @@ className={`px-4 py-3 rounded-xl font-medium transition-all ${
             <div className="p-4 overflow-y-auto max-h-[calc(80vh-60px)]">
               {existingForms.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">لا توجد فورمز سابقة في هذا المشروع</p>
+                  <p className="text-gray-500">لا توجد فورمز سابقة</p>
                 </div>
               ) : (
                 existingForms.map(form => (
                   <div key={form.id} className="mb-4">
-                    <h4 className="font-medium text-gray-800 mb-2">{form.name}</h4>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h4 className="font-medium text-gray-800">{form.name}</h4>
+                      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                        {form.projects?.name || 'مشروع غير معروف'}
+                      </span>
+                    </div>
                     <div className="space-y-2">
                       {form.questions?.map((q: any) => (
                         <button

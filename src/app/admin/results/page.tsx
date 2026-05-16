@@ -20,7 +20,6 @@ interface Form {
   id: string
   name: string
   project_id: string
-  target_gender?: string
   projects?: any
 }
 
@@ -49,33 +48,12 @@ export function getDisplayAnswer(q: Question, answerVal: any) {
     return String(answerVal)
   }
 
-  if (q.type === 'single_choice_with_counter') {
-    let selectedId = ''
-    let countVal = 0
-    if (typeof answerVal === 'object' && answerVal !== null) {
-      selectedId = answerVal.selected || ''
-      countVal = answerVal.count || 0
-    }
-    let opts = Array.isArray(options) ? options : (options?.options || [])
-    const selectedText = opts.find((o: any) => o.id === selectedId)?.text || selectedId
-    return countVal > 0 ? `${selectedText} (${countVal})` : selectedText
-  }
-
   if (q.type === 'single_choice' || q.type === 'multiple_choice' || q.type === 'dropdown' || q.type === 'ranking') {
     let opts = Array.isArray(options) ? options : (options?.options || [])
     
     const findText = (id: string) => {
       const opt = opts.find((o: any) => o.id === id)
       if (opt) return opt.text
-
-      if (id.includes('_sub_')) {
-        const parts = id.split('_sub_')
-        const mainOpt = opts.find((o: any) => o.id === parts[0])
-        if (mainOpt && Array.isArray(mainOpt.sub_options)) {
-          const subOpt = mainOpt.sub_options.find((s: any) => s.id === parts[1])
-          if (subOpt) return `${mainOpt.text} - ${subOpt.text}`
-        }
-      }
       return id
     }
 
@@ -186,17 +164,12 @@ export default function ResultsPage() {
       // Fetch forms
       const { data: formsData } = await supabase
         .from('forms')
-        .select('id, name, project_id, target_gender, projects(name)')
+        .select('id, name, project_id, projects(name)')
         .eq('is_active', true)
         .order('name')
 
       // Filter forms by gender for supervisors
       let filteredForms = formsData || []
-      if (profile.role === 'supervisor') {
-        filteredForms = filteredForms.filter((f: any) =>
-          f.target_gender === profile.gender || f.target_gender === 'both'
-        )
-      }
       setForms(filteredForms)
 
       // Fetch global stats (lightweight)

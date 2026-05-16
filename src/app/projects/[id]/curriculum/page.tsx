@@ -55,7 +55,6 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
       setProfile(profileData)
       setProject(projectData)
 
-      // Fetch curricula
       const { data: curriculaData } = await supabase
         .from('curricula').select('*').eq('project_id', projectId).order('created_at')
 
@@ -64,7 +63,6 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
       if (curriculaData && curriculaData.length > 0) {
         const curriculumIds = curriculaData.map(c => c.id)
 
-        // Fetch all lessons for all curricula
         const { data: lessonsData } = await supabase
           .from('lessons').select('*')
           .in('curriculum_id', curriculumIds)
@@ -72,7 +70,6 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
 
         setAllLessons(lessonsData || [])
 
-        // Fetch user's progress for all lessons
         const lessonIds = (lessonsData || []).map(l => l.id)
         if (lessonIds.length > 0) {
           const { data: progressData } = await supabase
@@ -94,16 +91,18 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
     }
   }
 
-  function getYouTubeId(url: string) {
-    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/)
-    return match ? match[1] : null
-  }
-
-  function isLessonLocked(lesson: any, lessons: any[], prog: Record<string, any>) {
+  function isLessonLocked(lesson: any, lessons: any[], prog: Record<string, any>, sequential: boolean) {
+    if (!sequential) return false
     if (lesson.order_index === 0) return false
     const prevLesson = lessons.find(l => l.order_index === lesson.order_index - 1)
     if (!prevLesson) return false
     return !prog[prevLesson.id]?.completed
+  }
+
+  const TYPE_ICONS: Record<string, { icon: string; label: string; color: string }> = {
+    video: { icon: '🎬', label: 'فيديو', color: 'text-blue-600 bg-blue-100' },
+    audio: { icon: '🎧', label: 'صوت', color: 'text-purple-600 bg-purple-100' },
+    text: { icon: '📝', label: 'نص', color: 'text-amber-600 bg-amber-100' },
   }
 
   if (loading || !project) {
@@ -137,7 +136,6 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
       </aside>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
-        {/* Back Button */}
         <Link href={`/projects/${projectId}`} className="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 transition-colors mb-6">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -145,10 +143,9 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
           رجوع للمشروع
         </Link>
 
-        {/* Page Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{project.name}</h1>
-          <p className="text-gray-500">المنهج التعليمي — تابع الدروس بالترتيب</p>
+          <p className="text-gray-500">المحتوى التعليمي</p>
         </div>
 
         {curricula.length === 0 ? (
@@ -158,7 +155,7 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">لا يوجد منهج تعليمي بعد</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">لا يوجد محتوى تعليمي بعد</h3>
             <p className="text-gray-500 text-sm">لم يتم إضافة دروس لهذا المشروع بعد</p>
           </div>
         ) : (
@@ -170,7 +167,6 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
 
               return (
                 <div key={curriculum.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  {/* Curriculum Header */}
                   <div className="p-6 border-b border-gray-50">
                     <div className="flex items-center justify-between">
                       <div>
@@ -184,7 +180,6 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
                         <div className="text-xs text-gray-400">من أصل {sortedLessons.length} دروس</div>
                       </div>
                     </div>
-                    {/* Progress Bar */}
                     {sortedLessons.length > 0 && (
                       <div className="mt-4 w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                         <div
@@ -195,22 +190,21 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
                     )}
                   </div>
 
-                  {/* Lessons List */}
                   <div className="divide-y divide-gray-50">
                     {sortedLessons.map((lesson, idx) => {
                       const isCompleted = progress[lesson.id]?.completed
-                      const isLocked = isLessonLocked(lesson, sortedLessons, progress)
+                      const isLocked = isLessonLocked(lesson, sortedLessons, progress, curriculum.is_sequential ?? true)
+                      const typeInfo = TYPE_ICONS[lesson.type] || TYPE_ICONS.video
 
                       return (
                         <div key={lesson.id} className={`p-5 ${isLocked ? 'opacity-50' : ''}`}>
                           <div className="flex items-center gap-4">
-                            {/* Number/Status Circle */}
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${
                               isCompleted
                                 ? 'bg-emerald-100 text-emerald-600'
                                 : isLocked
                                   ? 'bg-gray-100 text-gray-400'
-                                  : 'bg-blue-100 text-blue-600'
+                                  : typeInfo.color
                             }`}>
                               {isCompleted ? (
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -225,61 +219,50 @@ export default function CurriculumPage({ params }: { params: Promise<{ id: strin
                               )}
                             </div>
 
-                            {/* Lesson Info */}
                             <div className="flex-1 min-w-0">
-                              <h3 className={`font-semibold ${isCompleted ? 'text-emerald-700' : 'text-gray-900'}`}>
-                                {lesson.title}
-                              </h3>
+                              <div className="flex items-center gap-2">
+                                <h3 className={`font-semibold ${isCompleted ? 'text-emerald-700' : 'text-gray-900'}`}>
+                                  {lesson.title}
+                                </h3>
+                                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs ${typeInfo.color}`}>
+                                  {typeInfo.icon} {typeInfo.label}
+                                </span>
+                              </div>
                               {lesson.description && (
                                 <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{lesson.description}</p>
                               )}
-                              {lesson.youtube_url && (
-                                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                  </svg>
-                                  فيديو
-                                </p>
-                              )}
                             </div>
 
-                              {/* Action Button */}
-                              {isCompleted ? (
-                                <Link
-                                  href={`/projects/${projectId}/curriculum/${lesson.id}`}
-                                  className="shrink-0 px-4 py-2 text-sm font-medium text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
-                                >
-                                  إعادة المشاهدة
-                                </Link>
-                              ) : isLocked ? (
-                                <span className="shrink-0 px-4 py-2 text-sm font-medium text-gray-400 bg-gray-50 rounded-lg">
-                                  مقفول
-                                </span>
-                              ) : (
-                                <Link
-                                  href={`/projects/${projectId}/curriculum/${lesson.id}`}
-                                  className="shrink-0 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                  مشاهدة
-                                </Link>
-                              )}
-                            </div>
+                            {isCompleted ? (
+                              <Link
+                                href={`/projects/${projectId}/curriculum/${lesson.id}`}
+                                className="shrink-0 px-4 py-2 text-sm font-medium text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
+                              >
+                                إعادة المشاهدة
+                              </Link>
+                            ) : isLocked ? (
+                              <span className="shrink-0 px-4 py-2 text-sm font-medium text-gray-400 bg-gray-50 rounded-lg">
+                                مقفول
+                              </span>
+                            ) : (
+                              <Link
+                                href={`/projects/${projectId}/curriculum/${lesson.id}`}
+                                className="shrink-0 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                              >
+                                {lesson.type === 'text' ? 'قراءة' : lesson.type === 'audio' ? 'استماع' : 'مشاهدة'}
+                              </Link>
+                            )}
                           </div>
+                        </div>
                       )
                     })}
                   </div>
-
-
                 </div>
               )
             })}
-
-
           </div>
         )}
       </main>
-
-
     </div>
   )
 }

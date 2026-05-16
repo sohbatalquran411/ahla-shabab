@@ -9,7 +9,6 @@ interface QuestionOption {
   id: string
   text: string
   points: number
-  sub_options?: QuestionOption[]
 }
 
 interface Question {
@@ -168,7 +167,6 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
       case 'textarea':
         return q.points || 0
       case 'single_choice':
-      case 'single_choice_with_counter':
         return Math.max(0, ...(Array.isArray(opts) ? opts : []).map((o: any) => o.points || 0))
       case 'multiple_choice':
         return (Array.isArray(opts) ? opts : []).reduce((sum: number, o: any) => sum + (o.points || 0), 0)
@@ -185,7 +183,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
         }
         return Math.max(0, ...(Array.isArray(opts) ? opts : []).map((o: any) => o.points || 0))
       case 'scale':
-        return Math.max(5, ...(Array.isArray(opts) ? opts : []).map((o: any) => o.points || 0))
+        return Math.max(10, ...(Array.isArray(opts) ? opts : []).map((o: any) => o.points || 0))
       case 'ranking':
         return (Array.isArray(opts) ? opts : []).reduce((sum: number, o: any) => sum + (o.points || 0), 0)
       case 'matrix': {
@@ -246,45 +244,15 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
       if (answer === undefined || answer === null || answer === '') return
 
       if (q.type === 'single_choice' && options.length > 0) {
-          // Check if answer is for a sub-option
-          const answerParts = (typeof answer === 'string' ? answer : '').split('_sub_')
-          const mainOptionId = answerParts[0]
-          const subOptionId = answerParts[1]
-          
-          const mainOption = options.find((opt: any) => opt.id === mainOptionId)
-          if (mainOption) {
-            if (subOptionId && mainOption.sub_options) {
-              const subOption = mainOption.sub_options.find((sub: any) => sub.id === subOptionId)
-              if (subOption) {
-                score += subOption.points || 0
-              }
-            } else {
-              score += mainOption.points || 0
-            }
-          }
-        } else if (q.type === 'single_choice_with_counter' && options.length > 0) {
-          const selectedId = answer?.selected || ''
-          const mainOption = options.find((opt: any) => opt.id === selectedId)
+          const mainOption = options.find((opt: any) => opt.id === answer)
           if (mainOption) {
             score += mainOption.points || 0
           }
         } else if (q.type === 'multiple_choice' && options.length > 0 && Array.isArray(answer)) {
           answer.forEach((selectedId: string) => {
-            // Handle sub-options
-            const answerParts = selectedId.split('_sub_')
-            const mainOptionId = answerParts[0]
-            const subOptionId = answerParts[1]
-            
-            const mainOption = options.find((opt: any) => opt.id === mainOptionId)
+            const mainOption = options.find((opt: any) => opt.id === selectedId)
             if (mainOption) {
-              if (subOptionId && mainOption.sub_options) {
-                const subOption = mainOption.sub_options.find((sub: any) => sub.id === subOptionId)
-                if (subOption) {
-                  score += subOption.points || 0
-                }
-              } else {
-                score += mainOption.points || 0
-              }
+              score += mainOption.points || 0
             }
           })
         
@@ -334,13 +302,6 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
               }
             }
           }
-        }
-      } else if (q.type === 'single_choice_with_counter' && q.required) {
-        const answer = answers[q.id]
-        if (!answer || !answer.selected) {
-          setError(`يرجى الإجابة على السؤال: ${q.text}`)
-          setSubmitting(false)
-          return
         }
       } else if (q.required) {
         const answer = answers[q.id]
@@ -393,56 +354,6 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
     }
   }
 
-  const renderSubOptions = (mainOption: any, question: Question, mainOptionSelected: boolean) => {
-    if (!mainOption.sub_options || mainOption.sub_options.length === 0) return null
-
-    return (
-      <div className="mr-8 mt-3 space-y-2">
-        {(Array.isArray(mainOption.sub_options) ? mainOption.sub_options : []).map((subOpt: any, sIdx: number) => {
-          const subOptionId = `${mainOption.id}_sub_${subOpt.id}`
-          const subSelected = answers[question.id] === subOptionId || 
-            (Array.isArray(answers[question.id]) && answers[question.id].includes(subOptionId))
-          
-          return (
-            <div key={subOpt.id || sIdx}>
-              <label
-                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                  subSelected
-                    ? 'border-blue-500 bg-blue-50'
-                    : mainOptionSelected
-                      ? 'border-amber-200 bg-amber-50 hover:border-amber-400'
-                      : 'border-gray-200 bg-gray-50 opacity-50'
-                }`}
-              >
-                <input
-                  type={question.type === 'multiple_choice' ? 'checkbox' : 'radio'}
-                  name={`${question.id}_${mainOption.id}`}
-                  value={subOpt.id}
-                  checked={subSelected}
-                  onChange={() => {
-                    if (question.type === 'multiple_choice') {
-                      const current = Array.isArray(answers[question.id]) ? [...answers[question.id]] : []
-                      if (subSelected) {
-                        setAnswers({ ...answers, [question.id]: current.filter((id: string) => id !== subOptionId) })
-                      } else {
-                        setAnswers({ ...answers, [question.id]: [...current, subOptionId] })
-                      }
-                    } else {
-                      setAnswers({ ...answers, [question.id]: subOptionId })
-                    }
-                  }}
-                  disabled={!mainOptionSelected && question.type === 'single_choice'}
-                  className={`w-4 h-4 ${question.type === 'multiple_choice' ? 'text-blue-600' : 'text-blue-600'}`}
-                />
-                <span className="flex-1 text-sm">{subOpt.text}</span>
-              </label>
-            </div>
-          )
-        })}
-      </div>
-    )
-  }
-
   const renderQuestion = (question: Question, index: number) => {
     const currentAnswer = answers[question.id]
     const options = parseOptions(question.options)
@@ -477,50 +388,6 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
             {(Array.isArray(options) ? options : []).map((option: any, idx: number) => {
               const optionId = option.id || `opt_${idx}`
               const isSelected = currentAnswer === optionId
-              
-              return (
-                <div key={optionId}>
-                  <label
-                    className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                      isSelected
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-blue-300'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name={question.id}
-                      value={optionId}
-checked={isSelected}
-                      onChange={() => {
-                        setAnswers({ ...answers, [question.id]: optionId })
-                        setCurrentQuestionIndex(index)
-                      }}
-                      className="w-5 h-5 text-blue-600"
-                    />
-                    <span className="flex-1 font-medium">{option.text}</span>
-                    
-                  </label>
-                  
-                  {/* Sub-options */}
-                  {renderSubOptions(option, question, isSelected)}
-                </div>
-              )
-            })}
-          </div>
-        )
-
-      case 'single_choice_with_counter': {
-        const selectedOption = currentAnswer?.selected || ''
-        const countVal = currentAnswer?.count || 0
-        const activeOpt = (Array.isArray(options) ? options : []).find((o: any) => o.id === selectedOption)
-        const maxCount = activeOpt?.max_count || 0
-
-        return (
-          <div className="space-y-3">
-            {(Array.isArray(options) ? options : []).map((option: any, idx: number) => {
-              const optionId = option.id || `opt_${idx}`
-              const isSelected = selectedOption === optionId
               return (
                 <div key={optionId}>
                   <label
@@ -536,62 +403,18 @@ checked={isSelected}
                       value={optionId}
                       checked={isSelected}
                       onChange={() => {
-                        setAnswers({
-                          ...answers,
-                          [question.id]: { selected: optionId, count: 0 }
-                        })
+                        setAnswers({ ...answers, [question.id]: optionId })
                         setCurrentQuestionIndex(index)
                       }}
                       className="w-5 h-5 text-blue-600"
                     />
                     <span className="flex-1 font-medium">{option.text}</span>
                   </label>
-
-                  {isSelected && option.max_count > 0 && (
-                    <div className="mr-14 mt-3 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                      <span className="text-sm text-amber-700 font-medium">العدد:</span>
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const next = Math.min(countVal + 1, option.max_count)
-                            setAnswers({
-                              ...answers,
-                              [question.id]: { selected: optionId, count: next }
-                            })
-                          }}
-                          disabled={countVal >= option.max_count}
-                          className="w-9 h-9 rounded-lg bg-amber-600 text-white font-bold text-lg flex items-center justify-center hover:bg-amber-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                        >
-                          +
-                        </button>
-                        <span className="w-12 text-center text-lg font-bold text-amber-900 tabular-nums">
-                          {countVal}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const next = Math.max(countVal - 1, 0)
-                            setAnswers({
-                              ...answers,
-                              [question.id]: { selected: optionId, count: next }
-                            })
-                          }}
-                          disabled={countVal <= 0}
-                          className="w-9 h-9 rounded-lg bg-amber-600 text-white font-bold text-lg flex items-center justify-center hover:bg-amber-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                        >
-                          –
-                        </button>
-                      </div>
-                      <span className="text-xs text-amber-500">/ {option.max_count}</span>
-                    </div>
-                  )}
                 </div>
               )
             })}
           </div>
         )
-      }
 
       case 'multiple_choice':
         return (
@@ -600,7 +423,6 @@ checked={isSelected}
               const optionId = option.id || `opt_${idx}`
               const selected = Array.isArray(currentAnswer) ? currentAnswer : []
               const isSelected = selected.includes(optionId)
-              
               return (
                 <div key={optionId}>
                   <label
@@ -627,11 +449,7 @@ checked={isSelected}
                       className="w-5 h-5 text-blue-600 rounded"
                     />
                     <span className="flex-1 font-medium">{option.text}</span>
-                    
                   </label>
-                  
-                  {/* Sub-options */}
-                  {renderSubOptions(option, question, isSelected)}
                 </div>
               )
             })}
