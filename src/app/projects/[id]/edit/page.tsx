@@ -43,8 +43,8 @@ function EditProjectContent() {
   const [bans, setBans] = useState<any[]>([])
   const [allProfiles, setAllProfiles] = useState<any[]>([])
   const [projectUsers, setProjectUsers] = useState<any[]>([])
-  const [searchSupervisor, setSearchSupervisor] = useState('')
-  const [searchBan, setSearchBan] = useState('')
+  const [selectedSupervisorId, setSelectedSupervisorId] = useState('')
+  const [selectedBanId, setSelectedBanId] = useState('')
 
   useEffect(() => {
     setOrigin(window.location.origin)
@@ -200,6 +200,13 @@ function EditProjectContent() {
           setSupervisors(prev => prev.filter(s => s.id !== sup.id))
         }
       } else {
+        // If banned, unban first
+        const ban = bans.find(b => b.user_id === userId)
+        if (ban) {
+          await supabase.from('project_bans').delete().eq('id', ban.id)
+          setBans(prev => prev.filter(b => b.id !== ban.id))
+        }
+
         const { error } = await supabase
           .from('project_supervisors')
           .insert({ project_id: projectId, user_id: userId, created_by: profile?.id })
@@ -228,6 +235,13 @@ function EditProjectContent() {
           setBans(prev => prev.filter(b => b.id !== ban.id))
         }
       } else {
+        // If supervisor, remove from supervisors first
+        const sup = supervisors.find(s => s.user_id === userId)
+        if (sup) {
+          await supabase.from('project_supervisors').delete().eq('id', sup.id)
+          setSupervisors(prev => prev.filter(s => s.id !== sup.id))
+        }
+
         const { error } = await supabase
           .from('project_bans')
           .insert({ project_id: projectId, user_id: userId, created_by: profile?.id })
@@ -306,34 +320,6 @@ function EditProjectContent() {
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="وصف مختصر للمشروع..."
               />
-            </div>
-
-            {/* Target Gender */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">الفئة المستهدفة</label>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { value: 'both', label: 'الكل', icon: '👥', color: 'purple' },
-                  { value: 'male', label: 'ذكور فقط', icon: '👨', color: 'blue' },
-                  { value: 'female', label: 'إناث فقط', icon: '👩', color: 'pink' }
-                ].map(option => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, target_gender: option.value }))}
-                    className={`p-4 rounded-xl font-medium transition-all border-2 ${
-                      formData.target_gender === option.value
-                        ? option.color === 'purple' ? 'border-purple-600 bg-purple-50 text-purple-700' :
-                          option.color === 'blue' ? 'border-blue-600 bg-blue-50 text-blue-700' :
-                          'border-pink-600 bg-pink-50 text-pink-700'
-                        : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <span className="text-2xl mb-1 block">{option.icon}</span>
-                    {option.label}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Visibility Toggle */}
@@ -650,60 +636,77 @@ function EditProjectContent() {
                   <h4 className="font-bold text-gray-900">المشرفون</h4>
                   <span className="text-xs text-gray-500">{supervisors.length} مشرف</span>
                 </div>
-                <div className="relative mb-4">
-                  <input
-                    type="text"
-                    value={searchSupervisor}
-                    onChange={(e) => setSearchSupervisor(e.target.value)}
-                    placeholder="بحث بالاسم أو البريد..."
-                    className="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <svg className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-
                 {(() => {
                   const supervisorIds = new Set(supervisors.map(s => s.user_id))
                   const banIds = new Set(bans.map(b => b.user_id))
-                  const usersSource = profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean)
-                  const filtered = usersSource.filter((p: any) =>
-                    p.name.toLowerCase().includes(searchSupervisor.toLowerCase()) ||
-                    p.email.toLowerCase().includes(searchSupervisor.toLowerCase())
-                  )
+                  const usersSource = (profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean))
+                    .filter((p: any) => !banIds.has(p.id))
                   return (
-                    <div className="space-y-1 max-h-80 overflow-y-auto">
-                      {filtered.length === 0 ? (
-                        <p className="text-gray-400 text-sm text-center py-4">لا يوجد مستخدمون</p>
-                      ) : (
-                        filtered.map((p: any) => {
-                          const isSupervisor = supervisorIds.has(p.id)
-                          const isBanned = banIds.has(p.id)
-                          return (
-                            <div key={p.id} className={`flex items-center justify-between bg-white rounded-lg px-3 py-2 border ${isBanned ? 'border-red-200 bg-red-50' : 'border-gray-200'}`}>
-                              <div className="flex items-center gap-2">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${isSupervisor ? 'bg-blue-100 text-blue-600' : isBanned ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}`}>
-                                  {(p.name || p.email)?.[0] || '?'}
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <select
+                          value={selectedSupervisorId}
+                          onChange={(e) => setSelectedSupervisorId(e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">اختر مستخدم...</option>
+                          {usersSource.map((p: any) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name || 'غير معروف'} ({p.email})
+                            </option>
+                          ))}
+                        </select>
+                        {selectedSupervisorId && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleToggleSupervisor(selectedSupervisorId, supervisorIds.has(selectedSupervisorId))
+                              setSelectedSupervisorId('')
+                            }}
+                            className={`px-4 py-2 text-sm rounded-lg transition-colors whitespace-nowrap ${
+                              supervisorIds.has(selectedSupervisorId)
+                                ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                            }`}
+                          >
+                            {supervisorIds.has(selectedSupervisorId) ? 'إزالة' : 'إضافة'}
+                          </button>
+                        )}
+                      </div>
+                      {supervisors.length > 0 && (
+                        <div className="space-y-1 max-h-60 overflow-y-auto">
+                          <p className="text-xs text-gray-500 mb-1">المشرفون الحاليون:</p>
+                          {supervisors.map((s: any) => {
+                            const p = usersSource.find((u: any) => u.id === s.user_id)
+                            if (!p) return null
+                            return (
+                              <div key={s.user_id} className="flex items-center justify-between bg-blue-50 rounded-lg px-3 py-2 border border-blue-200">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm bg-blue-100 text-blue-600">
+                                    {(p.name || p.email)?.[0] || '?'}
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-900">{p.name || 'غير معروف'}</p>
+                                    <p className="text-xs text-gray-500">{p.email}</p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium text-gray-900">{p.name || 'غير معروف'}</p>
-                                  <p className="text-xs text-gray-500">{p.email}{isSupervisor ? ' • مشرف' : ''}{isBanned ? ' • محظور' : ''}</p>
-                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    handleToggleSupervisor(s.user_id, true)
+                                    setSelectedSupervisorId('')
+                                  }}
+                                  className="px-3 py-1 text-sm rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                                >
+                                  إزالة
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => handleToggleSupervisor(p.id, isSupervisor)}
-                                className={`px-3 py-1 text-sm rounded-lg transition-colors ${
-                                  isSupervisor
-                                    ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                                    : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                                }`}
-                              >
-                                {isSupervisor ? 'إزالة' : 'مشرف'}
-                              </button>
-                            </div>
-                          )
-                        })
+                            )
+                          })}
+                        </div>
+                      )}
+                      {usersSource.length === 0 && (
+                        <p className="text-gray-400 text-sm text-center py-2">لا يوجد مستخدمون متاحون</p>
                       )}
                     </div>
                   )
@@ -718,60 +721,76 @@ function EditProjectContent() {
                   <h4 className="font-bold text-gray-900">الحظر</h4>
                   <span className="text-xs text-gray-500">{bans.length} محظور</span>
                 </div>
-                <div className="relative mb-4">
-                  <input
-                    type="text"
-                    value={searchBan}
-                    onChange={(e) => setSearchBan(e.target.value)}
-                    placeholder="بحث بالاسم أو البريد..."
-                    className="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <svg className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-
                 {(() => {
                   const supervisorIds = new Set(supervisors.map(s => s.user_id))
                   const banIds = new Set(bans.map(b => b.user_id))
-                  const usersSource = profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean)
-                  const filtered = usersSource.filter((p: any) =>
-                    p.name.toLowerCase().includes(searchBan.toLowerCase()) ||
-                    p.email.toLowerCase().includes(searchBan.toLowerCase())
-                  )
+                  const usersSource = (profile?.role === 'admin' ? allProfiles : projectUsers.map((pu: any) => pu.profile).filter(Boolean))
                   return (
-                    <div className="space-y-1 max-h-80 overflow-y-auto">
-                      {filtered.length === 0 ? (
-                        <p className="text-gray-400 text-sm text-center py-4">لا يوجد مستخدمون</p>
-                      ) : (
-                        filtered.map((p: any) => {
-                          const isSupervisor = supervisorIds.has(p.id)
-                          const isBanned = banIds.has(p.id)
-                          return (
-                            <div key={p.id} className={`flex items-center justify-between bg-white rounded-lg px-3 py-2 border ${isBanned ? 'border-red-200 bg-red-50' : 'border-gray-200'}`}>
-                              <div className="flex items-center gap-2">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${isBanned ? 'bg-red-100 text-red-600' : isSupervisor ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
-                                  {(p.name || p.email)?.[0] || '?'}
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <select
+                          value={selectedBanId}
+                          onChange={(e) => setSelectedBanId(e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">اختر مستخدم...</option>
+                          {usersSource.map((p: any) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name || 'غير معروف'} ({p.email})
+                            </option>
+                          ))}
+                        </select>
+                        {selectedBanId && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleToggleBan(selectedBanId, banIds.has(selectedBanId))
+                              setSelectedBanId('')
+                            }}
+                            className={`px-4 py-2 text-sm rounded-lg transition-colors whitespace-nowrap ${
+                              banIds.has(selectedBanId)
+                                ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                                : 'bg-red-50 text-red-600 hover:bg-red-100'
+                            }`}
+                          >
+                            {banIds.has(selectedBanId) ? 'إلغاء الحظر' : 'حظر'}
+                          </button>
+                        )}
+                      </div>
+                      {bans.length > 0 && (
+                        <div className="space-y-1 max-h-60 overflow-y-auto">
+                          <p className="text-xs text-gray-500 mb-1">المحظورون حالياً:</p>
+                          {bans.map((b: any) => {
+                            const p = usersSource.find((u: any) => u.id === b.user_id)
+                            if (!p) return null
+                            return (
+                              <div key={b.user_id} className="flex items-center justify-between bg-red-50 rounded-lg px-3 py-2 border border-red-200">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm bg-red-100 text-red-600">
+                                    {(p.name || p.email)?.[0] || '?'}
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-900">{p.name || 'غير معروف'}</p>
+                                    <p className="text-xs text-gray-500">{p.email}</p>
+                                  </div>
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium text-gray-900">{p.name || 'غير معروف'}</p>
-                                  <p className="text-xs text-gray-500">{p.email}{isBanned ? ' • محظور' : ''}{isSupervisor ? ' • مشرف' : ''}</p>
-                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    handleToggleBan(b.user_id, true)
+                                    setSelectedBanId('')
+                                  }}
+                                  className="px-3 py-1 text-sm rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                                >
+                                  إلغاء الحظر
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => handleToggleBan(p.id, isBanned)}
-                                className={`px-3 py-1 text-sm rounded-lg transition-colors ${
-                                  isBanned
-                                    ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                                    : 'bg-red-50 text-red-600 hover:bg-red-100'
-                                }`}
-                              >
-                                {isBanned ? 'إلغاء الحظر' : 'حظر'}
-                              </button>
-                            </div>
-                          )
-                        })
+                            )
+                          })}
+                        </div>
+                      )}
+                      {usersSource.length === 0 && (
+                        <p className="text-gray-400 text-sm text-center py-2">لا يوجد مستخدمون</p>
                       )}
                     </div>
                   )
