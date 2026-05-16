@@ -59,6 +59,10 @@ export function getDisplayAnswer(q: Question, answerVal: any) {
 
     if (Array.isArray(answerVal)) {
       return answerVal.map(findText).join('، ')
+    } else if (typeof answerVal === 'object' && answerVal !== null) {
+      const optText = findText(answerVal.option_id || '')
+      const count = answerVal.count
+      return count ? `${optText} (×${count})` : optText
     } else {
       return findText(String(answerVal))
     }

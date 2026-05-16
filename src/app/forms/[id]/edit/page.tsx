@@ -1496,7 +1496,7 @@ const params = useParams()
                             ))}
                           </select>
                         )}
-                        {(currentFirst.value === 'text_check' && (vt === 'contains_word' || vt === 'does_not_contain')) && (
+                        {(currentFirst.value === 'text_check' && vt) && (
                           <input
                             type="text"
                             value={meta.validation_value || ''}
@@ -1736,6 +1736,17 @@ const params = useParams()
                 {(question.type === 'single_choice' || question.type === 'multiple_choice' || question.type === 'ranking') && (
 
                   <div className="ms-2 sm:ms-11 space-y-3">
+                    {question.type === 'single_choice' && (
+                      <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={!!question.has_counter}
+                          onChange={(e) => updateQuestion(qIndex, { has_counter: e.target.checked })}
+                          className="w-4 h-4 text-blue-600 rounded"
+                        />
+                        تفعيل العداد (سبحة التسبيح)
+                      </label>
+                    )}
 
                     <p className="text-sm font-medium text-gray-700">الخيارات:</p>
 
@@ -1778,6 +1789,18 @@ const params = useParams()
                             title="النقاط"
 
                           />
+
+                          {question.has_counter && (
+                            <input
+                              type="number"
+                              min="1"
+                              value={option.counter_target || ''}
+                              onChange={(e) => updateOption(qIndex, oIndex, { counter_target: parseInt(e.target.value) || null })}
+                              placeholder="الهدف"
+                              className="w-20 px-2 py-2 border border-emerald-200 rounded-lg text-center text-sm"
+                              title="العدد المستهدف للتسبيح"
+                            />
+                          )}
 
                           <button
 

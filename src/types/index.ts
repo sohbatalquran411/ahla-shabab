@@ -162,6 +162,7 @@ export interface QuestionOption {
   id: string
   text: string
   points: number
+  counter_target?: number | null
 }
 
 export interface Question {
@@ -173,6 +174,7 @@ export interface Question {
   required: boolean
   points: number
   options?: QuestionOption[]
+  has_counter?: boolean
 }
 
 export interface Form {

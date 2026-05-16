@@ -244,9 +244,17 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
       if (answer === undefined || answer === null || answer === '') return
 
       if (q.type === 'single_choice' && options.length > 0) {
-          const mainOption = options.find((opt: any) => opt.id === answer)
+          const optId = typeof answer === 'object' ? (answer as any).option_id : answer
+          const mainOption = options.find((opt: any) => opt.id === optId)
           if (mainOption) {
-            score += mainOption.points || 0
+            if (q.has_counter && mainOption.counter_target) {
+              const count = typeof answer === 'object' ? ((answer as any).count || 0) : 0
+              if (count >= mainOption.counter_target) {
+                score += mainOption.points || 0
+              }
+            } else {
+              score += mainOption.points || 0
+            }
           }
         } else if (q.type === 'multiple_choice' && options.length > 0 && Array.isArray(answer)) {
           answer.forEach((selectedId: string) => {
@@ -383,11 +391,14 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
         )
 
       case 'single_choice':
+        const answerObj = typeof currentAnswer === 'object' && currentAnswer !== null ? currentAnswer as any : null
+        const selectedId = answerObj?.option_id || currentAnswer || ''
+        const countVal = answerObj?.count || 0
         return (
           <div className="space-y-3">
             {(Array.isArray(options) ? options : []).map((option: any, idx: number) => {
               const optionId = option.id || `opt_${idx}`
-              const isSelected = currentAnswer === optionId
+              const isSelected = selectedId === optionId
               return (
                 <div key={optionId}>
                   <label
@@ -403,13 +414,52 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
                       value={optionId}
                       checked={isSelected}
                       onChange={() => {
-                        setAnswers({ ...answers, [question.id]: optionId })
+                        const val = question.has_counter ? { option_id: optionId, count: 0 } : optionId
+                        setAnswers({ ...answers, [question.id]: val })
                         setCurrentQuestionIndex(index)
                       }}
                       className="w-5 h-5 text-blue-600"
                     />
                     <span className="flex-1 font-medium">{option.text}</span>
+                    {option.counter_target && (
+                      <span className="text-xs text-gray-400">الهدف: {option.counter_target}</span>
+                    )}
                   </label>
+                  {question.has_counter && isSelected && option.counter_target && (
+                    <div className="mt-3 mr-12 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                      <p className="text-xs text-emerald-600 mb-3 text-center font-medium">{option.text}</p>
+                      <div className="flex items-center justify-center gap-6">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            const count = Math.max(0, (answerObj?.count || 0) - 1)
+                            setAnswers({ ...answers, [question.id]: { option_id: selectedId, count } })
+                          }}
+                          className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-red-200 transition-colors shadow-sm"
+                        >
+                          −
+                        </button>
+                        <div className="text-center">
+                          <div className="text-4xl font-bold text-emerald-700 min-w-[80px]">{countVal}</div>
+                          <div className="text-xs text-emerald-500 mt-1">
+                            / {option.counter_target}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            const count = (answerObj?.count || 0) + 1
+                            setAnswers({ ...answers, [question.id]: { option_id: selectedId, count } })
+                          }}
+                          className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-emerald-200 transition-colors shadow-sm"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )
             })}
