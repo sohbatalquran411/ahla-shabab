@@ -1449,7 +1449,7 @@ const params = useParams()
                       const wordCount = secondVal ? parseInt(secondVal.split('_')[1]) : 2
                       updateQuestion(qIndex, { options: [{ validation_type: 'name', validation_value: String(wordCount), validation_min: '', validation_max: '' }] as any })
                     } else if (firstVal === 'number') {
-                      const sv = secondVal || ''
+                      const sv = secondVal || 'equal_to'
                       updateQuestion(qIndex, { options: [{ validation_type: sv, validation_value: '', validation_min: '', validation_max: '' }] as any })
                     } else if (firstVal === 'text_check') {
                       const sv = secondVal || 'contains_word'
