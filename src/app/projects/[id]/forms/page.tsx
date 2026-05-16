@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAppSettings } from '@/hooks/useAppSettings'
 import Header from '@/components/Header'
+
+type SortDir = 'asc' | 'desc' | null
 
 export default function ProjectFormsPage({ params }: { params: Promise<{ id: string }> }) {
   const [projectId, setProjectId] = useState<string | null>(null)
@@ -17,6 +19,9 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
   const [expandedForm, setExpandedForm] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [resultSearch, setResultSearch] = useState('')
+  const [resultSortCol, setResultSortCol] = useState<string>('submitted_at')
+  const [resultSortDir, setResultSortDir] = useState<SortDir>('desc')
 
   const router = useRouter()
   const supabase = createClient()
@@ -78,6 +83,39 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
     }
   }
 
+  const handleResultSort = (col: string) => {
+    if (resultSortCol === col) {
+      if (resultSortDir === 'asc') setResultSortDir('desc')
+      else if (resultSortDir === 'desc') setResultSortDir(null)
+      else setResultSortDir('asc')
+    } else {
+      setResultSortCol(col)
+      setResultSortDir('asc')
+    }
+  }
+
+  const getSortIcon = (col: string) => {
+    if (resultSortCol !== col) {
+      return (
+        <svg className="w-3 h-3 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      )
+    }
+    if (resultSortDir === 'asc') {
+      return (
+        <svg className="w-3 h-3 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+        </svg>
+      )
+    }
+    return (
+      <svg className="w-3 h-3 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    )
+  }
+
   const handleCardClick = (form: any, isCompleted: boolean) => {
     if (form.allow_multiple) {
       router.push(`/forms/${form.id}`)
@@ -87,6 +125,40 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
       router.push(`/forms/${form.id}`)
     }
   }
+
+  const processedResponses = useMemo(() => {
+    const expandedId = expandedForm
+    if (!expandedId) return []
+    let result = [...(userResponses.filter(r => r.form_id === expandedId))]
+
+    if (resultSearch.trim()) {
+      const q = resultSearch.toLowerCase().trim()
+      result = result.filter(r =>
+        new Date(r.submitted_at).toLocaleString('ar-EG').toLowerCase().includes(q) ||
+        String(r.score).includes(q)
+      )
+    }
+
+    if (resultSortDir) {
+      result.sort((a, b) => {
+        let aVal: any, bVal: any
+        if (resultSortCol === 'submitted_at') {
+          aVal = new Date(a.submitted_at).getTime()
+          bVal = new Date(b.submitted_at).getTime()
+        } else if (resultSortCol === 'score') {
+          aVal = Number(a.score) || 0
+          bVal = Number(b.score) || 0
+        } else {
+          return 0
+        }
+        if (aVal < bVal) return resultSortDir === 'asc' ? -1 : 1
+        if (aVal > bVal) return resultSortDir === 'asc' ? 1 : -1
+        return 0
+      })
+    }
+
+    return result
+  }, [expandedForm, userResponses, resultSearch, resultSortCol, resultSortDir])
 
   if (loading || !project) {
     return (
@@ -209,35 +281,68 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
 
                 {/* Results Table */}
                 {expandedForm === form.id && (
-                  <div className="border-t border-gray-100 overflow-x-auto">
-                    <table className="w-full text-right text-sm">
-                      <thead className="bg-gray-50 text-gray-600">
-                        <tr>
-                          <th className="p-3 pr-6">التاريخ والوقت</th>
-                          <th className="p-3">النتيجة</th>
-                          <th className="p-3 pl-6">إجراءات</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {formResponses.length === 0 ? (
-                          <tr><td colSpan={3} className="p-6 text-center text-gray-400">لا توجد تسجيلات بعد</td></tr>
-                        ) : (
-                          formResponses.map(r => (
-                            <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
-                              <td className="p-3 pr-6 text-gray-900" dir="ltr">{new Date(r.submitted_at).toLocaleString('ar-EG')}</td>
-                              <td className="p-3 text-blue-600 font-medium">{r.score} / {r.max_score}</td>
-                              <td className="p-3 pl-6">
-                                {form.allow_delete_responses && (
-                                  <button onClick={() => handleDeleteResponse(r.id)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg" title="حذف">
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
+                  <div>
+                    <div className="px-4 py-2 border-t border-gray-100 bg-gray-50/50 flex items-center gap-3">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={resultSearch}
+                          onChange={(e) => setResultSearch(e.target.value)}
+                          placeholder="بحث في النتائج..."
+                          className="w-full pr-9 pl-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <svg className="w-4 h-4 text-gray-400 absolute right-3 top-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                      <span className="text-xs text-gray-500 shrink-0">{processedResponses.length} نتيجة</span>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-right text-sm">
+                        <thead className="bg-gray-50 text-gray-600">
+                          <tr>
+                            <th
+                              className="p-3 pr-6 cursor-pointer hover:bg-gray-100 select-none"
+                              onClick={() => handleResultSort('submitted_at')}
+                            >
+                              <div className="flex items-center gap-1.5">
+                                التاريخ والوقت {getSortIcon('submitted_at')}
+                              </div>
+                            </th>
+                            <th
+                              className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                              onClick={() => handleResultSort('score')}
+                            >
+                              <div className="flex items-center gap-1.5">
+                                النتيجة {getSortIcon('score')}
+                              </div>
+                            </th>
+                            <th className="p-3 pl-6">إجراءات</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {processedResponses.length === 0 ? (
+                            <tr><td colSpan={3} className="p-6 text-center text-gray-400">
+                              {resultSearch ? 'لا توجد نتائج تطابق بحثك' : 'لا توجد تسجيلات بعد'}
+                            </td></tr>
+                          ) : (
+                            processedResponses.map(r => (
+                              <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="p-3 pr-6 text-gray-900" dir="ltr">{new Date(r.submitted_at).toLocaleString('ar-EG')}</td>
+                                <td className="p-3 text-blue-600 font-medium">{r.score} / {r.max_score}</td>
+                                <td className="p-3 pl-6">
+                                  {form.allow_delete_responses && (
+                                    <button onClick={() => handleDeleteResponse(r.id)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg" title="حذف">
+                                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 )}
               </div>
