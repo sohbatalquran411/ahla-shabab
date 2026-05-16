@@ -9,6 +9,7 @@ interface QuestionOption {
   id: string
   text: string
   points: number
+  counter_target?: number | null
 }
 
 interface Question {
@@ -17,6 +18,7 @@ interface Question {
   type: string
   required: boolean
   points: number
+  has_counter?: boolean
   options: any
   order_index: number
 }
