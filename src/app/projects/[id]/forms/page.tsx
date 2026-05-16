@@ -16,7 +16,6 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
   const [userResponses, setUserResponses] = useState<any[]>([])
   const [expandedForm, setExpandedForm] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [deletingResponse, setDeletingResponse] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const router = useRouter()
@@ -79,6 +78,16 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
     }
   }
 
+  const handleCardClick = (form: any, isCompleted: boolean) => {
+    if (form.allow_multiple) {
+      router.push(`/forms/${form.id}`)
+    } else if (isCompleted) {
+      alert('يوجد تسجيل سابق')
+    } else {
+      router.push(`/forms/${form.id}`)
+    }
+  }
+
   if (loading || !project) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -91,12 +100,10 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
     <div dir="rtl" className="min-h-screen bg-gray-50">
       <Header user={user} settings={settings} onMenuClick={() => setSidebarOpen(true)} />
 
-      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Mobile Sidebar */}
       <aside className={`fixed inset-y-0 right-0 z-50 w-2/3 max-w-sm bg-white shadow-2xl transform transition-transform duration-300 lg:hidden ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="h-full flex flex-col bg-white">
           <div className="px-6 pt-8 pb-6 border-b border-gray-100 text-center relative">
@@ -121,7 +128,6 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
       </aside>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="mb-8">
           <Link href={`/projects/${projectId}`} className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors mb-4">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,40 +141,73 @@ export default function ProjectFormsPage({ params }: { params: Promise<{ id: str
 
         <h2 className="text-xl font-bold text-gray-900 mb-6">الفورمز المتاحة</h2>
 
-        {/* Forms Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {forms.map((form) => {
             const formResponses = userResponses.filter(r => r.form_id === form.id)
             const isCompleted = formResponses.length > 0
 
             return (
-              <div key={form.id} className={`bg-white rounded-2xl shadow-sm border transition-all ${expandedForm === form.id ? 'border-blue-300 shadow-md' : 'hover:shadow-lg hover:border-blue-200 border-gray-100'}`}>
-                <div className={`p-6 cursor-pointer ${expandedForm === form.id ? 'pb-4' : ''}`} onClick={() => setExpandedForm(prev => prev === form.id ? null : form.id)}>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              <div key={form.id} className={`bg-white rounded-2xl overflow-hidden shadow-sm border transition-all ${expandedForm === form.id ? 'border-blue-300 shadow-md' : 'hover:shadow-lg hover:border-blue-200 border-gray-100'}`}>
+                {/* Image / Icon */}
+                <div
+                  className="relative cursor-pointer"
+                  onClick={() => handleCardClick(form, isCompleted)}
+                >
+                  {form.image_url ? (
+                    <div className="w-full h-44 overflow-hidden">
+                      <img
+                        src={form.image_url}
+                        alt={form.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                      />
                     </div>
-                    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                      <div className={`p-2 rounded-lg transition-colors ${expandedForm === form.id ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'}`}>
-                        <svg className={`w-5 h-5 transition-transform ${expandedForm === form.id ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                      </div>
+                  ) : (
+                    <div className="w-full h-44 flex items-center justify-center bg-blue-50">
+                      <svg className="w-16 h-16 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
                     </div>
-                  </div>
+                  )}
+                </div>
 
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">{form.name}</h4>
-                  <p className="text-gray-600 text-sm line-clamp-2">{form.description || 'لا يوجد وصف'}</p>
+                {/* Content */}
+                <div className="p-5">
+                  <h4 className="text-lg font-bold text-gray-900 mb-1.5">{form.name}</h4>
+                  {form.description && (
+                    <p className="text-gray-500 text-sm line-clamp-2 mb-4">{form.description}</p>
+                  )}
 
-                  <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                    <Link href={`/forms/${form.id}`} onClick={e => e.stopPropagation()} className="text-blue-600 font-medium text-sm flex items-center gap-1 hover:text-blue-700">
-                      {isCompleted && !form.allow_multiple ? 'لقد قمت بالتسجيل مسبقاً' : 'تسجيل جديد'}
-                      <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </Link>
-                    {isCompleted && (
-                      <span className="text-sm text-green-600 font-medium bg-green-50 px-3 py-1.5 rounded-lg">{formResponses.length} تسجيل</span>
+                  <div className="flex items-center justify-between">
+                    {form.allow_multiple ? (
+                      <>
+                        {isCompleted && (
+                          <button
+                            onClick={() => setExpandedForm(prev => prev === form.id ? null : form.id)}
+                            className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${expandedForm === form.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                          >
+                            عرض النتائج
+                          </button>
+                        )}
+                        {!isCompleted && <div />}
+                      </>
+                    ) : isCompleted ? (
+                      <span className="text-gray-500 text-sm font-medium">تم التسجيل مسبقاً</span>
+                    ) : (
+                      <button
+                        onClick={() => router.push(`/forms/${form.id}`)}
+                        className="text-blue-600 font-medium text-sm flex items-center gap-1 hover:text-blue-700"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        تسجيل جديد
+                      </button>
                     )}
                   </div>
                 </div>
 
+                {/* Results Table */}
                 {expandedForm === form.id && (
                   <div className="border-t border-gray-100 overflow-x-auto">
                     <table className="w-full text-right text-sm">

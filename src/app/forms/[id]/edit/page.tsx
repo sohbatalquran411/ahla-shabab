@@ -270,6 +270,7 @@ const params = useParams()
           type: q.type,
           required: q.required || false,
           points: q.points || 0,
+          has_counter: q.has_counter || false,
           options: parsedOpts.matrix_rows ? [] : (parsedOpts.options || parsedOpts),
           order_index: q.order_index,
           matrix_rows,

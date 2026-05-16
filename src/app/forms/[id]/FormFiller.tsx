@@ -246,6 +246,7 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
       if (answer === undefined || answer === null || answer === '') return
 
       if (q.type === 'single_choice' && options.length > 0) {
+          maxScore += Math.max(0, ...(Array.isArray(options) ? options : []).map((o: any) => o.points || 0))
           const optId = typeof answer === 'object' ? (answer as any).option_id : answer
           const mainOption = options.find((opt: any) => opt.id === optId)
           if (mainOption) {
@@ -435,12 +436,12 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation()
-                            const count = Math.max(0, (answerObj?.count || 0) - 1)
+                            const count = (answerObj?.count || 0) + 1
                             setAnswers({ ...answers, [question.id]: { option_id: selectedId, count } })
                           }}
-                          className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-red-200 transition-colors shadow-sm"
+                          className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-emerald-200 transition-colors shadow-sm"
                         >
-                          −
+                          +
                         </button>
                         <div className="text-center">
                           <div className="text-4xl font-bold text-emerald-700 min-w-[80px]">{countVal}</div>
@@ -452,12 +453,12 @@ export default function FormFiller({ form, questions, existingResponse, allUserR
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation()
-                            const count = (answerObj?.count || 0) + 1
+                            const count = Math.max(0, (answerObj?.count || 0) - 1)
                             setAnswers({ ...answers, [question.id]: { option_id: selectedId, count } })
                           }}
-                          className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-emerald-200 transition-colors shadow-sm"
+                          className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-red-200 transition-colors shadow-sm"
                         >
-                          +
+                          −
                         </button>
                       </div>
                     </div>
