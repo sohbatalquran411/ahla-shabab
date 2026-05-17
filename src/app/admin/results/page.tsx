@@ -139,6 +139,18 @@ export default function ResultsPage() {
     checkUserAndFetchData()
   }, [])
 
+  // Auto-open form from query param
+  useEffect(() => {
+    if (!loading && forms.length > 0) {
+      const params = new URLSearchParams(window.location.search)
+      const formId = params.get('formId')
+      if (formId) {
+        const form = forms.find(f => f.id === formId)
+        if (form) handleFormClick(form)
+      }
+    }
+  }, [loading, forms])
+
   async function checkUserAndFetchData() {
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser()

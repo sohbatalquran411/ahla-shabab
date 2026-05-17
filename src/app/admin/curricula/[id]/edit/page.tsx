@@ -27,6 +27,14 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  // Add content mode
+  const [contentMode, setContentMode] = useState<'single' | 'multiple'>('single')
+  const [addType, setAddType] = useState<LessonType>('video')
+
+  useEffect(() => {
+    if (addType === 'text') setContentMode('single')
+  }, [addType])
+
   // Bulk add
   const [newRows, setNewRows] = useState(Array(5).fill(null).map(() => ({ ...EMPTY_ROW })))
   const [bulkAdding, setBulkAdding] = useState(false)
@@ -115,8 +123,8 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
 
   const handleBulkAdd = async () => {
     const valid = newRows.filter(r => {
-      if (r.type === 'video') return r.title.trim() && r.youtube_url.trim()
-      if (r.type === 'audio') return r.title.trim() && r.audio_url.trim()
+      if (addType === 'video') return r.title.trim() && r.youtube_url.trim()
+      if (addType === 'audio') return r.title.trim() && r.audio_url.trim()
       return r.title.trim() && r.content.trim()
     })
     if (valid.length === 0) { setError('لم يتم إدخال أي دروس صالحة'); return }
@@ -130,17 +138,17 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
 
       const toInsert = valid.map(r => {
         let youtubeUrl = r.youtube_url?.trim() || ''
-        if (r.type === 'video' && youtubeUrl && !youtubeUrl.includes('youtube') && !youtubeUrl.includes('youtu.be')) {
+        if (addType === 'video' && youtubeUrl && !youtubeUrl.includes('youtube') && !youtubeUrl.includes('youtu.be')) {
           youtubeUrl = `https://www.youtube.com/watch?v=${youtubeUrl}`
         }
         return {
           curriculum_id: curriculumId,
           title: r.title.trim(),
           description: r.description.trim(),
-          type: r.type,
-          youtube_url: youtubeUrl,
-          audio_url: r.audio_url?.trim() || null,
-          content: r.content?.trim() || null,
+          type: addType,
+          youtube_url: addType === 'video' ? youtubeUrl : null,
+          audio_url: addType === 'audio' ? (r.audio_url?.trim() || null) : null,
+          content: addType === 'text' ? (r.content?.trim() || null) : null,
           allow_comments: true,
           order_index: nextOrder++,
           created_by: user.id
@@ -151,7 +159,7 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
       if (insertError) throw insertError
 
       setLessons(prev => [...prev, ...(inserted || [])].sort((a, b) => a.order_index - b.order_index))
-      setNewRows(Array(5).fill(null).map(() => ({ ...EMPTY_ROW })))
+      setNewRows(Array(contentMode === 'single' || addType === 'text' ? 1 : 5).fill(null).map(() => ({ ...EMPTY_ROW, type: addType })))
     } catch (err: any) {
       setError(err.message || 'حدث خطأ')
     } finally {
@@ -411,72 +419,193 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
           </form>
         </div>
 
-        {/* Bulk Add Lessons */}
+        {/* Add New Content */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900">إضافة دروس جديدة</h2>
-            <button onClick={addRows} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium flex items-center gap-1.5">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-              إضافة 5 أسطر
-            </button>
+          <div className="px-6 py-4 border-b border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900">إضافة محتوى جديد</h2>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-right text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-4 py-3 w-10 text-gray-500">#</th>
-                  <th className="px-4 py-3 text-gray-600">النوع</th>
-                  <th className="px-4 py-3 text-gray-600">العنوان</th>
-                  <th className="px-4 py-3 text-gray-600">الرابط / المحتوى</th>
-                  <th className="px-4 py-3 text-gray-600">الوصف</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {newRows.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50/50">
-                    <td className="px-4 py-2 text-gray-400 text-center">{idx + 1}</td>
-                    <td className="px-4 py-2">
-                      <select
-                        value={row.type}
-                        onChange={e => updateRow(idx, 'type', e.target.value)}
-                        className="px-2 py-1.5 bg-white border border-gray-200 rounded text-sm"
-                      >
-                        <option value="video">فيديو</option>
-                        <option value="audio">صوت</option>
-                        <option value="text">نص</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-2">
-                      <input
-                        type="text"
-                        value={row.title}
-                        onChange={e => updateRow(idx, 'title', e.target.value)}
-                        className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded focus:ring-1 focus:ring-emerald-500 focus:border-transparent text-sm"
-                        placeholder="عنوان الدرس"
-                      />
-                    </td>
-                    <td className="px-4 py-2">
-                      {renderTypeColumn(row, idx, 'new')}
-                    </td>
-                    <td className="px-4 py-2">
-                      <input
-                        type="text"
-                        value={row.description}
-                        onChange={e => updateRow(idx, 'description', e.target.value)}
-                        className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded focus:ring-1 focus:ring-emerald-500 focus:border-transparent text-sm"
-                        placeholder="وصف (اختياري)"
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+          {/* Type & Mode Selection */}
+          <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/30">
+            <div className="flex flex-wrap items-end gap-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">نوع المحتوى</label>
+                <div className="flex gap-2">
+                  {(['video', 'audio', 'text'] as LessonType[]).map(t => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => { setAddType(t); setNewRows(Array(5).fill(null).map(() => ({ ...EMPTY_ROW, type: t }))) }}
+                      className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        addType === t
+                          ? 'bg-emerald-600 text-white shadow-md'
+                          : 'bg-white text-gray-600 border border-gray-200 hover:border-emerald-300 hover:text-emerald-600'
+                      }`}
+                    >
+                      {t === 'video' ? '🎬 فيديو' : t === 'audio' ? '🎧 صوت' : '📝 نص'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {addType !== 'text' && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">عدد المحتويات</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setContentMode('single'); setNewRows(Array(1).fill(null).map(() => ({ ...EMPTY_ROW, type: addType }))) }}
+                      className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        contentMode === 'single'
+                          ? 'bg-emerald-600 text-white shadow-md'
+                          : 'bg-white text-gray-600 border border-gray-200 hover:border-emerald-300 hover:text-emerald-600'
+                      }`}
+                    >
+                      محتوى واحد
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setContentMode('multiple'); setNewRows(Array(5).fill(null).map(() => ({ ...EMPTY_ROW, type: addType }))) }}
+                      className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        contentMode === 'multiple'
+                          ? 'bg-emerald-600 text-white shadow-md'
+                          : 'bg-white text-gray-600 border border-gray-200 hover:border-emerald-300 hover:text-emerald-600'
+                      }`}
+                    >
+                      محتوى متعدد
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Content Input */}
+          {addType === 'text' ? (
+            /* Text: Full form layout */
+            <div className="px-6 py-5 space-y-5">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">عنوان الدرس *</label>
+                <input
+                  type="text"
+                  value={newRows[0]?.title || ''}
+                  onChange={e => { setNewRows([{ ...EMPTY_ROW, type: 'text', title: e.target.value }]) }}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="أدخل عنوان الدرس"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">المقال</label>
+                {renderRichEditor(
+                  newRows[0]?.content || '',
+                  (val) => setNewRows(prev => [{ ...prev[0], content: val }]),
+                  'add-text-editor'
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">الوصف</label>
+                <input
+                  type="text"
+                  value={newRows[0]?.description || ''}
+                  onChange={e => setNewRows(prev => [{ ...prev[0], description: e.target.value }])}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="وصف (اختياري)"
+                />
+              </div>
+            </div>
+          ) : contentMode === 'single' ? (
+            /* Video/Audio: Single row */
+            <div className="px-6 py-5">
+              <div className="flex items-end gap-4">
+                <div className="flex-1 space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">العنوان *</label>
+                  <input
+                    type="text"
+                    value={newRows[0]?.title || ''}
+                    onChange={e => updateRow(0, 'title', e.target.value)}
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    placeholder="عنوان الدرس"
+                  />
+                </div>
+                <div className="flex-[2] space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {addType === 'video' ? 'رابط يوتيوب *' : 'رابط SoundCloud *'}
+                  </label>
+                  {renderTypeColumn(
+                    { ...newRows[0] || EMPTY_ROW, type: addType },
+                    0, 'new'
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">الوصف</label>
+                  <input
+                    type="text"
+                    value={newRows[0]?.description || ''}
+                    onChange={e => updateRow(0, 'description', e.target.value)}
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    placeholder="وصف (اختياري)"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Video/Audio: Multiple rows (table) */
+            <div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-right text-sm">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="px-4 py-3 w-10 text-gray-500">#</th>
+                      <th className="px-4 py-3 text-gray-600">العنوان</th>
+                      <th className="px-4 py-3 text-gray-600">{addType === 'video' ? 'رابط يوتيوب' : 'رابط SoundCloud'}</th>
+                      <th className="px-4 py-3 text-gray-600">الوصف</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {newRows.map((row, idx) => (
+                      <tr key={idx} className="hover:bg-gray-50/50">
+                        <td className="px-4 py-2 text-gray-400 text-center">{idx + 1}</td>
+                        <td className="px-4 py-2">
+                          <input
+                            type="text"
+                            value={row.title}
+                            onChange={e => updateRow(idx, 'title', e.target.value)}
+                            className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded focus:ring-1 focus:ring-emerald-500 focus:border-transparent text-sm"
+                            placeholder="عنوان الدرس"
+                          />
+                        </td>
+                        <td className="px-4 py-2">
+                          {renderTypeColumn({ ...row, type: addType }, idx, 'new')}
+                        </td>
+                        <td className="px-4 py-2">
+                          <input
+                            type="text"
+                            value={row.description}
+                            onChange={e => updateRow(idx, 'description', e.target.value)}
+                            className="w-full px-2 py-1.5 bg-white border border-gray-200 rounded focus:ring-1 focus:ring-emerald-500 focus:border-transparent text-sm"
+                            placeholder="وصف (اختياري)"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-6 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                <button onClick={addRows} className="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium flex items-center gap-1.5 border border-gray-200">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                  إضافة 5 أسطر
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Save button */}
           <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
             <p className="text-xs text-gray-400">
               {newRows.filter(r => {
-                if (r.type === 'video') return r.title.trim() && r.youtube_url.trim()
-                if (r.type === 'audio') return r.title.trim() && r.audio_url.trim()
+                if (addType === 'video') return r.title.trim() && r.youtube_url.trim()
+                if (addType === 'audio') return r.title.trim() && r.audio_url.trim()
                 return r.title.trim() && r.content.trim()
               }).length} دروس صالحة للإضافة
             </p>
@@ -488,7 +617,7 @@ export default function EditCurriculumPage({ params }: { params: Promise<{ id: s
               {bulkAdding ? (
                 <span className="flex items-center gap-2"><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>جاري الحفظ...</span>
               ) : (
-                <span className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>حفظ الدروس الجديدة</span>
+                <span className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>حفظ المحتوى</span>
               )}
             </button>
           </div>
