@@ -571,91 +571,6 @@ const params = useParams()
     })
   }
 
-  const formatAnswerForExcel = (q: any, answerVal: any): string => {
-    if (answerVal === undefined || answerVal === null || answerVal === '') return ''
-    let options = q.options
-    if (typeof options === 'string') {
-      try { options = JSON.parse(options) } catch { options = [] }
-    }
-    if (q.type === 'text' || q.type === 'textarea' || q.type === 'scale') return String(answerVal)
-    if (q.type === 'single_choice' || q.type === 'multiple_choice' || q.type === 'dropdown' || q.type === 'ranking') {
-      let opts = Array.isArray(options) ? options : (options?.options || [])
-      const findText = (id: string) => opts.find((o: any) => o.id === id)?.text || id
-      if (Array.isArray(answerVal)) return answerVal.map(findText).join('، ')
-      if (typeof answerVal === 'object' && answerVal !== null) {
-        const optText = findText(answerVal.option_id || '')
-        return answerVal.count ? `${optText} (×${answerVal.count})` : optText
-      }
-      return findText(String(answerVal))
-    }
-    if (q.type === 'matrix') {
-      let rows = options?.matrix_rows || []
-      let cols = options?.matrix_columns || []
-      if (rows.length === 0 && Array.isArray(options) && options[0]?.sub_options) {
-        rows = options; cols = options[0].sub_options
-      }
-      let res: string[] = []
-      if (typeof answerVal === 'object' && answerVal !== null) {
-        Object.keys(answerVal).forEach(rowId => {
-          const rowText = rows.find((r: any) => r.id === rowId)?.text || rowId
-          let colVals = answerVal[rowId]
-          if (!Array.isArray(colVals)) colVals = [colVals]
-          const colTexts = colVals.map((colId: string) => cols.find((c: any) => c.id === colId)?.text || colId)
-          res.push(`${rowText}: ${colTexts.join('، ')}`)
-        })
-      }
-      return res.join(' | ')
-    }
-    return String(answerVal)
-  }
-
-  const downloadExcel = async () => {
-    const { data: questions } = await supabase
-      .from('questions')
-      .select('id, text, type, options')
-      .eq('form_id', formId)
-      .order('order_index')
-    const { data: responses } = await supabase
-      .from('form_responses')
-      .select('id, user_id, score, max_score, submitted_at, answers, profiles!inner(name, email)')
-      .eq('form_id', formId)
-      .order('submitted_at', { ascending: false })
-    if (!responses || !questions || responses.length === 0) {
-      alert('لا توجد تسجيلات لتصديرها')
-      return
-    }
-    const headers: Record<string, string> = {}
-    headers['#'] = '#'
-    headers['name'] = 'اسم المستخدم'
-    headers['email'] = 'البريد الإلكتروني'
-    headers['score'] = 'النتيجة'
-    headers['percentage'] = 'النسبة'
-    headers['date'] = 'تاريخ التقديم'
-    questions.forEach((q: any, idx: number) => {
-      headers['q_' + q.id] = 'س' + (idx + 1) + ': ' + q.text
-    })
-    const rows = responses.map((r: any, idx: number) => {
-      const percentage = r.max_score > 0 ? Math.round((r.score / r.max_score) * 100) : 0
-      const row: any = {}
-      row[headers['#']] = idx + 1
-      row[headers['name']] = r.profiles?.name || ''
-      row[headers['email']] = r.profiles?.email || ''
-      row[headers['score']] = r.score + ' / ' + r.max_score
-      row[headers['percentage']] = percentage + '%'
-      row[headers['date']] = new Date(r.submitted_at).toLocaleString('ar-EG')
-      questions.forEach((q: any) => {
-        row[headers['q_' + q.id]] = formatAnswerForExcel(q, r.answers?.[q.id])
-      })
-      return row
-    })
-    // @ts-ignore
-    const XLSX: any = await import('https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mjs')
-    const ws = XLSX.utils.json_to_sheet(rows)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'الردود')
-    XLSX.writeFile(wb, 'results-' + formId + '.xlsx')
-  }
-
   const saveForm = async () => {
 
     if (!formData || !formData.name.trim()) {
@@ -914,13 +829,7 @@ const params = useParams()
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                 عرض التسجيلات
               </a>
-              <button
-                onClick={downloadExcel}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium flex items-center gap-1.5"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                تحميل Excel
-              </button>
+
             </>
           )}
 
