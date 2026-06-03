@@ -20,7 +20,7 @@ jobs:
       - name: Deploy to Hostinger
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=accept-new ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            cd public_html &&
+            cd domains/courses.ahlashabab.com/public_html &&
             if [ ! -d .git ]; then
               git init &&
               git remote add origin https://github.com/sohbatalquran411/ahla-shabab.git
