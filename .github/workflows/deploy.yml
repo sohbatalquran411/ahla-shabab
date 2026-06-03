@@ -21,7 +21,12 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             cd public_html &&
-            git pull origin main &&
+            if [ ! -d .git ]; then
+              git init &&
+              git remote add origin https://github.com/sohbatalquran411/ahla-shabab.git
+            fi &&
+            git fetch origin main &&
+            git reset --hard origin/main &&
             npm install --production=false &&
             npm run build
           "
