@@ -74,7 +74,7 @@ export default function LoginPage() {
           <div className="bg-gradient-to-l from-blue-600 to-blue-700 px-8 py-10 text-center">
             {settings.app_logo ? (
               <div className="w-24 h-24 mx-auto mb-4 rounded-2xl overflow-hidden bg-white shadow-lg p-2">
-                <img 
+                <img width="200" height="200"
                   src={settings.app_logo} 
                   alt="شعار التطبيق" 
                   className="w-full h-full object-contain"

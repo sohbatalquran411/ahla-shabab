@@ -59,7 +59,7 @@ export default function Header({ user, settings, onMenuClick, showMenuButton = t
             <Link href="/dashboard" className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center overflow-hidden border-2 border-blue-100 shadow-sm">
                 {settings?.app_logo ? (
-                  <img src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
+                  <img width="40" height="40" src={settings.app_logo} alt="شعار" className="w-full h-full object-cover" />
                 ) : (
                   <img src="/icon.svg" alt="شعار" className="w-full h-full object-cover" />
                 )}

@@ -3,13 +3,12 @@
 
 
 import { useState, useEffect, Suspense } from 'react'
-
+import dynamic from 'next/dynamic'
 import { createClient } from '@/utils/supabase/client'
-
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import ImageUpload from '@/components/ImageUpload'
-import RichTextEditor from '@/components/RichTextEditor'
+const RichTextEditor = dynamic(() => import('@/components/RichTextEditor'), { ssr: false })
 
 import type { QuestionType, QuestionOption } from '@/types'
 
