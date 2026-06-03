@@ -20,13 +20,14 @@ jobs:
       - name: Deploy to Hostinger
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=accept-new ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            cd domains/courses.ahlashabab.com/public_html &&
-            if [ ! -d .git ]; then
-              git init &&
-              git remote add origin https://github.com/sohbatalquran411/ahla-shabab.git
-            fi &&
-            git fetch origin main &&
-            git reset --hard origin/main &&
+            cd domains/courses.ahlashabab.com &&
+            rm -rf public_html.new &&
+            mkdir -p public_html.new &&
+            curl -sL 'https://github.com/sohbatalquran411/ahla-shabab/archive/main.tar.gz' | tar xz --strip-components=1 -C public_html.new &&
+            cp public_html/.env.production public_html.new/ 2>/dev/null; cp public_html/.env public_html.new/ 2>/dev/null; cp public_html/.env.local public_html.new/ 2>/dev/null; rm -rf public_html.old 2>/dev/null &&
+            mv public_html public_html.old 2>/dev/null; mv public_html.new public_html &&
+            rm -rf public_html.old 2>/dev/null &&
+            cd public_html &&
             npm install --production=false &&
             npm run build
           "
