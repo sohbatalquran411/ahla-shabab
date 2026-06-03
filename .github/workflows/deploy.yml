@@ -15,19 +15,22 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -T 10 -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -T 15 -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Deploy to Hostinger
+      - name: Deploy & Build
+        timeout-minutes: 15
         run: |
-          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=accept-new ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            cd domains/courses.ahlashabab.com &&
-            rm -rf public_html.new &&
-            mkdir -p public_html.new &&
-            curl -sL 'https://github.com/sohbatalquran411/ahla-shabab/archive/main.tar.gz' | tar xz --strip-components=1 -C public_html.new &&
-            cp public_html/.env.production public_html.new/ 2>/dev/null; cp public_html/.env public_html.new/ 2>/dev/null; cp public_html/.env.local public_html.new/ 2>/dev/null; rm -rf public_html.old 2>/dev/null &&
-            mv public_html public_html.old 2>/dev/null; mv public_html.new public_html &&
-            rm -rf public_html.old 2>/dev/null &&
-            cd public_html &&
-            npm install --production=false &&
-            npm run build
-          "
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=15 -o ConnectTimeout=30 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            set -e
+            NPM=/opt/alt/alt-nodejs20/root/usr/bin/npm
+            DIR=domains/courses.ahlashabab.com/public_html/.builds/source/repository
+
+            cd \"\$DIR\"
+            rm -rf * 2>/dev/null
+            curl -sL 'https://github.com/sohbatalquran411/ahla-shabab/archive/main.tar.gz' | tar xz --strip-components=1
+
+            printf 'DB_HOST=127.0.0.1\nDB_PORT=3306\nDB_USER=u971622953_admin_curses\nDB_PASSWORD=homotofo12\nDB_NAME=u971622953_a7la_curses\nJWT_SECRET=ahla-shabab-jwt-secret-2026\n' > .env.production
+
+            \"\$NPM\" install --production=false
+            \"\$NPM\" run build
+          " 2>&1
